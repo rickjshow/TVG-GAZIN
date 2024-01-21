@@ -51,9 +51,7 @@ if ($userType == 'limited') {
                                       JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
                                       JOIN usuarios AS u ON gs.id_usuarios = u.id
                                       JOIN sessoes AS s ON gs.id_sessoes = s.id
-                                      WHERE u.id = :userId AND s.situacao = 'Pendente'
-                                      ORDER BY s.data_criacao DESC
-                                      LIMIT 1";
+                                      WHERE u.id = :userId AND s.situacao = 'Pendente'";
                                 $stmtPart = $pdo->prepare($queryPart);
                                 $stmtPart->bindParam(":userId", $userId);
                                 $stmtPart->execute();

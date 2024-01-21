@@ -53,7 +53,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
             if ($resultPart) {
                 $idParticipante = $resultPart['id'];
 
-                // Verifica se a presença já foi registrada para o participante nesta sessão
                 $queryVerificaPresenca = "SELECT COUNT(*) FROM presenca WHERE id_sessao = :id_sessao AND id_participantes = :id_participante";
                 $stmtVerificaPresenca = $pdo->prepare($queryVerificaPresenca);
                 $stmtVerificaPresenca->bindParam(":id_sessao", $idSessao);
