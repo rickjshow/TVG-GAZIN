@@ -3,31 +3,35 @@ session_start();
 require_once "conexao.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["nome"];
-    $password = $_POST["senha"];
-
-    $query = "SELECT * FROM usuarios WHERE nome = :username AND senha = :password";
-    $stmt = $pdo->prepare($query);
-    $stmt->bindParam(":username", $username);
-    $stmt->bindParam(":password", $password);
-
-    try {
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user) {
-            if ($user['situacao'] == 'Ativo') {
-                $_SESSION["username"] = $username;
-                header("location: home.php");
-            } elseif ($user['situacao'] == 'Inativo') {
-                echo "<script>alert('Usuário Inativo Temporariamente!');</script>";
+    if(empty($_POST['nome']) || empty($_POST['senha'])){
+        echo "<script>alert('Por favor, preencha todos os campos!');</script>";
+    }else{
+        $username = $_POST["nome"];
+        $password = $_POST["senha"];
+    
+        $query = "SELECT * FROM usuarios WHERE nome = :username AND senha = :password";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(":username", $username);
+        $stmt->bindParam(":password", $password);
+    
+        try {
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            if ($user) {
+                if ($user['situacao'] == 'Ativo') {
+                    $_SESSION["username"] = $username;
+                    header("location: home.php");
+                } elseif ($user['situacao'] == 'Inativo') {
+                    echo "<script>alert('Usuário Inativo Temporariamente!');</script>";
+                }
+            } else {
+                echo "<script>alert('Usuário ou senha incorretos. Tente novamente.');</script>";
             }
-        } else {
-            echo "<script>alert('Usuário ou senha incorretos. Tente novamente.');</script>";
+        } catch (PDOException $e) {
+            echo "Erro: " . $e->getMessage();
+            var_dump($e);
         }
-    } catch (PDOException $e) {
-        echo "Erro: " . $e->getMessage();
-        var_dump($e);
     }
 }
 ?>

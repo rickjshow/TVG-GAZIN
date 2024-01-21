@@ -68,14 +68,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
                     $stmtInsert->bindParam(":id_status", $idStatus);
                     $stmtInsert->execute();
                 } else {
-                    echo "<script>alert('Presença já cadastrada para $participante nesta sessão!'); window.location.href='home.php';</script>";
+                    session_start();
+                    $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Presença ja cadastrada para os participantes!');
+                    header("location: presenca.php");
+                    exit();
                 }
             }
         }
-
-        echo "<script>alert('Presença cadastrada com sucesso!'); window.location.href='home.php';</script>";
+        if($stmtInsert){
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Presença cadastrada com sucesso!');
+            header("location: presenca.php");
+            exit();
+        }
     } else {
-        echo "<script>alert('Sessão não encontrada ou não está pendente.'); window.location.href='presenca.php';</script>";
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Sessão não encontrada ou não está pendente!');
+        header("location: presenca.php");
+        exit();
     }
 
     exit();

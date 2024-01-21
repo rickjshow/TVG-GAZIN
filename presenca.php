@@ -23,6 +23,8 @@ if ($userType == 'limited') {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="alert.js"></script>
         <title>Presença</title>
     </head>
 
@@ -71,9 +73,36 @@ if ($userType == 'limited') {
                         </tbody>
                     </table>
 
-                    <input type="submit" class="btn btn-primary mt-4" data-bs-toggle="modal" onclick="return validarPresenca()" name="adicionarPresenca" data-bs-target="#exampleModal" value="Confirmar">
+                    <script>
+                            function validarFormulario() {
+                                var radios = document.querySelectorAll('input[type="radio"]');
+                                var radiosMarcados = document.querySelectorAll('input[type="radio"]:checked');
+
+                                if (radiosMarcados.length !== (radios.length / 2)) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro!',
+                                        text: 'Por favor, marque a presença para todos os participantes.'
+                                    });
+                                    return false;
+                                }
+
+                                return true;
+                            }
+                    </script>
+
+                    <input type="submit" class="btn btn-primary mt-4" data-bs-toggle="modal" onclick="return validarFormulario()" name="adicionarPresenca" data-bs-target="#exampleModal" value="Confirmar">
                 </div>
             </form>
+
+            <?php
+                    if (isset($_SESSION['alerta'])) {
+                    echo "<script>
+                            alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
+                            </script>";
+                    unset($_SESSION['alerta']);
+                    }
+            ?>
         </div>
 
         <div id="login-expired-message" style="color: black;"></div>
