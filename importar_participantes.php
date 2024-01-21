@@ -9,7 +9,9 @@ include "importacao_participantes.php";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Importar Planilha</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="alert.js"></script>
 </head>
 <body class="bg-light">
 
@@ -38,10 +40,18 @@ include "importacao_participantes.php";
                     <form action="importacao_participantes.php" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="planilha">Escolha a planilha:</label>
-                            <input type="file" class="form-control-file" name="planilha" id="planilha" accept=".csv, .xlsx, .xls">
+                            <input type="file" class="form-control-file" name="planilha" id="planilha" accept=".csv, .xlsx, .xls, .ods">
                         </div>
-                        <button type="submit" name="arquivo" id="arquivo" class="btn btn-primary" name="submit">Importar</button>
+                        <button type="submit" id="arquivo" class="btn btn-primary" name="submit">Importar</button>
                     </form>
+                    <?php
+                        if (isset($_SESSION['alerta'])) {
+                                echo "<script>";
+                                echo "alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');";
+                                echo "</script>";
+                        unset($_SESSION['alerta']);
+                        }
+                    ?>
                 </div>
             </div>
         </div>
@@ -49,7 +59,6 @@ include "importacao_participantes.php";
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 </body>
 </html>

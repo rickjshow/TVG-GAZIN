@@ -1,75 +1,86 @@
 <?php
+require 'vendor/autoload.php';
 
-include_once "conexao.php";
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
-if(isset($_FILES['arquivo'])){
-    $arquivo = $_FILES['arquivo'];
+include "conexao.php";
 
-$primeira_linha = true;
-$linhas_importadas = 0;
-$linhas_nao_importadas = 0;
-$participantes_nao_importado = "";
+if (isset($_POST['submit'])) {
+    if ($_FILES['planilha']['error'] == UPLOAD_ERR_OK) {
+        $allowedFileTypes = array('csv', 'xlsx', 'xls', 'ods');
+        $fileExtension = pathinfo($_FILES['planilha']['name'], PATHINFO_EXTENSION);
 
-if (pathinfo($arquivo['name'], PATHINFO_EXTENSION) === "csv") {
-
-    $dados_arquivo = fopen($arquivo['tmp_name'], "r");
-
-    while ($linha = fgetcsv($dados_arquivo, 1000, ";")) {
-
-        if ($primeira_linha) {
-            $primeira_linha = false;
-            continue;
+        if (!in_array(strtolower($fileExtension), $allowedFileTypes)) {
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Tipo de arquivo não suportado. Por favor, anexe uma planilha no formato .csv, .xlsx, .xls ou .ods.');
+            header("location: importar_participantes.php");
+            exit();
         }
+        
+        $caminhoTemporario = $_FILES['planilha']['tmp_name'];
 
-        array_walk_recursive($linha, 'converter');
+        $spreadsheet = IOFactory::load($caminhoTemporario);
+        $sheet = $spreadsheet->getActiveSheet();
 
-        $nome = $linha[0] ?? "NULL";
-        $departamento_nome = $linha[1] ?? "NULL";
+        $sqlSelectDepartamento = "SELECT id FROM departamentos WHERE name = :nome";
+        $stmtSelectDepartamento = $pdo->prepare($sqlSelectDepartamento);
 
-        $queryUsername = "SELECT nome FROM participantes WHERE nome = :nome";
-        $consultanome = $pdo->prepare($queryUsername);
-        $consultanome->bindParam(':nome', $nome);
-        $consultanome->execute();
+        $sqlInsertParticipante = "INSERT INTO participantes (nome, id_departamentos) VALUES (:nome, :id_departamento)";
+        $stmtInsertParticipante = $pdo->prepare($sqlInsertParticipante);
 
-        if ($consultanome->rowCount() > 0) {
-            $linhas_nao_importadas++;
-            $participantes_nao_importado .= ", " . $nome;
-        } else {
+        $duplicateNames = array();
 
-            $sqlDepartamento = "SELECT id FROM departamentos WHERE name = :departamento_nome";
-            $consultaDepartamento = $pdo->prepare($sqlDepartamento);
-            $consultaDepartamento->bindParam(':departamento_nome', $departamento_nome);
-            $consultaDepartamento->execute();
+        foreach ($sheet->getRowIterator() as $row) {
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(FALSE);
 
-            if ($consultaDepartamento->rowCount() == 0) {
-                $linhas_nao_importadas++;
-                $participantes_nao_importado .= ", " . $nome;
-            } else {
-                $departamento_id = $consultaDepartamento->fetchColumn();
+            $nome = $cellIterator->current()->getValue();
+            $cellIterator->next();
+            $nomeDepartamento = $cellIterator->current()->getValue();
 
-                // Inserir participante na tabela
-                $sql = "INSERT INTO participantes(nome, id_departamentos) VALUES(:nome, :id_departamentos)";
-                $consulta = $pdo->prepare($sql);
-                $consulta->bindParam(':nome', $nome);
-                $consulta->bindParam(':id_departamentos', $departamento_id);
+            $stmtSelectDepartamento->execute(['nome' => $nomeDepartamento]);
+            $idDepartamento = $stmtSelectDepartamento->fetchColumn();
 
-                if ($consulta->execute()) {
-                    $linhas_importadas++;
-                    header("location: importar_participantes.php");
-                    exit();
-                } else {
-                    $linhas_nao_importadas++;
-                    $participantes_nao_importado .= ", " . $nome;
-                    echo "<script>alert('Erro!'); window.location.href='importar_participantes.php';</script>";
-                }
+            if (!$idDepartamento) {
+                continue; 
+            }
+
+            $stmtCheckNome = $pdo->prepare("SELECT COUNT(*) FROM participantes WHERE nome = :nome");
+            $stmtCheckNome->execute(['nome' => $nome]);
+            $count = $stmtCheckNome->fetchColumn();
+
+            if ($count > 0) {
+                $duplicateNames[] = $nome;
+                continue;
+            }
+
+            $result = $stmtInsertParticipante->execute(['nome' => $nome, 'id_departamento' => $idDepartamento]);
+
+            if (!$result) {
+                echo "Erro na inserção para $nome";
             }
         }
-    }
-}
 
-    function converter(&$dados_arquivo){
-            
-        $dados_arquivo = mb_convert_encoding($dados_arquivo, "UTF-8", "ISO-8859-1");
+        $stmtSelectDepartamento = null;
+        $stmtInsertParticipante = null;
+        $stmtCheckNome = null;
+        $pdo = null;
+
+        session_start();
+
+        if (!empty($duplicateNames)) {
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Falha ao cadastrar participantes. Alguns participantes já existem no banco.');
+        } else {
+            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Cadastrado com sucesso!');
+        }
+
+        header("location: importar_participantes.php");
+        exit();
+    } else {
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Por favor, anexe alguma planilha');
+        header("location: importar_participantes.php");
+        exit();
     }
-}
+}   
 ?>
