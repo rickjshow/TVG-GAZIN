@@ -1,7 +1,10 @@
 <?php
 
+$data = [];
+
 include "conexao.php";
 include "header.php";
+
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -76,7 +79,28 @@ if (isset($_GET['id'])) {
     </div>
 </div>
 
+<?php 
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tempoFinalEmSegundos'])) {
+    $tempoTotal = json_decode($_POST['tempoFinalEmSegundos'], true); 
+   
+    $tempoFormatado = gmdate("H:i:s", $tempoTotal);
+
+    
+    $queryPonto = "INSERT INTO ponto (valor) VALUES(:tempoFormatado)";
+    $consulta = $pdo->prepare($queryPonto);
+
+    $consulta->bindParam(':tempoFormatado', $tempoFormatado, PDO::PARAM_STR);
+
+   
+    if ($consulta->execute()) {
+        echo "insert concluído";
+    } else {
+        echo "falha ao inserir";
+    }
+}
+
+?>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

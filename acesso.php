@@ -37,6 +37,7 @@ verificarPermissao($permission);
                 </thead>
                 <tbody>
                     <?php
+
                     $query = "SELECT u.*, d.name
                             FROM usuarios as u
                             JOIN departamentos as d ON u.id_departamentos = d.id
@@ -44,8 +45,6 @@ verificarPermissao($permission);
                             $consulta = $pdo->prepare($query);
                             $consulta->execute();
                             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-
 
                     foreach ($data as $row) : ?>
                         <tr>
@@ -58,9 +57,7 @@ verificarPermissao($permission);
                                 </a>
                             </td>
                         </tr>
-                    <?php
-
-                    endforeach; ?>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>

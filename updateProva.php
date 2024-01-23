@@ -31,13 +31,15 @@ if (isset($_POST['update_prova'])) {
     $nome = $_POST['nome'];
     $descricao = $_POST['descricao'];
     $pergunta = $_POST['pergunta'];
+    $pontos = $_POST['pontos'];
 
     $sqlprova = "
     UPDATE provas
     SET
         nome = :nome,
         descricao = :descricao,
-        pergunta = :pergunta
+        pergunta = :pergunta,
+        pontuacao_maxima = :pontos
     WHERE id = :id 
     ";
 
@@ -45,11 +47,20 @@ if (isset($_POST['update_prova'])) {
     $consulta->bindValue(':nome', $nome);
     $consulta->bindValue(':descricao', $descricao);
     $consulta->bindValue(':pergunta', $pergunta);
+    $consulta->bindValue(':pontos', $pontos);
     $consulta->bindValue(':id', $id, PDO::PARAM_INT);
-    $consulta->execute();
 
-    header('Location: cadastro_provas.php');
-    exit;
+    if ($consulta->execute()) {
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Atualizado sucesso!');
+        header("location: cadastro_provas.php");
+        exit();
+    } else {
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Falha ao atualizar prova');
+        header("location: cadastro_provas.php");
+        exit();
+    }
 }
 
 ?>
@@ -80,6 +91,10 @@ if (isset($_POST['update_prova'])) {
         <div class="mb-3">
             <label for="exampleFormControlTextarea1" class="form-label">Perguntas</label>
             <textarea class="form-control" name="pergunta" id="exampleFormControlTextarea1" cols="30" rows="20"><?= $row['pergunta'] ?></textarea>
+        </div>
+        <div class="form-group">
+            <label for="pontos">Pontuação Maxima prova:</label>
+            <input type="number" name="pontos" class="form-control" value="<?= $row['pontuacao_maxima'] ?>">
         </div>
 
         </div>

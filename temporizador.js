@@ -1,20 +1,20 @@
 let temporizador;
 let tempoInicial;
 let tempoPausado;
-let tempoTotal = { minutos: 40, segundos: 0 };
+let tempoTotal = 40 * 60; // Inicialmente, 40 minutos convertidos para segundos
 let temporizadorAtivo = false;
 
 function atualizarTemporizador() {
     const tempoAtual = new Date().getTime();
     const tempoDecorrido = Math.floor((tempoAtual - tempoInicial + tempoPausado) / 1000);
 
-    if (tempoDecorrido >= tempoTotal.minutos * 60 + tempoTotal.segundos) {
+    if (tempoDecorrido >= tempoTotal) {
         clearInterval(temporizador);
         temporizador = null;
         temporizadorAtivo = false;
         alert("Tempo esgotado!");
     } else {
-        const tempoRestante = tempoTotal.minutos * 60 + tempoTotal.segundos - tempoDecorrido;
+        const tempoRestante = tempoTotal - tempoDecorrido;
         const minutosRestantes = Math.floor(tempoRestante / 60);
         const segundosRestantes = tempoRestante % 60;
 
@@ -43,21 +43,31 @@ function finalizarTemporizador() {
     clearInterval(temporizador);
     temporizador = null;
     temporizadorAtivo = false;
+
     const tempoFinal = new Date().getTime();
     const tempoDecorrido = Math.floor((tempoFinal - tempoInicial + tempoPausado) / 1000);
 
-    tempoTotal.minutos = Math.floor(tempoDecorrido / 60);
-    tempoTotal.segundos = tempoDecorrido % 60;
+    const tempoFinalEmSegundos = tempoDecorrido;
 
-    const tempoFormatado = `${String(tempoTotal.minutos).padStart(2, '0')}:${String(tempoTotal.segundos).padStart(2, '0')}`;
-    $('#temporizador').text(tempoFormatado);
+    console.log('Tempo Final (segundos):', tempoFinalEmSegundos);
 
-    alert(`Tempo final: ${tempoTotal.minutos} minutos e ${tempoTotal.segundos} segundos`);
+    // Enviar para o arquivo PHP
+    $.ajax({
+        type: 'POST',
+        url: 'lancarPontos.php',
+        data: { tempoFinalEmSegundos: tempoFinalEmSegundos }
+    })
+    .done(function(response) {
+        console.log(response);
+    })
+    .fail(function(error) {
+        console.error('Erro na requisição AJAX:', error);
+    });
 }
 
 function resetarTemporizador() {
-    tempoTotal = { minutos: 40, segundos: 0 };
-    const tempoFormatado = `${String(tempoTotal.minutos).padStart(2, '0')}:${String(tempoTotal.segundos).padStart(2, '0')}`;
+    tempoTotal = 40 * 60; 
+    const tempoFormatado = `${String(Math.floor(tempoTotal / 60)).padStart(2, '0')}:${String(tempoTotal % 60).padStart(2, '0')}`;
     $('#temporizador').text(tempoFormatado);
     temporizadorAtivo = false;
     tempoPausado = 0;
@@ -82,6 +92,3 @@ $('#resetar').click(function () {
 $(document).ready(function () {
     resetarTemporizador();
 });
-
-
-

@@ -8,6 +8,8 @@ if (isset($_POST["add_tvg"])) {
         $nome = $_POST["nometvg"];
         $data = $_POST["datatvg"];
 
+        date_default_timezone_set('America/Sao_Paulo');
+
         $dateAtual = date("Y-m-d");
 
         if($data < $dateAtual){

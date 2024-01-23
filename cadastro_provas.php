@@ -76,6 +76,10 @@ verificarPermissao($permission);
                                 <label for="exampleFormControlTextarea1" class="form-label">Perguntas:</label>
                                 <textarea class="form-control" name="pergunta_prova" id="exampleFormControlTextarea1" cols="30" rows="10"></textarea>
                             </div>
+                            <div class="form-group">
+                                <label for="pontos">Pontuação Maxima prova:</label>
+                                <input type="number" name="pontos" class="form-control">
+                            </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
