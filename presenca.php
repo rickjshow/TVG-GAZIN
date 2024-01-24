@@ -152,7 +152,7 @@ if ($userType == 'limited') {
             JOIN usuarios AS u ON gs.id_usuarios = u.id
             JOIN sessoes AS ses ON pre.id_sessao = ses.id
             JOIN equipes AS e ON gs.id_equipe = e.id
-            WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente' ORDER BY ses.data_criacao DESC LIMIT 1";
+            WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente'";
 
     $consulta = $pdo->prepare($query);
     $consulta->execute();

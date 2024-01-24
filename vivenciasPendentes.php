@@ -47,7 +47,7 @@ $nomeSessao = $stmtSessao->fetchColumn();
                     JOIN gerenciamento_sessao AS gs ON e.id = gs.id_equipe
                     JOIN usuarios AS u ON gs.id_usuarios = u.id
                     JOIN sessoes AS ses ON ep.id_sessao = ses.id
-                    WHERE u.id = :userId AND ses.situacao = 'Pendente'";
+                    WHERE u.id = :userId AND ses.situacao = 'Pendente' AND ep.situacao = 'Pendente'";
 
                     $consulta = $pdo->prepare($queryProvas);
                     $consulta->bindParam(":userId", $userId);
