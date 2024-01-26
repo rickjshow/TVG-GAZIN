@@ -2,6 +2,7 @@
 
 include "conexao.php";
 include "header.php";
+include "temporizador.php";
 
 $username = $_SESSION['username'];
 

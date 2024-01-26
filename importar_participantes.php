@@ -1,6 +1,10 @@
 <?php 
 include "header.php";
 include "importacao_participantes.php";
+require_once "permissao.php";
+include "temporizador.php";
+
+verificarPermissao($permission);
 
 ?>
 <!DOCTYPE html>

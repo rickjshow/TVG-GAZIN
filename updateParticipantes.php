@@ -1,6 +1,10 @@
 <?php
 include("header.php");
 include("conexao.php");
+require_once "permissao.php";
+include "temporizador.php";
+
+verificarPermissao($permission);
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];

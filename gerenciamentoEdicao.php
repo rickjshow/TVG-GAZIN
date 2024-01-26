@@ -2,6 +2,10 @@
 include "header.php";
 include "conexao.php";
 include "adicionarEquipeSessao.php";
+require_once "permissao.php";
+include "temporizador.php";
+
+verificarPermissao($permission);
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["confirmacao"])) {
     $confirmacao = $_POST["confirmacao"];

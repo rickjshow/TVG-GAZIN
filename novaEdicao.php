@@ -31,6 +31,7 @@ verificarPermissao($permission);
                         <th>Nome</th>
                         <th>Data TVG</th>
                         <th>Situação</th>
+                        <th>Editar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,7 +40,16 @@ verificarPermissao($permission);
                     $consulta = $pdo->prepare($query);
                     $consulta->execute();
                     $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+                    $queryG = "SELECT s.id AS sessao_id FROM gerenciamento_sessao AS gs
+                    JOIN sessoes AS s ON gs.id_sessoes = s.id";
+                    $consulta2 = $pdo->prepare($queryG);
+                    $consulta2->execute();
+                    $dados = $consulta2->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach($dados AS $dado);                 
                     ?>
+
 
                     <?php foreach ($data as $row) : ?>
                         <tr>
@@ -49,6 +59,8 @@ verificarPermissao($permission);
                                 <a class="btn btn-<?php echo ($row['situacao'] == 'Pendente') ? 'danger' : 'success'; ?>" style="font-size: 12px;" id="btn">
                                     <?php echo $row['situacao']; ?>
                                 </a>
+                                <td><a href="updateGSessao.php?id=<?php echo $dado['sessao_id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a></td>
+                            <td>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -92,7 +104,7 @@ verificarPermissao($permission);
         resetTimer();
     </script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>
