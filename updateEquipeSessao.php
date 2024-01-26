@@ -20,14 +20,14 @@ $participantes = $pdo->query("SELECT p.nome AS participante_nome FROM gerenciame
 foreach($participantes as $part);
 $sessoes = $pdo->query("SELECT s.nome AS nome_sessao, s.id AS sessao_id FROM gerenciamento_sessao AS gs JOIN sessoes AS s ON gs.id_sessoes = s.id WHERE gs.id = $idGS")->fetchAll(PDO::FETCH_ASSOC);
 foreach($sessoes as $sessao);
-$provas = $pdo->query("SELECT pro.nome AS prova_nome FROM equipes_provas AS ep JOIN provas AS pro ON ep.id_provas = pro.id WHERE id_sessao = {$sessao['sessao_id']} AND id_equipes = {$equipe['equipe_id']}")->fetchAll(PDO::FETCH_ASSOC);
+$provas = $pdo->query("SELECT pro.nome AS prova_nome, ep.id AS provas_id FROM equipes_provas AS ep JOIN provas AS pro ON ep.id_provas = pro.id WHERE id_sessao = {$sessao['sessao_id']} AND id_equipes = {$equipe['equipe_id']}")->fetchAll(PDO::FETCH_ASSOC);
 foreach($provas as $prova);
 $gs = $pdo->query("SELECT * FROM gerenciamento_sessao WHERE id = $idGS")->fetchAll(PDO::FETCH_ASSOC);
 foreach($gs as $gerent);
 
 }
 
-if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["equipe"]) && isset($_POST["facilitador"]) && isset($_POST["participante"]) &&  isset($_POST["provas"])) {                                                                                                                                                                  
+if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["equipe"]) && isset($_POST["facilitador"]) && isset($_POST["participante"]) &&  isset($_POST["provas"]) && isset($_POST["id"]) && isset($_POST["id2"])) {                                                                                                                                                                  
 
         $sessao = $_POST["sessao"];
         $equipe = $_POST["equipe"];
@@ -35,6 +35,8 @@ if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["eq
         $participantes = $_POST["participante"];
         $provas = $_POST["provas"];
         $id = $_POST['id'];
+        $id2 = $_POST['provas_id'];
+
 
         $sqlsessao = "SELECT id FROM sessoes WHERE nome = :sessao";
         $consultasessao = $pdo->prepare($sqlsessao);
@@ -106,21 +108,23 @@ if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["eq
         }
 
 
-        $sql = "UPDATE gerenciamento_sessao SET id_sessoes = :id_sessoes, id_equipe = :id_equipe, id_usuarios = :id_usuarios, id_participantes = :id_participantes";
+        $sql = "UPDATE gerenciamento_sessao SET id_sessoes = :id_sessoes, id_equipe = :id_equipe, id_usuarios = :id_usuarios, id_participantes = :id_participantes WHERE id = :id";
         $consulta = $pdo->prepare($sql);
         $consulta->bindParam(':id_sessoes', $sessao_id);
         $consulta->bindParam(':id_equipe', $equipe_id);
         $consulta->bindParam(':id_usuarios', $facilitador_id);
+        $consulta->bindParam(':id', $id);
 
         foreach ($participantes_ids as $participante_id) {
             $consulta->bindParam(':id_participantes', $participante_id);
             $consulta->execute();
         }
 
-        $sql1 = "UPDATE equipes_provas SET id_sessao = :id_sessoes, id_equipes = :id_equipe, id_provas = :id_provas";
+        $sql1 = "UPDATE equipes_provas SET id_sessao = :id_sessoes, id_equipes = :id_equipe, id_provas = :id_provas WHERE id = :id2";
         $consulta1 = $pdo->prepare($sql1);
         $consulta1->bindParam(':id_sessoes', $sessao_id);
         $consulta1->bindParam(':id_equipe', $equipe_id);
+        $consulta1->bindParam(':id2', $id2);
 
 
         foreach ($provas_ids as $provas_id) {
@@ -150,6 +154,7 @@ if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["eq
         <h2 class="mt-4 text-center">Edição gerenciamento de Edição</h2>
         <form action="updateEquipeSessao.php" method="post" id="meuFormulario">
             <input type="hidden" name="id" value="<?= $gerent['id'] ?>">
+            <input type="hidden" name="id2" value="<?= $prova['provas_id'] ?>">
             <div class="form-group">
                 <label for="sessao">Sessão</label>
                 <select id="sessao" name="sessao" class="form-control select2">
