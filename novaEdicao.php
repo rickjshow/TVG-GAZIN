@@ -18,10 +18,10 @@ verificarPermissao($permission);
 </head>
 
 <body>
-        <div class="box1 mt-4 text-center">
-            <h3 class="mt-4" style="font-size: 20px;">Edição TVG</h3>
-            <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Adicionar Edição</button>
-        </div>
+    <div class="box1 mt-4 text-center">
+        <h3 class="mt-4" style="font-size: 20px;">Edição TVG</h3>
+        <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Adicionar Edição</button>
+    </div>
 
     <div class="container-fluid">
         <div class="table-responsive-sm mt-4" style="font-size: 12px;">
@@ -47,9 +47,8 @@ verificarPermissao($permission);
                     $consulta2->execute();
                     $dados = $consulta2->fetchAll(PDO::FETCH_ASSOC);
 
-                    foreach($dados AS $dado);                 
+                    foreach ($dados as $dado);
                     ?>
-
 
                     <?php foreach ($data as $row) : ?>
                         <tr>
@@ -59,11 +58,17 @@ verificarPermissao($permission);
                                 <a class="btn btn-<?php echo ($row['situacao'] == 'Pendente') ? 'danger' : 'success'; ?>" style="font-size: 12px;" id="btn">
                                     <?php echo $row['situacao']; ?>
                                 </a>
-                                <td><a href="updateGSessao.php?id=<?php echo $dado['sessao_id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a></td>
+                            </td>
                             <td>
+                                <?php if ($row['situacao'] != 'Finalizado') : ?>
+                                    <a href="updateGSessao.php?id=<?php echo $dado['sessao_id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a>
+                                <?php else : ?>
+                                    <button class="btn btn-success" disabled style="font-size: 12px;">Atualizar</button>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
+
                 </tbody>
             </table>
         </div>
@@ -104,7 +109,7 @@ verificarPermissao($permission);
         resetTimer();
     </script>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>

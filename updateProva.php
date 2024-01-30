@@ -78,33 +78,35 @@ if (isset($_POST['update_prova'])) {
     <title>UpdateProva</title>
 </head>
 <body>
-    
+
 <div class="container-fluid mt-4">
     <form action="updateProva.php" method="post">
         <input type="hidden" name="id" value="<?= $row['id'] ?>">
+
         <div class="form-group">
-            <label>Nome Vivência</label>
+            <label for="nome" class="mt-4">Nome da Vivência:</label>
             <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
         </div>
 
-        <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Descriçao</label>
-            <textarea class="form-control" name="descricao" id="exampleFormControlTextarea1" cols="30" rows="20"><?= $row['descricao'] ?></textarea>
+        <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <textarea class="form-control" name="descricao" rows="5"><?= $row['descricao'] ?></textarea>
         </div>
 
-        <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Perguntas</label>
-            <textarea class="form-control" name="pergunta" id="exampleFormControlTextarea1" cols="30" rows="20"><?= $row['pergunta'] ?></textarea>
-        </div>
         <div class="form-group">
-            <label for="pontos">Pontuação Maxima prova:</label>
+            <label for="pergunta">Perguntas:</label>
+            <textarea class="form-control" name="pergunta" rows="5"><?= $row['pergunta'] ?></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="pontos">Pontuação Máxima da Prova:</label>
             <input type="number" name="pontos" class="form-control" value="<?= $row['pontuacao_maxima'] ?>">
         </div>
 
-        </div>
         <input type="submit" class="btn btn-success" name="update_prova" value="ATUALIZAR">
     </form>
 </div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>

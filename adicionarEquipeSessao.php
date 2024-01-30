@@ -12,7 +12,7 @@ if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["eq
         $participantes = $_POST["participante"];
         $provas = $_POST["provas"];
 
-        $sqlsessao = "SELECT id FROM sessoes WHERE nome = :sessao";
+        $sqlsessao = "SELECT id FROM sessoes WHERE nome = :sessao order by data_criacao desc limit 1";
         $consultasessao = $pdo->prepare($sqlsessao);
         $consultasessao->bindParam(':sessao', $sessao);
         $consultasessao->execute();

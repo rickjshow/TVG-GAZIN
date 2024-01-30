@@ -30,19 +30,16 @@ $nomeSessao = $stmtSessao->fetchColumn();
 </head>
 
 <body>
-
-    <div class="container-fluid text-center">
-
         <div class="box1 mt-4 text-center">
             <h1 class='mt-4' style='font-size: 20px;'>Vivências Pendentes</h1>
             <h4 class='mt-4'></h4>
             <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSessao; ?></h4>
         </div>
-
-        <?php 
-                if($resultUser){
-                    $userId = $resultUser['id'];
-                    $queryProvas = "SELECT DISTINCT e.nome AS equipe_nome, p.nome AS prova_nome, p.id AS prova_id FROM equipes_provas AS ep
+        <div class="container-fluid text-center">
+        <?php
+        if ($resultUser) {
+            $userId = $resultUser['id'];
+            $queryProvas = "SELECT DISTINCT e.nome AS equipe_nome, p.nome AS prova_nome, p.id AS prova_id FROM equipes_provas AS ep
                     JOIN provas AS p ON  ep.id_provas = p.id
                     JOIN equipes AS e ON ep.id_equipes = e.id
                     JOIN gerenciamento_sessao AS gs ON e.id = gs.id_equipe
@@ -50,13 +47,13 @@ $nomeSessao = $stmtSessao->fetchColumn();
                     JOIN sessoes AS ses ON ep.id_sessao = ses.id
                     WHERE u.id = :userId AND ses.situacao = 'Pendente' AND ep.situacao = 'Pendente'";
 
-                    $consulta = $pdo->prepare($queryProvas);
-                    $consulta->bindParam(":userId", $userId);
-                    $consulta->execute();
-                    $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            $consulta = $pdo->prepare($queryProvas);
+            $consulta->bindParam(":userId", $userId);
+            $consulta->execute();
+            $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-                    foreach ($data as $row) {
-                        echo "<div class='row'>
+            foreach ($data as $row) {
+                echo "<div class='row'>
                                   <div class='col-sm-6 mb-3 mb-sm-0 mx-auto'>
                                     <a href='lancarPontos.php?id={$row['prova_id']}' style='text-decoration: none; color: black;'>
                                           <div class='card mt-4'>
@@ -68,9 +65,9 @@ $nomeSessao = $stmtSessao->fetchColumn();
                                        </a>
                                    </div>
                                </div>";
-                    }
-                }              
-        ?>      
+            }
+        }
+        ?>
 
         <script>
             resetTimer();

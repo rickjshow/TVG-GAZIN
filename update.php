@@ -82,28 +82,32 @@ if (isset($_POST['update_usuario'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
-    <title>Document</title>
+    <title>Update Usuario</title>
 </head>
 <body>
 
-<div class="container-fluid mt-4">
+<div class="container mt-4">
     <form action="update.php" method="post">
         <input type="hidden" name="id" value="<?= $row['id'] ?>">
+
         <div class="form-group">
-            <label>Usuario</label>
+            <label  class="mt-4" for="nome">Usuário:</label>
             <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
         </div>
+
         <div class="form-group">
-            <label>Senha</label>
+            <label for="senha">Senha:</label>
             <input type="text" name="senha" class="form-control" value="<?= $row['senha'] ?>">
         </div>
+
         <div class="form-group">
-            <label for="situacao">Situação</label>
+            <label for="situacao">Situação:</label>
             <select name="situacao" class="form-control">
                 <option value="Ativo" <?= ($row['situacao'] == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
                 <option value="Inativo" <?= ($row['situacao'] == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
             </select>
         </div>
+
         <div class="form-group">
             <label for="departamentos">Departamento:</label>
             <select name="departamentos" class="form-control">
@@ -120,6 +124,7 @@ if (isset($_POST['update_usuario'])) {
                 <?php endforeach; ?>
             </select>
         </div>
+
         <div class="form-group">
             <label for="tipo">Tipo:</label>
             <select name="tipo" class="form-control">
@@ -136,6 +141,7 @@ if (isset($_POST['update_usuario'])) {
                 <?php endforeach; ?>
             </select>
         </div>
+
         <input type="submit" class="btn btn-success" name="update_usuario" value="ATUALIZAR">
     </form>
 </div>
@@ -143,12 +149,4 @@ if (isset($_POST['update_usuario'])) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>
-</html>
-
-
-
-
-
-
-
-    
+</html>  

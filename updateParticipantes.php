@@ -77,32 +77,35 @@ if (isset($_POST['update_participantes'])) {
 <body>
 
 
-    <div class="container-fluid mt-4">
-        <form action="updateParticipantes.php" method="post">
-            <input type="hidden" name="id" value="<?= $row['id'] ?>">
-            <div class="form-group">
-                <label>Nome:</label>
-                <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
-            </div>
-            <div class="form-group">
-                <label for="departamentos">Departamento:</label>
-                <select name="departamentos" class="form-control">
-                    <?php
-                    $query = "SELECT * FROM departamentos";
-                    $consulta = $pdo->prepare($query);
-                    $consulta->execute();
-                    $departamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+<div class="container mt-4">
+    <form action="updateParticipantes.php" method="post">
+        <input type="hidden" name="id" value="<?= $row['id'] ?>">
+        
+        <div class="form-group mt-4">
+            <label for="nome">Nome:</label>
+            <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
+        </div>
 
-                    foreach ($departamentos as $departamento) : ?>
-                        <option value="<?= $departamento['name'] ?>" <?= ($row['departamento_nome'] == $departamento['name']) ? "selected" : "" ?>>
-                            <?= $departamento['name'] ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        <input type="submit" class="btn btn-success" name="update_participantes" value="ATUALIZAR">
+        <div class="form-group">
+            <label for="departamentos">Departamento:</label>
+            <select name="departamentos" class="form-control">
+                <?php
+                $query = "SELECT * FROM departamentos";
+                $consulta = $pdo->prepare($query);
+                $consulta->execute();
+                $departamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach ($departamentos as $departamento) : ?>
+                    <option value="<?= $departamento['name'] ?>" <?= ($row['departamento_nome'] == $departamento['name']) ? "selected" : "" ?>>
+                        <?= $departamento['name'] ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success" name="update_participantes">ATUALIZAR</button>
     </form>
-    </div>
+</div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>

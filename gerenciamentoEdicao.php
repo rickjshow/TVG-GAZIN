@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["confirmacao"])) {
         } else {
             $sessao_id = $consultasessao->fetchColumn();
         }
-        header("Location: /TVG-GAZIN/gerenciamentoEdicao.php?continuar=1&idsessao=$sessao_id");
+        header("Location:gerenciamentoEdicao.php?continuar=1&idsessao=$sessao_id");
         exit();
     }
 }
@@ -165,7 +165,7 @@ $provas = $pdo->query("SELECT * FROM provas")->fetchAll(PDO::FETCH_ASSOC);
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
     <script>
         $(".select2").select2();
