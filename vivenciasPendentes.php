@@ -36,6 +36,18 @@ $nomeSessao = $stmtSessao->fetchColumn();
             <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSessao; ?></h4>
         </div>
         <div class="container-fluid text-center">
+
+            <?php 
+
+            if(isset($_SESSION['alerta'])){
+                echo "<script>
+                    alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
+                </script>";
+                unset($_SESSION['alerta']);
+            }
+
+            ?>
+        
         <?php
         if ($resultUser) {
             $userId = $resultUser['id'];
@@ -67,6 +79,7 @@ $nomeSessao = $stmtSessao->fetchColumn();
                                </div>";
             }
         }
+        
         ?>
 
         <script>
