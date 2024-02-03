@@ -1,6 +1,6 @@
 <?php
 include("header.php");
-include("conexao.php");
+require_once ("conexao.php");
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];

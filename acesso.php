@@ -1,5 +1,5 @@
 <?php
-include "conexao.php";
+require_once "conexao.php";
 require_once "permissao.php";
 include "header.php";
 include "adicionar.php";

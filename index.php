@@ -2,6 +2,7 @@
 session_start();
 require_once "conexao.php";
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if(empty($_POST['nome']) || empty($_POST['senha'])){
         echo "<script>alert('Por favor, preencha todos os campos!');</script>";

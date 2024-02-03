@@ -1,28 +1,16 @@
 <?php
 
-
-
-$data = [];
-
 include "conexao.php";
-include "header.php";
-
-$id = null;
-
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-
-    $queryProva = "SELECT * FROM provas WHERE id = :id";
-    $consulta = $pdo->prepare($queryProva);
-    $consulta->bindValue(":id", $id, PDO::PARAM_INT);
-    $consulta->execute();
-    $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-}
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tempoFinalEmSegundos']) && isset($_POST['idProva'])) {
-    $idProva = $_POST['idProva'];
-    $tempoTotal = json_decode($_POST['tempoFinalEmSegundos'], true);
+//mudei pra GET pra facilitar depos pode volta pra post see quiser!!
+//quando chama via ajax ta caindo aqui dentro !!!
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos']) && isset($_GET['idProva'])) {
+
+    //print_r($_GET);die; //tem para aqui agr
+    //nego ta esperto kkkk
+    $idProva = $_GET['idProva'];
+    $tempoTotal = json_decode($_GET['tempoFinalEmSegundos'], true);
 
     $tempoFormatado = gmdate("H:i:s", $tempoTotal);
 
@@ -89,10 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tempoFinalEmSegundos'
                 $consulta3->bindValue(':ponto_obtido', $pontuacao, PDO::PARAM_INT);
                 $consulta3->bindParam(':tempo_gasto', $tempoFormatado, PDO::PARAM_STR);
 
+                //vc fez certo aqui so tava errado ordem que vc montou as coisa vamo ve se funga
                 if ($consulta3->execute()) {
-                    $querySituacao = "UPDATE equipes_provas SET situacao = 'Finalizado' WHERE id_provas = :id_provas";
+                    $querySituacao = "UPDATE equipes_provas SET situacao = 'Finalizado' WHERE id_provas = :id_provas AND id_equipes = :id_equipes AND id_sessao = :id_sessao";
                     $consulta4 = $pdo->prepare($querySituacao);
                     $consulta4->bindValue(':id_provas', $idProva, PDO::PARAM_INT);
+                    $consulta4->bindValue(':id_equipes', $idEquipe, PDO::PARAM_INT);
+                    $consulta4->bindValue(':id_sessao', $idSessao, PDO::PARAM_INT);
                     $consulta4->execute();
 
                     echo json_encode(['pontuacao' => $pontuacao]);
@@ -107,6 +98,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tempoFinalEmSegundos'
     }
 }
 
+
+$data = [];
+
+include "header.php";
+
+$id = null;
+
+if (isset($_GET['id'])) {
+    $id = $_GET['id'];
+
+    $queryProva = "SELECT * FROM provas WHERE id = :id";
+    $consulta = $pdo->prepare($queryProva);
+    $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+    $consulta->execute();
+    $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+}
 
 ?>
 
@@ -220,65 +227,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tempoFinalEmSegundos'
                 var idProva = <?php echo $id; ?>;
 
                 Swal.fire({
-    title: 'Você tem certeza?',
-    text: 'Isso finalizará o temporizador e lançará os pontos.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sim, finalizar!',
-    cancelButtonText: 'Cancelar'
-}).then((result) => {
-    if (result.isConfirmed) {
-        $.ajax({
-            type: "POST",
-            url: "lancarPontos.php",
-            data: {
-                tempoFinalEmSegundos: tempoGasto,
-                idProva: idProva
-            },
-            dataType: 'json', // Adicione isso para indicar que você espera uma resposta JSON
-            contentType: 'application/json',
-            success: function(response) {
-                if ('pontuacao' in response) {
-                    var pontuacao = response.pontuacao;
+                    title: 'Você tem certeza?',
+                    text: 'Isso finalizará o temporizador e lançará os pontos.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim, finalizar!',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "GET",
+                            url: "lancarPontos.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva, //isso podia ser em outro arquivo ai vc mata aquele codico la cima joga pra outro arquvo 
+                            dataType: 'json', // Adicione isso para indicar que você espera uma resposta JSON
+                            contentType: 'application/json',
+                            success: function(response) {
+                                console.log(response);
+                                if (response.pontuacao) {
+                                    var pontuacao = response.pontuacao;
 
-                    Swal.fire({
-                        title: 'Pontuação Final',
-                        text: 'Sua pontuação final é: ' + pontuacao,
-                        icon: 'success'
-                    });
-                } else if ('error' in response) {
-                    console.error(response.error);
-                    Swal.fire({
-                        title: 'Erro',
-                        text: 'Ocorreu um erro ao processar a pontuação.',
-                        icon: 'error'
-                    });
-                } else {
-                    console.error("Resposta inesperada do servidor:", response);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Erro na requisição AJAX: " + error);
-                Swal.fire({
-                    title: 'Erro',
-                    text: 'Ocorreu um erro na requisição AJAX.',
-                    icon: 'error'
+                                    Swal.fire({
+                                        title: 'Pontuação Final',
+                                        text: 'Sua pontuação final é: ' + pontuacao,
+                                        icon: 'success',
+                                        showCancelButton: false,
+                                        confirmButtonText: 'OK'
+                                    }).then((result) => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = 'vivenciasPendentes.php';
+                                        }
+                                    });
+
+                                } else if (response.error) {
+                                    console.error(response.error);
+                                    Swal.fire({
+                                        title: 'Erro',
+                                        text: 'Ocorreu um erro ao processar a pontuação.',
+                                        icon: 'error'
+                                    });
+                                } else {
+                                    console.error("Resposta inesperada do servidor:", response);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Erro na requisição AJAX: " + error);
+                                Swal.fire({
+                                    title: 'Erro',
+                                    text: 'Ocorreu um erro na requisição AJAX.',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+
+                        localStorage.removeItem('tempoRestante');
+
+                        totalTimeInSeconds = initialTotalTimeInSeconds;
+                        updateDisplay();
+                    } else {
+                        if (!timerRunning) {
+                            startTimer();
+                        }
+                    }
                 });
-            }
-        });
-
-        localStorage.removeItem('tempoRestante');
-
-        totalTimeInSeconds = initialTotalTimeInSeconds;
-        updateDisplay();
-    } else {
-        if (!timerRunning) {
-            startTimer();
-        }
-    }
-});
             }
 
             function updateTimer() {

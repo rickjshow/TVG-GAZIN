@@ -1,6 +1,6 @@
 <?php
 ob_start();
-session_start();
+///session_start(); não precisa dentro do permissao tem banco de dados 
 require_once "permissao.php";
 ?>
 <!DOCTYPE html>

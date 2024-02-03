@@ -1,6 +1,6 @@
 <?php
 include "header.php";
-include "conexao.php";
+require_once "conexao.php";
 include "adicionarEquipeSessao.php";
 require_once "permissao.php";
 include "temporizador.php";
