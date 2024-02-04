@@ -56,7 +56,11 @@ if (isset($_POST["add_user"])) {
                 } else {
                     $departamento_id = $consultaDepartamento->fetchColumn();
 
-                    $sql = "INSERT INTO usuarios(nome, senha, permission, situacao, id_departamentos, id_tipo) VALUES(:nome, :senha, :situacao, 'Ativo', :id_departamentos, :id_tipo)";
+                    $sql = "INSERT INTO usuarios(nome, senha, permission, situacao, id_departamentos, id_tipo, fotos) VALUES(:nome, :senha, :situacao, 'Ativo', :id_departamentos, :id_tipo, :fotos)";
+
+                    $caminho_imagem_predefinida = 'semfoto.jpg';
+
+                    $imagem_binaria = file_get_contents($caminho_imagem_predefinida);
 
                     $consulta = $pdo->prepare($sql);
                     $consulta->bindParam(':nome', $nome);
@@ -64,6 +68,7 @@ if (isset($_POST["add_user"])) {
                     $consulta->bindParam(':situacao', $situacao);
                     $consulta->bindParam(':id_departamentos', $departamento_id);
                     $consulta->bindParam(':id_tipo', $tipo_id);
+                    $consulta->bindParam(':fotos', $imagem_binaria, PDO::PARAM_LOB);
 
                     if ($consulta->execute()) {
                         session_start();

@@ -453,3 +453,13 @@ header.dashboard-toolbar {
     }
 }
 
+@media (min-width: 992px) {  
+
+    #fotoperfil {
+        
+        display: none;
+
+    }
+
+}
+

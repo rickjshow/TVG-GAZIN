@@ -15,6 +15,8 @@ verificarPermissao($permission);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Edição gerenciamento sessão</title>
 </head>
 
@@ -65,6 +67,55 @@ verificarPermissao($permission);
 
         ?>
     </div>
+    
+        <div class="container-fluid text-center mt-1 p-4">
+            <button id="btnExcluirSessao" class="btn btn-danger" disabled style="font-size: 12px;">Excluir Sessão</button>
+        </div>
+
+ <script>
+
+
+    $(document).ready(function() {
+        $("#btnExcluirSessao").prop("disabled", false);
+
+        $("#btnExcluirSessao").click(function() {
+            var idSessao = "<?php echo $idGS; ?>";
+
+            Swal.fire({
+                title: 'Você tem certeza?',
+                text: 'Esta ação encerrará a sessão. Deseja continuar?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, encerrar sessão!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'excluiSessao.php',
+                        data: { idSessao: idSessao },
+                        success: function(response) {
+                            // Redirecionar para excluiSessao.php com o ID na URL
+                            window.location.href = 'excluiSessao.php?idGS=' + idSessao;
+                        },
+                        error: function(error) {
+                            console.error('Erro ao excluir sessão:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Ocorreu um erro ao encerrar a sessão. Por favor, tente novamente.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+
+</script>
+    
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

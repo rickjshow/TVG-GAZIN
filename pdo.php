@@ -1,13 +1,4 @@
-<?php
-
-//ponhei aaqui mais vc pode criar arquivo so pra isso e chamar todas tela 
-if (!function_exists('iniciarSessaoSeNecessario')) {
-    function iniciarSessaoSeNecessario() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-    }
-}
+<?php 
 
 $servidor = "localhost";
 $usuario = "root";

@@ -71,6 +71,8 @@ if (isset($_POST['update_participantes'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Update Participantes</title>
 </head>
 
@@ -103,9 +105,66 @@ if (isset($_POST['update_participantes'])) {
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success" name="update_participantes">ATUALIZAR</button>
+        <button type="submit" class="btn btn-success" name="update_participantes">Atualizar</button>
     </form>
 </div>
+
+<div class="container-fluid text-center" style="margin-top: -33px;">
+    <button id="btnExcluirPart" class="btn btn-danger" disabled style="font-size: 12px;">Excluir Participante</button>
+</div>
+
+        <?php
+            if (isset($_SESSION['alerta'])) {
+              echo "<script>
+                      alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
+                   </script>";
+              unset($_SESSION['alerta']);
+            }
+        ?>
+
+ <script>
+
+
+    $(document).ready(function() {
+        $("#btnExcluirPart").prop("disabled", false);
+
+        $("#btnExcluirPart").click(function() {
+            var idParticipante = "<?php echo $id; ?>";
+
+            Swal.fire({
+                title: 'Você tem certeza?',
+                text: 'Esta ação irá excluir o Participante. Deseja continuar?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, excluir!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'deleteParticipantes.php',
+                        data: { idSessao: idParticipante },
+                        success: function(response) {
+                            window.location.href = 'deleteParticipantes.php?idParticipante=' + idParticipante;
+                        },
+                        error: function(error) {
+                            console.error('Erro ao excluir o Participante:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Ocorreu um erro ao excluir o Participante. Por favor, tente novamente.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+
+</script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>

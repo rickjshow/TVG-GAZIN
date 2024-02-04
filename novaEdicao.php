@@ -105,6 +105,15 @@ verificarPermissao($permission);
         </div>
     </div>
 
+    <?php
+            if (isset($_SESSION['alerta'])) {
+            echo "<script>
+                    alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
+                    </script>";
+            unset($_SESSION['alerta']);
+            }
+    ?>
+
     <div id="login-expired-message" style="color: black;"></div>
 
     <script>
