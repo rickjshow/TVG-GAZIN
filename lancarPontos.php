@@ -20,7 +20,231 @@ if (isset($_GET['id'])) {
 }
 
 
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Lançar Pontos</title>
+</head>
+
+<body>
+
+    <div class='container-fluid mt-4'>
+        <?php
+        foreach ($data as $row) {
+            echo "
+            <div class='accordion accordion-flush' id='accordionFlushExample'>
+                <div class='card mt-4'>
+                    <div class='accordion-item card-body text-center'>
+                        <div class='accordion-header'>
+                            <div class='accordion-button collapsed' data-bs-toggle='collapse' data-bs-target='#flush-collapseOne' aria-expanded='false' aria-controls='flush-collapseOne'>
+                                {$row['nome']}
+                            </div>
+                        </div>
+                        <hr class='my-3'> <!-- Adiciona o divisor -->
+                        <div id='flush-collapseOne' class='accordion-collapse collapse' data-bs-parent='#accordionFlushExample'>
+                            <div class='accordion-body text-left'>
+                                <p>{$row['descricao']}</p>
+                                <hr class='my-3'> <!-- Adiciona o divisor -->
+                                <p>{$row['pergunta']}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>";
+        }
+        ?>
+
+        <div class="row mt-4">
+            <div class="col-md-6 offset-md-3">
+                <div class="card text-center">
+                    <div class="card-header">
+                        <h3>Tempo Prova</h3>
+                    </div>
+                    <div class="card-body">
+                        <h1 id="timer">40:00</h1>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" onclick="startTimer()">Iniciar</button>
+                        <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
+                        <button class="btn btn-danger" onclick="stopTimer()">Finalizar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <script>
+
+            var timerInterval;
+            var timerRunning = false;
+            var initialTotalTimeInSeconds = 2400;
+            var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
+            var initialTimeInSeconds = totalTimeInSeconds;
+
+            function startTimer() {
+                if (!timerRunning) {
+                    timerInterval = setInterval(updateTimer, 1000);
+                    timerRunning = true;
+                }
+            }
+
+            function pauseTimer() {
+
+                if (!timerRunning) {
+                    Swal.fire({
+                        title: 'Aviso',
+                        text: 'É necessário iniciar o temporizador antes de pausar.',
+                        icon: 'info'
+                    });
+                    return;
+                }
+
+                clearInterval(timerInterval);
+                timerRunning = false;
+            }
+
+
+            function stopTimer() {
+
+                if (!timerRunning) {
+                    Swal.fire({
+                        title: 'Aviso',
+                        text: 'É necessário iniciar o temporizador antes de finalizar.',
+                        icon: 'info'
+                    });
+                    return;
+                }
+
+                clearInterval(timerInterval);
+                timerRunning = false;
+                updateDisplay();
+                showTimeSpentAlert();
+
+                var tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+                var idProva = <?php echo $id; ?>;
+
+                Swal.fire({
+                    title: 'Você tem certeza?',
+                    text: 'Isso finalizará o temporizador e lançará os pontos.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sim, finalizar!',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: "lancarPontos.php",
+                            data: JSON.stringify({
+                                tempoFinalEmSegundos: tempoGasto,
+                                idProva: idProva
+                            }),
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            success: function(response) {
+                                if ('pontuacao' in response) {
+                                    var pontuacao = response.pontuacao;
+                                    Swal.fire({
+                                        title: 'Pontuação Final',
+                                        text: 'Sua pontuação final é: ' + pontuacao,
+                                        icon: 'success'
+                                    });
+                                } else if ('error' in response) {
+                                    console.error(response.error);
+                                    Swal.fire({
+                                        title: 'Erro',
+                                        text: 'Ocorreu um erro ao processar a pontuação.',
+                                        icon: 'error'
+                                    });
+                                } else {
+                                    console.error("Resposta inesperada do servidor:", response);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Erro na requisição AJAX: " + error);
+                                Swal.fire({
+                                    title: 'Erro',
+                                    text: 'Ocorreu um erro na requisição AJAX.',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+
+                localStorage.removeItem('tempoRestante');
+
+                totalTimeInSeconds = initialTotalTimeInSeconds;
+                updateDisplay();
+            } else {
+                if (!timerRunning) {
+                    startTimer();
+                }
+            }
+        });
+    }
+
+            function updateTimer() {
+                if (totalTimeInSeconds === 0) {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                } else {
+                    totalTimeInSeconds--;
+                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
+                    updateDisplay();
+                }
+            }
+
+            function updateDisplay() {
+                var minutes = Math.floor(totalTimeInSeconds / 60);
+                var seconds = totalTimeInSeconds % 60;
+
+                var formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                document.getElementById('timer').innerText = formattedTime;
+            }
+
+            function showTimeSpentAlert() {
+                var timeSpentInSeconds = initialTotalTimeInSeconds - totalTimeInSeconds;
+                var minutes = Math.floor(timeSpentInSeconds / 60);
+                var seconds = timeSpentInSeconds % 60;
+
+                var formattedTimeSpent = `${minutes} minutos e ${seconds} segundos`;
+
+            }
+
+            window.onbeforeunload = function(event) {
+
+                if (event.target.performance.navigation.type !== 1) {
+                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
+                }
+            };
+
+            document.addEventListener('DOMContentLoaded', function() {
+                var tempoArmazenado = localStorage.getItem('tempoRestante');
+                if (tempoArmazenado) {
+                    totalTimeInSeconds = parseInt(tempoArmazenado);
+                    updateDisplay();
+                    if (totalTimeInSeconds > 0 && !timerRunning) {
+                        startTimer();
+                    }
+                }
+            });
+
+    </script>
+
+
+<?php
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tempoFinalEmSegundos']) && isset($_POST['idProva'])) {
+
     $idProva = $_POST['idProva'];
     $tempoTotal = json_decode($_POST['tempoFinalEmSegundos'], true);
 
@@ -109,224 +333,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tempoFinalEmSegundos'
 
 
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <title>Lançar Pontos</title>
-</head>
-
-<body>
-
-    <div class='container-fluid mt-4'>
-        <?php
-        foreach ($data as $row) {
-            echo "
-            <div class='accordion accordion-flush' id='accordionFlushExample'>
-                <div class='card mt-4'>
-                    <div class='accordion-item card-body text-center'>
-                        <div class='accordion-header'>
-                            <div class='accordion-button collapsed' data-bs-toggle='collapse' data-bs-target='#flush-collapseOne' aria-expanded='false' aria-controls='flush-collapseOne'>
-                                {$row['nome']}
-                            </div>
-                        </div>
-                        <hr class='my-3'> <!-- Adiciona o divisor -->
-                        <div id='flush-collapseOne' class='accordion-collapse collapse' data-bs-parent='#accordionFlushExample'>
-                            <div class='accordion-body text-left'>
-                                <p>{$row['descricao']}</p>
-                                <hr class='my-3'> <!-- Adiciona o divisor -->
-                                <p>{$row['pergunta']}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>";
-        }
-        ?>
-
-        <div class="row mt-4">
-            <div class="col-md-6 offset-md-3">
-                <div class="card text-center">
-                    <div class="card-header">
-                        <h3>Tempo Prova</h3>
-                    </div>
-                    <div class="card-body">
-                        <h1 id="timer">40:00</h1>
-                    </div>
-                    <div class="card-footer">
-                        <button class="btn btn-primary" onclick="startTimer()">Iniciar</button>
-                        <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
-                        <button class="btn btn-danger" onclick="stopTimer()">Finalizar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <script>
-            var timerInterval;
-            var timerRunning = false;
-            var initialTotalTimeInSeconds = 2400;
-            var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
-            var initialTimeInSeconds = totalTimeInSeconds;
-
-            function startTimer() {
-                if (!timerRunning) {
-                    timerInterval = setInterval(updateTimer, 1000);
-                    timerRunning = true;
-                }
-            }
-
-            function pauseTimer() {
-
-                if (!timerRunning) {
-                    // Se o temporizador não estiver em execução, exibir mensagem
-                    Swal.fire({
-                        title: 'Aviso',
-                        text: 'É necessário iniciar o temporizador antes de pausar.',
-                        icon: 'info'
-                    });
-                    return;
-                }
-
-                clearInterval(timerInterval);
-                timerRunning = false;
-            }
-
-
-            function stopTimer() {
-
-                if (!timerRunning) {
-                    // Se o temporizador não estiver em execução, exibir mensagem
-                    Swal.fire({
-                        title: 'Aviso',
-                        text: 'É necessário iniciar o temporizador antes de finalizar.',
-                        icon: 'info'
-                    });
-                    return;
-                }
-
-                clearInterval(timerInterval);
-                timerRunning = false;
-                updateDisplay();
-                showTimeSpentAlert();
-
-                var tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-                var idProva = <?php echo $id; ?>;
-
-                Swal.fire({
-    title: 'Você tem certeza?',
-    text: 'Isso finalizará o temporizador e lançará os pontos.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Sim, finalizar!',
-    cancelButtonText: 'Cancelar'
-}).then((result) => {
-    if (result.isConfirmed) {
-        $.ajax({
-            type: "POST",
-            url: "lancarPontos.php",
-            data: {
-                tempoFinalEmSegundos: tempoGasto,
-                idProva: idProva
-            },
-            dataType: 'json', // Adicione isso para indicar que você espera uma resposta JSON
-            contentType: 'application/json',
-            success: function(response) {
-                if ('pontuacao' in response) {
-                    var pontuacao = response.pontuacao;
-
-                    Swal.fire({
-                        title: 'Pontuação Final',
-                        text: 'Sua pontuação final é: ' + pontuacao,
-                        icon: 'success'
-                    });
-                } else if ('error' in response) {
-                    console.error(response.error);
-                    Swal.fire({
-                        title: 'Erro',
-                        text: 'Ocorreu um erro ao processar a pontuação.',
-                        icon: 'error'
-                    });
-                } else {
-                    console.error("Resposta inesperada do servidor:", response);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Erro na requisição AJAX: " + error);
-                Swal.fire({
-                    title: 'Erro',
-                    text: 'Ocorreu um erro na requisição AJAX.',
-                    icon: 'error'
-                });
-            }
-        });
-
-        localStorage.removeItem('tempoRestante');
-
-        totalTimeInSeconds = initialTotalTimeInSeconds;
-        updateDisplay();
-    } else {
-        if (!timerRunning) {
-            startTimer();
-        }
-    }
-});
-            }
-
-            function updateTimer() {
-                if (totalTimeInSeconds === 0) {
-                    clearInterval(timerInterval);
-                    timerRunning = false;
-                } else {
-                    totalTimeInSeconds--;
-                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
-                    updateDisplay();
-                }
-            }
-
-            function updateDisplay() {
-                var minutes = Math.floor(totalTimeInSeconds / 60);
-                var seconds = totalTimeInSeconds % 60;
-
-                var formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                document.getElementById('timer').innerText = formattedTime;
-            }
-
-            function showTimeSpentAlert() {
-                var timeSpentInSeconds = initialTotalTimeInSeconds - totalTimeInSeconds;
-                var minutes = Math.floor(timeSpentInSeconds / 60);
-                var seconds = timeSpentInSeconds % 60;
-
-                var formattedTimeSpent = `${minutes} minutos e ${seconds} segundos`;
-
-            }
-
-            window.onbeforeunload = function(event) {
-
-                if (event.target.performance.navigation.type !== 1) {
-                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
-                }
-            };
-
-            document.addEventListener('DOMContentLoaded', function() {
-                var tempoArmazenado = localStorage.getItem('tempoRestante');
-                if (tempoArmazenado) {
-                    totalTimeInSeconds = parseInt(tempoArmazenado);
-                    updateDisplay();
-                    if (totalTimeInSeconds > 0 && !timerRunning) {
-                        startTimer();
-                    }
-                }
-            });
-        </script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>

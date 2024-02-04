@@ -35,7 +35,7 @@ if (isset($_GET['id'])) {
     foreach($gs as $gerent){
         $gs_ids[] = $gerent['id'];
     }
-
+    
 }
 
 if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["equipe"]) && isset($_POST["facilitador"]) && isset($_POST["participante"]) && isset($_POST["provas"]) && isset($_POST["id"]) && isset($_POST["id2"]))) {
