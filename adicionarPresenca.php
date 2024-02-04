@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
         }
         if($stmtInsert){
             session_start();
-            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Presença cadastrada com sucesso!');
+            $_SESSION['alertaSucesso'] = array('tipo' => 'success', 'mensagem' => 'Presença cadastrada com sucesso!'); 
             header("location: presenca.php");
             exit();
         }
@@ -87,7 +87,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
         header("location: presenca.php");
         exit();
     }
-
     exit();
 }
 ?>

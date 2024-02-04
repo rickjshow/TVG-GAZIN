@@ -1,6 +1,6 @@
 <?php
 include "header.php";
-include "conexao.php";
+require_once "conexao.php";
 require_once "permissao.php";
 include "adicionarEdicao.php";
 include "temporizador.php";
@@ -14,6 +14,8 @@ verificarPermissao($permission);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="alert.js"></script>
     <title>Painel TVG</title>
 </head>
 
@@ -102,6 +104,15 @@ verificarPermissao($permission);
             </div>
         </div>
     </div>
+
+    <?php
+            if (isset($_SESSION['alerta'])) {
+            echo "<script>
+                    alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
+                    </script>";
+            unset($_SESSION['alerta']);
+            }
+    ?>
 
     <div id="login-expired-message" style="color: black;"></div>
 

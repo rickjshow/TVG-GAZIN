@@ -1,7 +1,9 @@
 <?php
+
 include "header.php";
 include "temporizador.php";
-include "conexao.php";
+require_once "conexao.php";
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

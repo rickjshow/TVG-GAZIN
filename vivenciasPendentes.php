@@ -1,6 +1,6 @@
 <?php
 
-include "conexao.php";
+require_once "conexao.php";
 include "header.php";
 include "temporizador.php";
 
@@ -13,10 +13,10 @@ $stmtUser->execute();
 
 $resultUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
-$querySessao = "SELECT nome FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+$querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
 $stmtSessao = $pdo->prepare($querySessao);
 $stmtSessao->execute();
-$nomeSessao = $stmtSessao->fetchColumn();
+$nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC)
 
 ?>
 
@@ -33,7 +33,7 @@ $nomeSessao = $stmtSessao->fetchColumn();
         <div class="box1 mt-4 text-center">
             <h1 class='mt-4' style='font-size: 20px;'>Vivências Pendentes</h1>
             <h4 class='mt-4'></h4>
-            <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSessao; ?></h4>
+            <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSessao['nome']; ?></h4>
         </div>
         <div class="container-fluid text-center">
 
@@ -49,6 +49,9 @@ $nomeSessao = $stmtSessao->fetchColumn();
             ?>
         
         <?php
+
+            $idSessao = $nomeSessao['id'];
+
         if ($resultUser) {
             $userId = $resultUser['id'];
             $queryProvas = "SELECT DISTINCT e.nome AS equipe_nome, p.nome AS prova_nome, p.id AS prova_id FROM equipes_provas AS ep
@@ -57,10 +60,11 @@ $nomeSessao = $stmtSessao->fetchColumn();
                     JOIN gerenciamento_sessao AS gs ON e.id = gs.id_equipe
                     JOIN usuarios AS u ON gs.id_usuarios = u.id
                     JOIN sessoes AS ses ON ep.id_sessao = ses.id
-                    WHERE u.id = :userId AND ses.situacao = 'Pendente' AND ep.situacao = 'Pendente'";
+                    WHERE u.id = :userId AND ses.situacao = 'Pendente' AND ep.situacao = 'Pendente' AND ep.id_sessao = :id_sessao AND gs.id_sessoes = :id_sessao";
 
             $consulta = $pdo->prepare($queryProvas);
             $consulta->bindParam(":userId", $userId);
+            $consulta->bindParam(":id_sessao", $idSessao);
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
 

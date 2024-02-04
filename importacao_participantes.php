@@ -3,7 +3,7 @@ require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-include "conexao.php";
+require_once "conexao.php";
 
 if (isset($_POST['submit'])) {
     if ($_FILES['planilha']['error'] == UPLOAD_ERR_OK) {

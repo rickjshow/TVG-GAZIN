@@ -1,6 +1,6 @@
 <?php
 include "header.php";
-include "conexao.php";
+require_once "conexao.php";
 include "adicionarPresenca.php";
 include "temporizador.php";
 
@@ -25,6 +25,7 @@ if ($userType == 'limited') {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="alert.js"></script>
+        <script src="alertSucess.js"></script>
         <title>Presença</title>
     </head>
 
@@ -96,12 +97,23 @@ if ($userType == 'limited') {
             </form>
 
             <?php
-                    if (isset($_SESSION['alerta'])) {
+                if (isset($_SESSION['alertaSucesso'])) {
                     echo "<script>
-                            alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
-                            </script>";
-                    unset($_SESSION['alerta']);
-                    }
+                            alertaSucesso('{$_SESSION['alertaSucesso']['tipo']}', '{$_SESSION['alertaSucesso']['mensagem']}');
+                        </script>";
+                    unset($_SESSION['alertaSucesso']);
+                }
+            ?>
+
+            <?php 
+
+                if (isset($_SESSION['alerta'])) {
+                echo "<script>
+                        alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
+                        </script>";
+                unset($_SESSION['alerta']);
+                }
+            
             ?>
         </div>
 
@@ -138,34 +150,41 @@ if ($userType == 'limited') {
                     </thead>
                     <tbody>";
 
-    $querySessao = "SELECT nome FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
-    $stmtSessao = $pdo->prepare($querySessao);
-    $stmtSessao->execute();
-    $nomeSessao = $stmtSessao->fetchColumn();
-
-    echo "<h4 class='mt-1 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: $nomeSessao</h4>";
-
-    $query = "SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador FROM presenca AS pre
-            JOIN status AS s ON pre.id_status = s.id
-            JOIN participantes AS p ON pre.id_participantes = p.id
-            JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
-            JOIN usuarios AS u ON gs.id_usuarios = u.id
-            JOIN sessoes AS ses ON pre.id_sessao = ses.id
-            JOIN equipes AS e ON gs.id_equipe = e.id
-            WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente'";
-
-    $consulta = $pdo->prepare($query);
-    $consulta->execute();
-    $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-    foreach ($data as $row) {
-        echo "<tr>";
-        echo "<th>{$row['nome_facilitador']}</th>";
-        echo "<th>{$row['participante_nome']}</th>";
-        echo "<th>{$row['equipe_nome']}</th>";
-
-        echo "</tr>";
-    }
+                    $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+                    $stmtSessao = $pdo->prepare($querySessao);
+                    $stmtSessao->execute();
+                    $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($nomeSessao) {
+                        echo "<h4 class='mt-1 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: {$nomeSessao['nome']}</h4>";
+                    
+                        $query = "SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador FROM presenca AS pre
+                            JOIN status AS s ON pre.id_status = s.id
+                            JOIN participantes AS p ON pre.id_participantes = p.id
+                            JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
+                            JOIN usuarios AS u ON gs.id_usuarios = u.id
+                            JOIN sessoes AS ses ON pre.id_sessao = ses.id
+                            JOIN equipes AS e ON gs.id_equipe = e.id
+                            WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente' AND gs.id_sessoes = :id_sessao";
+                    
+                        $consulta = $pdo->prepare($query);
+                        $consulta->bindParam(":id_sessao", $nomeSessao['id']);
+                        $consulta->execute();
+                    
+                        if ($consulta->rowCount() > 0) {
+                            foreach ($consulta as $row) {
+                                echo "<tr>";
+                                echo "<th>{$row['nome_facilitador']}</th>";
+                                echo "<th>{$row['participante_nome']}</th>";
+                                echo "<th>{$row['equipe_nome']}</th>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='3'>Não há participantes ausentes nesta sessão.</td></tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='3'>Não há sessões pendentes.</td></tr>";
+                    }
 
     echo "</tbody>
                 </table>
