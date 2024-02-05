@@ -78,11 +78,12 @@ if (isset($_POST['update_participantes'])) {
 
 <body>
 
-
-<div class="container mt-4">
-    <form action="updateParticipantes.php" method="post">
+<div class="text-center mt-4"></div>
+   
+<div class="container mt-4 border rounded p-4 shadow">
+    <form action="updateParticipantes.php" method="post" class="mx-auto">
         <input type="hidden" name="id" value="<?= $row['id'] ?>">
-        
+        <h2 class="font-weight-bold  text-center">Atualizar Participantes</h2>
         <div class="form-group mt-4">
             <label for="nome">Nome:</label>
             <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
@@ -105,12 +106,14 @@ if (isset($_POST['update_participantes'])) {
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success" name="update_participantes">Atualizar</button>
+        <button type="submit" class="btn btn-success" style="font-size: 12px" name="update_participantes">Atualizar</button>
     </form>
-</div>
+    
+    <div class="form-group">
+        <button id="btnExcluirPart" class="btn btn-danger" style="font-size: 12px; margin-left:90px; margin-top:-59px">Excluir</button>
+    </div>
 
-<div class="container-fluid text-center" style="margin-top: -33px;">
-    <button id="btnExcluirPart" class="btn btn-danger" disabled style="font-size: 12px;">Excluir Participante</button>
+    
 </div>
 
         <?php

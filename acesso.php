@@ -24,7 +24,7 @@ verificarPermissao($permission);
             <h3 class="mt-4" style="font-size: 20px;">Lista de Facilitadores</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Adicionar Usuario</button>
         </div>
-    <div class="container-fluid">    
+    <div class="container-fluid ">    
         <div class="table-responsive-sm mt-4" style="font-size: 12px;">
             <table class="table table-sm table-hover table-striped">
                 <thead>

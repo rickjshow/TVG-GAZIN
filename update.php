@@ -81,15 +81,18 @@ if (isset($_POST['update_usuario'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>Update Usuario</title>
 </head>
 <body>
 
-<div class="container mt-4">
-    <form action="update.php" method="post">
+<div class="text-center mt-4"></div>
+<div class="container mt-4 border rounded p-4 shadow">
+    <form action="update.php" method="post" class="mx-auto">
         <input type="hidden" name="id" value="<?= $row['id'] ?>">
-
+        <h2 class="font-weight-bold  text-center">Atualizar Usuario</h2>
         <div class="form-group">
             <label  class="mt-4" for="nome">Usuário:</label>
             <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
@@ -142,9 +145,57 @@ if (isset($_POST['update_usuario'])) {
             </select>
         </div>
 
-        <input type="submit" class="btn btn-success" name="update_usuario" value="ATUALIZAR">
+        <input type="submit" class="btn btn-success" style="font-size: 12px;" name="update_usuario" value="ATUALIZAR">
     </form>
+
+    <div class="form-group">
+         <button id="btnExcluiruser" class="btn btn-danger" style="font-size: 12px; margin-left:100px; margin-top:-59px">Excluir Usuário</button>
+    </div>
 </div>
+
+    <script>
+
+
+    $(document).ready(function() {
+        $("#btnExcluiruser").prop("disabled", false);
+
+        $("#btnExcluiruser").click(function() {
+            var id = "<?php echo $_GET['id']; ?>";
+
+            Swal.fire({
+                title: 'Você tem certeza?',
+                text: 'Esta ação irá excluir o usuário. Deseja continuar?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, excluir!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'deleteUsuario.php',
+                        data: { idUser: id},
+                        success: function(response) {
+                            window.location.href = 'deleteUsuario.php?idUsuario=' + id;
+                        },
+                        error: function(error) {
+                            console.error('Erro ao excluir o usuário:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Ocorreu um erro ao excluir o usuário. Por favor, tente novamente.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+
+</script>
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>

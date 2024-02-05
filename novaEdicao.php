@@ -52,7 +52,9 @@ verificarPermissao($permission);
                     foreach ($dados as $dado);
                     ?>
 
-                    <?php foreach ($data as $row) : ?>
+                    <?php
+                       foreach ($data as $row) :
+                        ?>
                         <tr>
                             <th><?php echo $row['nome']; ?></th>
                             <th><a><?php echo $row['data_TVG']; ?></a></th>
@@ -62,11 +64,24 @@ verificarPermissao($permission);
                                 </a>
                             </td>
                             <td>
-                                <?php if ($row['situacao'] != 'Finalizado') : ?>
-                                    <a href="updateGSessao.php?id=<?php echo $dado['sessao_id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a>
-                                <?php else : ?>
-                                    <button class="btn btn-success" disabled style="font-size: 12px;">Atualizar</button>
-                                <?php endif; ?>
+                                <?php
+                                
+                                $queryG = "SELECT s.id AS sessao_id FROM gerenciamento_sessao AS gs
+                                            JOIN sessoes AS s ON gs.id_sessoes = s.id
+                                            WHERE s.id = :sessao_id";
+                                $consulta2 = $pdo->prepare($queryG);
+                                $consulta2->bindValue(':sessao_id', $row['id']);
+                                $consulta2->execute();
+                                $equipesCadastradas = $consulta2->fetch(PDO::FETCH_ASSOC);
+                    
+                             
+                                $paginaRedirecionar = ($equipesCadastradas) ? 'updateGSessao.php' : 'gerenciamentoEdicao.php';
+
+                                    if($row['situacao'] != 'Finalizado')  : ?>
+                                        <a href="<?php echo $paginaRedirecionar; ?>?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a>            
+                                    <?php elseif($row['situacao'] != 'Pendente') : ?>
+                                        <button class="btn btn-success" disabled style="font-size: 12px;">Atualizar</button>                           
+                                    <?php  endif; ?>                                         
                             </td>
                         </tr>
                     <?php endforeach; ?>

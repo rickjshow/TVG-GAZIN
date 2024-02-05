@@ -22,34 +22,36 @@ verificarPermissao($permission);
 <body>
 
         <div class="box1 mt-4 text-center">
-            <h2 class="mt-4" style="font-size: 20px;">Cadastro Vivências TVG</h2>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastro de Vivências</button>
         </div>
-    <div class="container-fluid">
-        <div class="table-responsive-sm mt-4">
-            <table class="table table-sm table-hover table-striped" style="font-size: 12px;">
-                <thead>
-                    <tr>
-                        <th>Vivencia</th>
-                        <th>Editar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $query = "SELECT * FROM provas";
-                    $consulta = $pdo->prepare($query);
-                    $consulta->execute();
-                    $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-                    ?>
 
-                    <?php foreach ($data as $row) : ?>
+        <div class="container mt-4 border rounded shadow">
+        <h2 class="mt-4 font-weight-bold text-center" style="font-size: 20px;">Cadastro Vivências TVG</h2>
+            <div class="table-responsive-sm mt-4">
+                <table class="table table-sm table-hover table-striped mx-auto" style="font-size: 12px;">
+                    <thead>
                         <tr>
-                            <th><?php echo $row['nome']; ?></th>
-                            <td><a href="updateProva.php?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a></td>
+                            <th>Vivencia</th>
+                            <th>Editar</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $query = "SELECT * FROM provas";
+                        $consulta = $pdo->prepare($query);
+                        $consulta->execute();
+                        $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+                        ?>
+
+                        <?php foreach ($data as $row) : ?>
+                            <tr>
+                                <th><?php echo $row['nome']; ?></th>
+                                <td><a href="updateProva.php?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Modal -->

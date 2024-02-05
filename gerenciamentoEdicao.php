@@ -28,11 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["confirmacao"])) {
 $sessoes = $pdo->query("SELECT nome FROM sessoes order by data_criacao desc limit 1 ")->fetchAll(PDO::FETCH_ASSOC);
 if (isset($_GET['continuar']) && $_GET['continuar'] == 1) {
     $equipes = $pdo->query("SELECT e.* FROM equipes e WHERE not e.id in (select s.id_equipe from gerenciamento_sessao s where s.id_sessoes = {$_GET['idsessao']} )")->fetchAll(PDO::FETCH_ASSOC);
-    $facilitadores = $pdo->query("SELECT u.* FROM usuarios u WHERE u.permission = 'limited' AND u.situacao = 'Ativo' AND not u.id in (select s.id_usuarios from gerenciamento_sessao s where s.id_sessoes = {$_GET['idsessao']} )")->fetchAll(PDO::FETCH_ASSOC);
+    $facilitadores = $pdo->query("SELECT u.* FROM usuarios u WHERE u.permission = 'limited' AND not u.id in (select s.id_usuarios from gerenciamento_sessao s where s.id_sessoes = {$_GET['idsessao']} )")->fetchAll(PDO::FETCH_ASSOC);
     $participantes = $pdo->query("SELECT p.* FROM participantes p WHERE not p.id in (select s.id_participantes from gerenciamento_sessao s where s.id_sessoes = {$_GET['idsessao']} ) ")->fetchAll(PDO::FETCH_ASSOC);
 } else {
     $equipes = $pdo->query("SELECT * FROM equipes")->fetchAll(PDO::FETCH_ASSOC);
-    $facilitadores = $pdo->query("SELECT * FROM usuarios WHERE permission = 'limited' AND situacao = 'Ativo'")->fetchAll(PDO::FETCH_ASSOC);
+    $facilitadores = $pdo->query("SELECT * FROM usuarios WHERE permission = 'limited'")->fetchAll(PDO::FETCH_ASSOC);
     $participantes = $pdo->query("SELECT * FROM participantes")->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -56,9 +56,10 @@ $provas = $pdo->query("SELECT * FROM provas")->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
 
-
-    <div class="container-fluid">
-        <h2 class="mt-4 text-center">Gerenciamento de Edição</h2>
+    <div class="text-center mt-4"></div>
+    <div class="text-center mt-4"></div>
+    <div class="container-fluid border rounded p-4 shadow  col-md-10">
+    <h2 class="font-weight-bold  text-center">Gerenciamento  de Edição</h2>
         <form action="gerenciamentoEdicao.php" method="post" id="meuFormulario">
             <div class="form-group">
                 <label for="sessao">Sessão</label>

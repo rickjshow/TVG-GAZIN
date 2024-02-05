@@ -6,6 +6,7 @@ require_once "permissao.php";
 include "temporizador.php";
 
 verificarPermissao($permission);
+
 ?>
 
 <!DOCTYPE html>
@@ -72,6 +73,42 @@ verificarPermissao($permission);
             <button id="btnExcluirSessao" class="btn btn-danger" disabled style="font-size: 12px;">Excluir Sessão</button>
         </div>
 
+
+
+        <div class="container-fluid text-center mt-1 p-4">
+            <?php 
+                if (isset($_GET['id'])) {
+                    $idGS = $_GET['id'];
+                } else {
+                    echo "<script>alert('ID não encontrado!');</script>";
+                }
+
+                $query = "SELECT COUNT(*) AS total_provas_nao_finalizadas
+                        FROM equipes_provas
+                        WHERE id_sessao = :id_sessao
+                        AND situacao <> 'Finalizado'";
+
+                $consulta = $pdo->prepare($query);
+                $consulta->bindValue(':id_sessao', $idGS);  
+                $consulta->execute();
+                $resultado = $consulta->fetch(PDO::FETCH_ASSOC);
+
+                $totalProvasNaoFinalizadas = $resultado['total_provas_nao_finalizadas'];
+            ?>
+
+            <div class="container-fluid text-center mt-1 p-4">
+                <?php
+                    if ($totalProvasNaoFinalizadas > 0) {
+                        echo '<p>Ainda há provas não finalizadas. Não é possível encerrar a sessão.</p>';
+                    } elseif($totalProvasNaoFinalizadas <= 0) {
+                    echo "<form action='finalizarSessao.php' method='post'>
+                            <a href='finalizarSessao.php?id={$idGS}' type='submit' class='btn btn-secondary' data-dismiss='modal'>Finalizar Sessão</a>
+                        </form>";
+                    }
+                ?>
+            </div>
+        </div>
+        
  <script>
 
 

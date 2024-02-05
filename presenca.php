@@ -180,7 +180,7 @@ if ($userType == 'limited') {
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='3'>Não há participantes ausentes nesta sessão.</td></tr>";
+                            echo "<tr><td colspan='3' class='text-center align-middle'>Não há participantes ausentes nesta sessão.</td></tr>";
                         }
                     } else {
                         echo "<tr><td colspan='3'>Não há sessões pendentes.</td></tr>";
