@@ -3,12 +3,10 @@
 include "conexao.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    if (isset($_GET['iniciar']) && $_GET['iniciar'] === 'iniciar') {
+    if (isset($_GET['iniciar']) && isset($_GET['idProva'])) {
         echo json_encode($_GET['iniciar']);
 
-        $idProva = $_GET['id'];
-
-        print_r($idProva);die;
+        $idVivencia = $_GET['idProva'];
 
         $username = $_SESSION['username'];
 
@@ -17,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $consulta->bindValue(":nome", $username, PDO::PARAM_STR);
         $consulta->execute();
         $userId = $consulta->fetchColumn();
+    
         if (!$userId) {
             echo "Usuário não encontrado.";
             exit;
@@ -40,23 +39,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                     $idSessao = $dados['id_sessao'];
                     $idEquipe = $dados['id_equipe'];
                 }
+
+                $Iniciar = "UPDATE equipes_provas SET andamento = 'Execultando' WHERE id_provas = :idProva AND id_equipes = :idEquipes AND id_sessao = :idSessao";
+                $consultaIniciar = $pdo->prepare($Iniciar);
+                $consultaIniciar->bindValue(':idProva', $idVivencia, PDO::PARAM_INT);
+                $consultaIniciar->bindValue(':idEquipes', $idEquipe, PDO::PARAM_INT);
+                $consultaIniciar->bindValue(':idSessao', $idSessao, PDO::PARAM_INT);
+                $consultaIniciar->execute();
             }
         }
-        
-        $Iniciar = "UPDATE equipes_provas SET andamento = 'Execultando' WHERE id_provas = :idProva AND id_equipes = :idEquipes AND id_sessao = :idSessao";
-        $consultaIniciar = $pdo->prepare($Iniciar);
-        $consultaIniciar->bindValue(":idProva", $idProva, PDO::PARAM_STR);
-        $consultaIniciar->bindValue(":idEquipes", $idEquipe, PDO::PARAM_STR);
-        $consultaIniciar->bindValue(":idSessao", $idSessao, PDO::PARAM_STR);
-        $consultaIniciar->execute();
-
     }
 }
 
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos']) && isset($_GET['idProva'])) {
-    //print_r($_GET);die; //tem para aqui agr
-    //nego ta esperto kkkk
+   
     $idProva = $_GET['idProva'];
     $tempoTotal = json_decode($_GET['tempoFinalEmSegundos'], true);
 
@@ -126,7 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
                 $consulta3->bindValue(':ponto_obtido', $pontuacao, PDO::PARAM_INT);
                 $consulta3->bindParam(':tempo_gasto', $tempoFormatado, PDO::PARAM_STR);
 
-                //vc fez certo aqui so tava errado ordem que vc montou as coisa vamo ve se funga
                 if ($consulta3->execute()) {
                     $querySituacao = "UPDATE equipes_provas SET situacao = 'Finalizado', andamento = 'Finalizado' WHERE id_provas = :id_provas AND id_equipes = :id_equipes AND id_sessao = :id_sessao";
                     $consulta4 = $pdo->prepare($querySituacao);
@@ -138,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
                     echo json_encode(['pontuacao' => $pontuacao]);
                     exit;
                 } else {
-                    // Se algo deu errado...
+
                     echo json_encode(['error' => 'Erro ao salvar pontuação.']);
                     exit;
                 }
@@ -224,21 +221,22 @@ if (isset($_GET['id'])) {
         </div>
 
         <script>
-        $(document).ready(function(){
-            var iniciar = 'iniciar';
-            $("#startButton").click(function(){
-                // Enviar a requisição AJAX
-                $.ajax({
-                    type: "GET",
-                    url: "lancarPontos.php?iniciar=" + iniciar,
-                    dataType: 'json', 
-                    contentType: 'application/json',
-                    success: function(response) {
-                        console.log(response);
-                    }
+
+                $(document).ready(function(){
+                $("#startButton").click(function(){
+                    var iniciar = 'iniciar';
+                    var idProva = <?php echo $id; ?>; 
+                    $.ajax({
+                        type: "GET",
+                        url: "lancarPontos.php?iniciar=" + iniciar + "&idProva=" + idProva,
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        success: function(response) {
+                            console.log(response);
+                        }
+                    });
                 });
             });
-        });
     </script>
 
 

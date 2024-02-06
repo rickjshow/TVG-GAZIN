@@ -118,7 +118,7 @@ if ($resultUser['permission'] == 'limited') {
 
     if ($resultUser) {
         $userId = $resultUser['id'];
-        $queryProvas = "SELECT DISTINCT e.nome AS equipe_nome, p.nome AS prova_nome, p.id AS prova_id, ep.situacao AS situacao FROM equipes_provas AS ep
+        $queryProvas = "SELECT DISTINCT e.nome AS equipe_nome, p.nome AS prova_nome, p.id AS prova_id, ep.situacao AS situacao, ep.andamento AS andamento FROM equipes_provas AS ep
                     JOIN provas AS p ON  ep.id_provas = p.id
                     JOIN equipes AS e ON ep.id_equipes = e.id
                     JOIN gerenciamento_sessao AS gs ON e.id = gs.id_equipe
@@ -156,11 +156,15 @@ if ($resultUser['permission'] == 'limited') {
                         $icone = '';
 
 
-                        if ($prova['situacao'] === 'Pendente') {
+                        if ($prova['situacao'] === 'Pendente' && $prova['andamento'] === 'Aguardando') {
                             $icone_cor = 'text-danger';
                             $icone = 'fa-times';
                             $statusText = 'Aguardando';
-                        } elseif ($prova['situacao'] === 'Finalizado') {
+                        } elseif ($prova['andamento'] === 'Execultando') {
+                            $icone_cor = 'text-warning';
+                            $icone = 'fa-hourglass';
+                            $statusText = 'Em andamento'; 
+                        } elseif ($prova['situacao'] === 'Finalizado' && $prova['andamento'] === 'Finalizado') {
                             $icone_cor = 'text-success';
                             $icone = 'fa-check';
                             $statusText = 'Finalizado'; 
@@ -177,8 +181,6 @@ if ($resultUser['permission'] == 'limited') {
 
                     }
                 }
-
-
 
                 echo "</div></div></div></div>";
                 echo "<div class='mt-4'></div>";
