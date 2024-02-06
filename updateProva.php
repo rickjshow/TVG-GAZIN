@@ -83,36 +83,37 @@ if (isset($_POST['update_prova'])) {
 
     <div class="text-center mt-4"></div>
     
-<div class="container mt-4 border rounded p-4 shadow">
-    <div class="mx-auto col-md-6">
-        <form action="updateProva.php" method="post">
-            <input type="hidden" name="id" value="<?= $row['id'] ?>">
-            <h2 class="font-weight-bold  text-center">Atualizar Prova</h2>
-            <div class="form-group">
-                <label for="nome" class="mt-4">Nome da Vivência:</label>
-                <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
-            </div>
+<div class="container">
+    <div class="container mt-4 border rounded p-4 shadow">
+        <div class="mx-auto col-md-6">
+            <form action="updateProva.php" method="post">
+                <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                <h2 class="font-weight-bold text-center">Atualizar Vivência</h2>
+                <div class="form-group">
+                    <label for="nome" class="mt-4">Nome da Vivência:</label>
+                    <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
+                </div>
 
-            <div class="form-group">
-                <label for="descricao">Descrição:</label>
-                <textarea class="form-control" name="descricao" rows="5"><?= $row['descricao'] ?></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea class="form-control" name="descricao" rows="5"><?= $row['descricao'] ?></textarea>
+                </div>
 
-            <div class="form-group">
-                <label for="pergunta">Perguntas:</label>
-                <textarea class="form-control" name="pergunta" rows="5"><?= $row['pergunta'] ?></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="pergunta">Perguntas:</label>
+                    <textarea class="form-control" name="pergunta" rows="5"><?= $row['pergunta'] ?></textarea>
+                </div>
 
-            <div class="form-group">
-                <label for="pontos">Pontuação Máxima da Prova:</label>
-                <input type="number" name="pontos" class="form-control" value="<?= $row['pontuacao_maxima'] ?>">
-            </div>
+                <div class="form-group">
+                    <label for="pontos">Pontuação Máxima da Prova:</label>
+                    <input type="number" name="pontos" class="form-control" value="<?= $row['pontuacao_maxima'] ?>">
+                </div>
 
-            <input type="submit" style="font-size: 15px" class="btn btn-success" name="update_prova" value="ATUALIZAR">
-        </form>
+                <input type="submit" style="font-size: 15px" class="btn btn-success" name="update_prova" value="ATUALIZAR">
+            </form>
+        </div>
     </div>
 </div>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>

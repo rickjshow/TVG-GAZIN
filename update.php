@@ -88,71 +88,72 @@ if (isset($_POST['update_usuario'])) {
 </head>
 <body>
 
-<div class="text-center mt-4"></div>
-<div class="container mt-4 border rounded p-4 shadow">
-    <form action="update.php" method="post" class="mx-auto">
-        <input type="hidden" name="id" value="<?= $row['id'] ?>">
-        <h2 class="font-weight-bold  text-center">Atualizar Usuario</h2>
-        <div class="form-group">
-            <label  class="mt-4" for="nome">Usuário:</label>
-            <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
-        </div>
+<div class="container mt-4">
+    <div class="text-center mt-4"></div>
+    <div class="container mt-4 border rounded p-4 shadow">
+        <form action="update.php" method="post" class="mx-auto">
+            <input type="hidden" name="id" value="<?= $row['id'] ?>">
+            <h2 class="font-weight-bold  text-center">Atualizar Usuario</h2>
+            <div class="form-group">
+                <label  class="mt-4" for="nome">Usuário:</label>
+                <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="text" name="senha" class="form-control" value="<?= $row['senha'] ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="situacao">Situação:</label>
+                <select name="situacao" class="form-control">
+                    <option value="Ativo" <?= ($row['situacao'] == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
+                    <option value="Inativo" <?= ($row['situacao'] == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="departamentos">Departamento:</label>
+                <select name="departamentos" class="form-control">
+                    <?php
+                    $query = "SELECT * FROM departamentos";
+                    $consulta = $pdo->prepare($query);
+                    $consulta->execute();
+                    $departamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($departamentos as $departamento) : ?>
+                        <option value="<?= $departamento['name'] ?>" <?= ($row['departamento_nome'] == $departamento['name']) ? "selected" : "" ?>>
+                            <?= $departamento['name'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tipo">Tipo:</label>
+                <select name="tipo" class="form-control">
+                    <?php
+                    $query = "SELECT * FROM tipo";
+                    $consulta = $pdo->prepare($query);
+                    $consulta->execute();
+                    $tipos = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($tipos as $tipo) : ?>
+                        <option value="<?= $tipo['tipo'] ?>" <?= ($row['tipo_nome'] == $tipo['tipo']) ? "selected" : "" ?>>
+                            <?= $tipo['tipo'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <input type="submit" class="btn btn-success" style="font-size: 12px;" name="update_usuario" value="ATUALIZAR">
+        </form>
 
         <div class="form-group">
-            <label for="senha">Senha:</label>
-            <input type="text" name="senha" class="form-control" value="<?= $row['senha'] ?>">
+            <button id="btnExcluiruser" class="btn btn-danger" style="font-size: 12px; margin-left:100px; margin-top:-59px">Excluir Usuário</button>
         </div>
-
-        <div class="form-group">
-            <label for="situacao">Situação:</label>
-            <select name="situacao" class="form-control">
-                <option value="Ativo" <?= ($row['situacao'] == 'Ativo') ? 'selected' : ''; ?>>Ativo</option>
-                <option value="Inativo" <?= ($row['situacao'] == 'Inativo') ? 'selected' : ''; ?>>Inativo</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="departamentos">Departamento:</label>
-            <select name="departamentos" class="form-control">
-                <?php
-                $query = "SELECT * FROM departamentos";
-                $consulta = $pdo->prepare($query);
-                $consulta->execute();
-                $departamentos = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-                foreach ($departamentos as $departamento) : ?>
-                    <option value="<?= $departamento['name'] ?>" <?= ($row['departamento_nome'] == $departamento['name']) ? "selected" : "" ?>>
-                        <?= $departamento['name'] ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="tipo">Tipo:</label>
-            <select name="tipo" class="form-control">
-                <?php
-                $query = "SELECT * FROM tipo";
-                $consulta = $pdo->prepare($query);
-                $consulta->execute();
-                $tipos = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-                foreach ($tipos as $tipo) : ?>
-                    <option value="<?= $tipo['tipo'] ?>" <?= ($row['tipo_nome'] == $tipo['tipo']) ? "selected" : "" ?>>
-                        <?= $tipo['tipo'] ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <input type="submit" class="btn btn-success" style="font-size: 12px;" name="update_usuario" value="ATUALIZAR">
-    </form>
-
-    <div class="form-group">
-         <button id="btnExcluiruser" class="btn btn-danger" style="font-size: 12px; margin-left:100px; margin-top:-59px">Excluir Usuário</button>
     </div>
 </div>
-
     <script>
 
 

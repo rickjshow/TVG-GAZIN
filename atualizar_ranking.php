@@ -25,7 +25,7 @@
             $numero++;
         }
     }else{
-        echo "<tr><td colspan='3' class='text-center'>Nenhuma sessão pendente no momento</td></tr>";
+        echo "<tr><td colspan='3' class='text-center'>Nenhuma sessão pendente ou prova finalizada no momento</td></tr>";
     }
     
 ?>

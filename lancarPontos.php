@@ -192,7 +192,7 @@ if (isset($_GET['id'])) {
             function pauseTimer() {
 
                 if (!timerRunning) {
-                    // Se o temporizador não estiver em execução, exibir mensagem
+
                     Swal.fire({
                         title: 'Aviso',
                         text: 'É necessário iniciar o temporizador antes de pausar.',

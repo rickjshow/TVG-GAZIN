@@ -14,6 +14,7 @@ require_once "permissao.php";
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="index.js"></script>
     <title>Painel TVG</title>
     
@@ -128,7 +129,17 @@ require_once "permissao.php";
                                 </script>
 
 
-                                </header>                
+                                </header>   
+                                
+                                
+                                <script>
+                                    $(document).ready(function () {
+                                        $('.dashboard-nav-item').on('click', function () {
+                                            $('.dashboard-nav-item').removeClass('active');
+                                            $(this).addClass('active');
+                                        });
+                                    });
+                                </script>
 
                            
                             <nav class="dashboard-nav-list">
