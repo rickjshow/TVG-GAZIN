@@ -133,7 +133,7 @@ if ($resultUser['permission'] == 'limited') {
 
         echo "<div class='mt-4'></div>";
         echo "<h1 class='font-weight-bold mt-4 text-center' style='font-size: 20px;'>Vivências Pendentes</h1>
-            <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: {$nomeSessao['nome']} </h4>";
+            <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: {$nomeSessao["nome"]} </h4>";
 
         $equipesProcessadas = [];
 

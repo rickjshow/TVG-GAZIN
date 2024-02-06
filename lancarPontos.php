@@ -2,15 +2,64 @@
 
 include "conexao.php";
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET['iniciar']) && $_GET['iniciar'] === 'iniciar') {
+        echo json_encode($_GET['iniciar']);
 
-//mudei pra GET pra facilitar depos pode volta pra post see quiser!!
-//quando chama via ajax ta caindo aqui dentro !!!
+        $idProva = $_GET['id'];
+
+        print_r($idProva);die;
+
+        $username = $_SESSION['username'];
+
+        $queryUser = "SELECT id FROM usuarios WHERE nome = :nome";
+        $consulta = $pdo->prepare($queryUser);
+        $consulta->bindValue(":nome", $username, PDO::PARAM_STR);
+        $consulta->execute();
+        $userId = $consulta->fetchColumn();
+        if (!$userId) {
+            echo "Usuário não encontrado.";
+            exit;
+        } else {
+            $queryEquipeSessao = "SELECT s.id AS id_sessao, e.id AS id_equipe FROM gerenciamento_sessao AS gs
+                JOIN equipes AS e ON gs.id_equipe = e.id
+                JOIN sessoes AS s ON gs.id_sessoes = s.id
+                JOIN usuarios AS u ON gs.id_usuarios = u.id
+                WHERE u.id = :id";
+            $consulta1 = $pdo->prepare($queryEquipeSessao);
+            $consulta1->bindValue(":id", $userId, PDO::PARAM_INT);
+            $consulta1->execute();
+            $dadosSessao = $consulta1->fetchAll(PDO::FETCH_ASSOC);
+    
+            if (!$dadosSessao) {
+                echo "Dados da sessão não encontrados.";
+                exit;
+            } else {
+    
+                foreach ($dadosSessao as $dados) {
+                    $idSessao = $dados['id_sessao'];
+                    $idEquipe = $dados['id_equipe'];
+                }
+            }
+        }
+        
+        $Iniciar = "UPDATE equipes_provas SET andamento = 'Execultando' WHERE id_provas = :idProva AND id_equipes = :idEquipes AND id_sessao = :idSessao";
+        $consultaIniciar = $pdo->prepare($Iniciar);
+        $consultaIniciar->bindValue(":idProva", $idProva, PDO::PARAM_STR);
+        $consultaIniciar->bindValue(":idEquipes", $idEquipe, PDO::PARAM_STR);
+        $consultaIniciar->bindValue(":idSessao", $idSessao, PDO::PARAM_STR);
+        $consultaIniciar->execute();
+
+    }
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos']) && isset($_GET['idProva'])) {
-
     //print_r($_GET);die; //tem para aqui agr
     //nego ta esperto kkkk
     $idProva = $_GET['idProva'];
     $tempoTotal = json_decode($_GET['tempoFinalEmSegundos'], true);
+
 
     $tempoFormatado = gmdate("H:i:s", $tempoTotal);
 
@@ -79,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
 
                 //vc fez certo aqui so tava errado ordem que vc montou as coisa vamo ve se funga
                 if ($consulta3->execute()) {
-                    $querySituacao = "UPDATE equipes_provas SET situacao = 'Finalizado' WHERE id_provas = :id_provas AND id_equipes = :id_equipes AND id_sessao = :id_sessao";
+                    $querySituacao = "UPDATE equipes_provas SET situacao = 'Finalizado', andamento = 'Finalizado' WHERE id_provas = :id_provas AND id_equipes = :id_equipes AND id_sessao = :id_sessao";
                     $consulta4 = $pdo->prepare($querySituacao);
                     $consulta4->bindValue(':id_provas', $idProva, PDO::PARAM_INT);
                     $consulta4->bindValue(':id_equipes', $idEquipe, PDO::PARAM_INT);
@@ -166,13 +215,31 @@ if (isset($_GET['id'])) {
                         <h1 id="timer">40:00</h1>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-primary" onclick="startTimer()">Iniciar</button>
-                        <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
-                        <button class="btn btn-danger" onclick="stopTimer()">Finalizar</button>
+                            <button id="startButton" class="btn btn-primary" onclick="startTimer()">Iniciar</button>
+                            <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
+                            <button class="btn btn-danger" onclick="stopTimer()">Finalizar</button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <script>
+        $(document).ready(function(){
+            var iniciar = 'iniciar';
+            $("#startButton").click(function(){
+                // Enviar a requisição AJAX
+                $.ajax({
+                    type: "GET",
+                    url: "lancarPontos.php?iniciar=" + iniciar,
+                    dataType: 'json', 
+                    contentType: 'application/json',
+                    success: function(response) {
+                        console.log(response);
+                    }
+                });
+            });
+        });
+    </script>
 
 
         <script>
@@ -337,6 +404,7 @@ if (isset($_GET['id'])) {
                     }
                 }
             });
+
         </script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

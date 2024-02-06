@@ -13,10 +13,10 @@ if (isset($_GET['id'])) {
     $equipes = $pdo->query("SELECT e.nome AS equipe_nome FROM gerenciamento_sessao AS gs JOIN equipes AS e ON gs.id_equipe = e.id JOIN sessoes AS ses ON gs.id_sessoes = ses.id WHERE gs.id_equipe = $id_equipe AND ses.situacao = 'Pendente'")->fetchAll(PDO::FETCH_ASSOC);
     foreach ($equipes as $equipe)
 
-        $facilitadores = $pdo->query("SELECT u.nome AS nome_user, s.situacao AS ss FROM gerenciamento_sessao AS gs JOIN usuarios AS u ON gs.id_usuarios = u.id JOIN sessoes AS s ON gs.id_sessoes = s.id WHERE gs.id_equipe = $id_equipe AND s.situacao = 'Pendente'")->fetchAll(PDO::FETCH_ASSOC);
+    $facilitadores = $pdo->query("SELECT u.nome AS nome_user, s.situacao AS ss FROM gerenciamento_sessao AS gs JOIN usuarios AS u ON gs.id_usuarios = u.id JOIN sessoes AS s ON gs.id_sessoes = s.id WHERE gs.id_equipe = $id_equipe AND s.situacao = 'Pendente'")->fetchAll(PDO::FETCH_ASSOC);
     foreach ($facilitadores as $usuario)
 
-        $participantes1 = $pdo->query("SELECT p.id AS id_participantes, p.nome AS participante_nome FROM gerenciamento_sessao AS gs JOIN participantes AS p ON gs.id_participantes = p.id JOIN sessoes AS ses ON gs.id_sessoes = ses.id WHERE gs.id_equipe = $id_equipe AND ses.situacao = 'Pendente'")->fetchAll(PDO::FETCH_ASSOC);
+    $participantes1 = $pdo->query("SELECT p.id AS id_participantes, p.nome AS participante_nome FROM gerenciamento_sessao AS gs JOIN participantes AS p ON gs.id_participantes = p.id JOIN sessoes AS ses ON gs.id_sessoes = ses.id WHERE gs.id_equipe = $id_equipe AND ses.situacao = 'Pendente'")->fetchAll(PDO::FETCH_ASSOC);
 
 
     $sessoes = $pdo->query("SELECT s.nome AS nome_sessao, s.id AS sessao_id FROM gerenciamento_sessao AS gs JOIN sessoes AS s ON gs.id_sessoes = s.id WHERE gs.id_equipe = $id_equipe AND s.situacao ='Pendente'")->fetchAll(PDO::FETCH_ASSOC);

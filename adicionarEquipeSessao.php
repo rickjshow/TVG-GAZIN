@@ -98,7 +98,7 @@ if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["eq
             $consulta->execute();
         }
 
-        $sql1 = "INSERT INTO equipes_provas (id_sessao, id_equipes, id_provas, situacao) VALUES (:id_sessoes, :id_equipe, :id_provas, 'Pendente')";
+        $sql1 = "INSERT INTO equipes_provas (id_sessao, id_equipes, id_provas, situacao, andamento) VALUES (:id_sessoes, :id_equipe, :id_provas, 'Pendente', 'Aguardando')";
         $consulta1 = $pdo->prepare($sql1);
         $consulta1->bindParam(':id_sessoes', $sessao_id);
         $consulta1->bindParam(':id_equipe', $equipe_id);
