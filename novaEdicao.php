@@ -6,6 +6,7 @@ include "adicionarEdicao.php";
 include "temporizador.php";
 
 verificarPermissao($permission);
+
 ?>
 
 <!DOCTYPE html>

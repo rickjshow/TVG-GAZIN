@@ -113,9 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
                 $pontuacao = round((1 - ($tempoTotal / $tempoMaximo)) * $pontoMaximo);
                 $pontuacao = max(0, $pontuacao);
 
-
-
-
+                
                 $queryPonto = "INSERT INTO pontuacao (id_provas, id_sessoes, id_equipes, ponto_obtido, tempo_gasto) VALUES(:id_provas, :id_sessoes, :id_equipes, :ponto_obtido, :tempo_gasto)";
                 $consulta3 = $pdo->prepare($queryPonto);
                 $consulta3->bindValue(':id_provas', $idProva, PDO::PARAM_INT);
