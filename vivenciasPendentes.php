@@ -31,11 +31,27 @@ if ($resultUser['permission'] == 'limited') {
         <title>Vivencias Pendentes</title>
     </head>
 
+    <?php  
+
+    if(isset($nomeSessao['id'])){
+        $idSessao = $nomeSessao['id']; 
+    }else{
+        $idSessao = null;
+    }
+    
+    if(isset($nomeSessao['nome'])){
+        $nomeSession = $nomeSessao['nome'];
+    }else{
+        $nomeSession = null;
+    }
+
+    ?>
+
     <body>
         <div class="box1 mt-4 text-center">
             <h1 class='mt-4' style='font-size: 20px;'>Vivências Pendentes</h1>
             <h4 class='mt-4'></h4>
-            <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSessao['nome']; ?></h4>
+            <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSession; ?></h4>
         </div>
         <div class="container-fluid text-center">
 
@@ -51,8 +67,6 @@ if ($resultUser['permission'] == 'limited') {
             ?>
 
             <?php
-
-            $idSessao = $nomeSessao['id'];
 
             if ($resultUser) {
                 $userId = $resultUser['id'];

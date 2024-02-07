@@ -97,7 +97,7 @@
                 });
             }
 
-            setInterval(atualizarRanking, 10);
+            setInterval(atualizarRanking, 2000);
         });
     </script>
 </body>
