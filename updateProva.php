@@ -11,7 +11,9 @@ if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
     $sqlProvas = "
-        SELECT * FROM provas WHERE id = :id 
+        SELECT p.*, tp.nome AS tipo_provas FROM provas AS p 
+        JOIN tipo_provas AS tp ON p.tipo_provas_id = tp.id
+        WHERE p.id = :id;
     ";
 
     $consulta = $pdo->prepare($sqlProvas);
@@ -37,6 +39,13 @@ if (isset($_POST['update_prova'])) {
     $descricao = $_POST['descricao'];
     $pergunta = $_POST['pergunta'];
     $pontos = $_POST['pontos'];
+    $tipo_provas = $_POST['tipo_prova'];
+
+    $queryTipo = "SELECT id FROM tipo_provas WHERE nome = :nome";
+    $consultaTipo = $pdo->prepare($queryTipo);
+    $consultaTipo->bindValue(':nome', $tipo_provas);
+    $consultaTipo->execute();
+    $resultado_tipo =  $consultaTipo->fetch(PDO::FETCH_ASSOC);
 
     $sqlprova = "
     UPDATE provas
@@ -44,7 +53,8 @@ if (isset($_POST['update_prova'])) {
         nome = :nome,
         descricao = :descricao,
         pergunta = :pergunta,
-        pontuacao_maxima = :pontos
+        pontuacao_maxima = :pontos,
+        tipo_provas_id = :tipo_prova
     WHERE id = :id 
     ";
 
@@ -53,6 +63,7 @@ if (isset($_POST['update_prova'])) {
     $consulta->bindValue(':descricao', $descricao);
     $consulta->bindValue(':pergunta', $pergunta);
     $consulta->bindValue(':pontos', $pontos);
+    $consulta->bindValue(':tipo_prova',  $resultado_tipo['id'], PDO::PARAM_INT);
     $consulta->bindValue(':id', $id, PDO::PARAM_INT);
 
     if ($consulta->execute()) {
@@ -75,7 +86,9 @@ if (isset($_POST['update_prova'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>UpdateProva</title>
 </head>
 <body>
@@ -109,13 +122,72 @@ if (isset($_POST['update_prova'])) {
                     <input type="number" name="pontos" class="form-control" value="<?= $row['pontuacao_maxima'] ?>">
                 </div>
 
-                <input type="submit" style="font-size: 15px" class="btn btn-success" name="update_prova" value="ATUALIZAR">
+                <div class="form-group">
+                <label for="tipo_provas">Tipo Prova:</label>
+                    <select name="tipo_prova" class="form-control">
+                <?php 
+                    
+                    $queryTipoAll = "SELECT * FROM tipo_provas";
+                    $consultaTipo = $pdo->prepare($queryTipoAll);
+                    $consultaTipo->execute();
+                    $data = $consultaTipo->fetchAll(PDO::FETCH_ASSOC);
+
+                    foreach ($data as $tipo) : ?>
+                        <option value="<?= $tipo['nome'] ?>" <?= ($row['tipo_provas'] == $tipo['nome']) ? "selected" : "" ?>>
+                            <?= $tipo['nome'] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+                <input type="submit" style="font-size: 12px" class="btn btn-success" name="update_prova" value="Atualizar">
             </form>
+            <div class="form-group">
+                <button id="btnExcluirProva" class="btn btn-danger" style="font-size: 12px; margin-left:90px; margin-top:-59px">Excluir</button>
+            </div> 
         </div>
+    <script>
+
+    $(document).ready(function() {
+        $("#btnExcluirProva").prop("disabled", false)
+        $("#btnExcluirProva").click(function() {
+            var idProva = "<?php echo $id; ?>"
+            Swal.fire({
+                title: 'Você tem certeza?',
+                text: 'Esta ação irá excluir a prova. Deseja continuar?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, excluir!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'deleteProva.php',
+                        data: { idProva: idProva},
+                        success: function(response) {
+                            window.location.href = 'deleteProva.php?idProva=' + idProva;
+                        },
+                        error: function(error) {
+                            console.error('Erro ao excluir a Prova:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Ocorreu um erro ao excluir a prova. Por favor, tente novamente.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    </script>
     </div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
 

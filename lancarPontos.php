@@ -152,13 +152,25 @@ $id = null;
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    $queryProva = "SELECT * FROM provas WHERE id = :id";
+    $queryProva = "SELECT p.*, tp.nome AS tipo_prova FROM provas AS p 
+    JOIN tipo_provas AS tp ON p.tipo_provas_id = tp.id
+    WHERE p.id = :id";
     $consulta = $pdo->prepare($queryProva);
     $consulta->bindValue(":id", $id, PDO::PARAM_INT);
     $consulta->execute();
     $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
 }
 
+
+if (!empty($data)) {
+
+    $prova = $data[0];
+    
+    $tipo_prova = $prova['tipo_prova'];
+
+    if ($tipo_prova == 'Automatico') {
+   
 ?>
 
 <!DOCTYPE html>
@@ -410,3 +422,20 @@ if (isset($_GET['id'])) {
 </body>
 
 </html>
+<?php
+} elseif($tipo_prova == 'Manual_comida'){
+
+    header("location: adicionar_prova_manual_gastronomica.php?id={$id}");
+    exit;
+
+}elseif($tipo_prova == 'Manual_estilingue'){
+   
+
+    header("location: adicionar_prova_manual_estilingue.php?id={$id}"); 
+    exit;
+
+} else {
+    echo "Tipo de prova desconhecido: " . $tipo_prova;
+}
+
+}

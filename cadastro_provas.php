@@ -14,7 +14,9 @@ verificarPermissao($permission);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="alert.js"></script>
     <title>Cadastro de Provas</title>
 </head>
@@ -84,6 +86,23 @@ verificarPermissao($permission);
                                 <label for="pontos">Pontuação Maxima prova:</label>
                                 <input type="number" name="pontos" class="form-control">
                             </div>
+                            <div class="form-group">
+                            <label for="tipo_provas">Tipo Prova:</label>
+                                <select name="tipo_prova" class="form-control">
+                            <?php 
+                                
+                                $queryTipoAll = "SELECT * FROM tipo_provas";
+                                $consultaTipo = $pdo->prepare($queryTipoAll);
+                                $consultaTipo->execute();
+                                $data = $consultaTipo->fetchAll(PDO::FETCH_ASSOC);
+
+                                foreach ($data as $tipo) : ?>
+                                    <option value="<?= $tipo['nome'] ?>" <?= ($tipo['nome'] == $tipo['nome']) ? "selected" : "" ?>>
+                                        <?= $tipo['nome'] ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
@@ -107,7 +126,6 @@ verificarPermissao($permission);
     <script>
         resetTimer();
     </script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>
