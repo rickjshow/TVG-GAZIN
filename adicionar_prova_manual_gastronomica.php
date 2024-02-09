@@ -114,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
                         }               
 
                         if ($excedeMaximo) {
-                            echo json_encode(['error' => 'A pontuação não pode exceder o máximo permitido.']);
-                            exit();
+                            echo json_encode(['error' => 'A pontuação não pode exceder o máximo de '. $pontoMaximo . " pontos!"]);
+                            exit();                      
                         } else {
 
                             $queryPonto = "INSERT INTO pontuacao (id_provas, id_sessoes, id_equipes, ponto_obtido, tempo_gasto) VALUES(:id_provas, :id_sessoes, :id_equipes, :ponto_obtido, :tempo_gasto)";
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
                                 $consulta4->bindValue(':id_sessao', $idSessao, PDO::PARAM_INT);
                                 $consulta4->execute();
         
-                                echo json_encode(['pontuacao' => $pontuacao]);
+                                echo json_encode(['pontuacao' => 'A sua pontuacão foi de ' . $pontuacao . ' pontos!']);
                                 exit;
                             } else {
         
@@ -296,47 +296,30 @@ if (isset($_GET['id'])) {
     }
 
     function saveTimerState(totalTimeInSeconds, formVisible) {
-    localStorage.setItem('tempoRestante', totalTimeInSeconds);
-    localStorage.setItem('formVisivel', formVisible);
-}
+        localStorage.setItem('tempoRestante', totalTimeInSeconds);
+        localStorage.setItem('formVisivel', formVisible);
+    }
 
-
-function restoreTimerState() {
-    var tempoArmazenado = localStorage.getItem('tempoRestante');
-    var formVisivel = localStorage.getItem('formVisivel');
-    if (tempoArmazenado) {
-        totalTimeInSeconds = parseInt(tempoArmazenado);
-        updateDisplay();
-        if (totalTimeInSeconds > 0 && !timerRunning) {
-            startTimer();
+    function stopTimer() {
+        if (!timerRunning) {
+            Swal.fire({
+                title: 'Aviso',
+                text: 'É necessário iniciar o temporizador antes de finalizar.',
+                icon: 'info'
+            });
+            return;
         }
+        clearInterval(timerInterval);
+        timerRunning = false;
+        updateDisplay();
+        tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+        showTimeSpentAlert();
+        totalTimeInSeconds = initialTotalTimeInSeconds;
+        updateDisplay();
+        showPontuacaoForm(); 
+        saveTimerState(initialTotalTimeInSeconds, true);
+        localStorage.removeItem('tempoRestante'); // Remover o tempo restante após parar o temporizador
     }
-    if (formVisivel === 'true') {
-        showPontuacaoForm();
-    }
-}
-
-
-function stopTimer() {
-    if (!timerRunning) {
-        Swal.fire({
-            title: 'Aviso',
-            text: 'É necessário iniciar o temporizador antes de finalizar.',
-            icon: 'info'
-        });
-        return;
-    }
-    clearInterval(timerInterval);
-    timerRunning = false;
-    updateDisplay();
-    tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-    showTimeSpentAlert();
-    totalTimeInSeconds = initialTotalTimeInSeconds;
-    updateDisplay();
-    showPontuacaoForm(); 
-    saveTimerState(initialTotalTimeInSeconds, true);
-}
-
 
     function showPontuacaoForm() {
         document.getElementById('pontuacaoForm').style.display = 'block';
@@ -347,14 +330,13 @@ function stopTimer() {
         restoreTimerState();
     });
 
-
     function enviarPontos() {
         var idProva = <?php echo $id; ?>;
         var sabor = document.getElementById('sabor').value;
         var atendimento = document.getElementById('atendimento').value;
         var organizacao = document.getElementById('organizacao').value;
 
-        if (sabor === '' || atendimento === '' || organizacao === '' || tempoGasto === 0) {
+        if (sabor === '' || atendimento === '' || organizacao === '') {
             Swal.fire({
                 title: 'Aviso',
                 text: 'Por favor, preencha todas as pontuações antes de finalizar a prova.',
@@ -363,25 +345,55 @@ function stopTimer() {
             return;
         }
 
-    $.ajax({
-    type: "GET",
-    url: "adicionar_prova_manual_gastronomica.php",
-    data: {
-        tempoFinalEmSegundos: tempoGasto,
-        idProva: idProva,
-        sabor: sabor,
-        atendimento: atendimento,
-        organizacao: organizacao
-    },
-    success: function(response) {
-        console.log("Resposta do servidor:", response);
-        try {
-            var responseData = JSON.parse(response);
+        $.ajax({
+            type: "GET",
+            url: "adicionar_prova_manual_gastronomica.php",
+            data: {
+                tempoFinalEmSegundos: tempoGasto,
+                idProva: idProva,
+                sabor: sabor,
+                atendimento: atendimento,
+                organizacao: organizacao
+            },
+            success: function(response) {
+                console.log("Resposta do servidor:", response);
+                try {
+                    var responseData = JSON.parse(response);
 
-            if (responseData.error) {
+                    if (responseData.error) {
+                        Swal.fire({
+                            title: 'Erro',
+                            text: responseData.error,
+                            icon: 'error',
+                            showCancelButton: false,
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Pontuação Final',
+                            text: responseData.pontuacao,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = 'vivenciasPendentes.php';
+                            }
+                        }); 
+                    }
+                } catch (error) {
+                    console.error("Erro ao processar resposta JSON:", error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Erro na requisição AJAX:", error);
                 Swal.fire({
                     title: 'Erro',
-                    text: responseData.error,
+                    text: 'Erro na requisição AJAX.',
                     icon: 'error',
                     showCancelButton: false,
                     confirmButtonText: 'OK'
@@ -390,77 +402,25 @@ function stopTimer() {
                         window.location.reload();
                     }
                 });
-            } else {
-                var pontuacao = responseData.pontuacao;
-                var pontoMaximo = responseData.pontoMaximo;
-
-                console.log("Pontuação máxima:", pontoMaximo);
-
-                if (pontuacao > pontoMaximo) {
-                    Swal.fire({
-                        title: 'Erro',
-                        text: 'A pontuação não pode ultrapassar a pontuação máxima de ' + pontoMaximo,
-                        icon: 'error',
-                        showCancelButton: false,
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.reload();  // Recarrega a página
-                        }
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Pontuação Final',
-                        text: 'Sua pontuação final é: ' + pontuacao,
-                        icon: 'success',
-                        showCancelButton: false,
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = 'vivenciasPendentes.php';
-                        }
-                    });
-                }
-            }
-        } catch (error) {
-            console.error("Erro ao processar resposta JSON:", error);
-        }
-    },
-    error: function(xhr, status, error) {
-        console.error("Erro na requisição AJAX:", error);
-        Swal.fire({
-            title: 'Erro',
-            text: 'Erro na requisição AJAX.',
-            icon: 'error',
-            showCancelButton: false,
-            confirmButtonText: 'OK'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.reload();
             }
         });
-    }
-});
 
-
-    localStorage.removeItem('tempoRestante');
-    totalTimeInSeconds = initialTotalTimeInSeconds;
-    updateDisplay();
-}
-
-
-function updateTimer() {
-    if (totalTimeInSeconds === 0) {
-        clearInterval(timerInterval);
-        timerRunning = false;
-    } else {
-        totalTimeInSeconds--;
-        tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-        localStorage.setItem('tempoRestante', totalTimeInSeconds);
+        localStorage.removeItem('tempoRestante');
+        totalTimeInSeconds = initialTotalTimeInSeconds;
         updateDisplay();
     }
-}
 
+    function updateTimer() {
+        if (totalTimeInSeconds === 0) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+        } else {
+            totalTimeInSeconds--;
+            tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+            localStorage.setItem('tempoRestante', totalTimeInSeconds);
+            updateDisplay();
+        }
+    }
 
     function updateDisplay() {
         var minutes = Math.floor(totalTimeInSeconds / 60);
@@ -498,6 +458,7 @@ function updateTimer() {
     });
 
 </script>
+
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
