@@ -51,14 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos']) && isset($_GET['idProva']) && isset($_GET['sabor']) && isset($_GET['atendimento']) && isset($_GET['organizacao'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
    
-    $idProva = $_GET['idProva'];
-    $tempoTotal = $_GET['tempoFinalEmSegundos'];
-    $sabor = $_GET['sabor'];
-    $atendimento = $_GET['atendimento'];
-    $organizacao = $_GET['organizacao'];
+    $idProva = $_POST['idProva'];
+    $tempoTotal = $_POST['tempoFinalEmSegundos'];
+    $sabor = $_POST['sabor'];
+    $atendimento = $_POST['atendimento'];
+    $organizacao = $_POST['organizacao'];
 
     $pontuacao = ($sabor) + ($atendimento) + ($organizacao);
 
@@ -114,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
                         }               
 
                         if ($excedeMaximo) {
-                            echo json_encode(['error' => 'A pontuação não pode exceder o máximo permitido.']);
-                            exit();
+                            echo json_encode(['error' => 'A pontuação não pode exceder o ' . $pontoMaximo . ' máximo permitido.']);
+                            exit;                            
                         } else {
 
                             $queryPonto = "INSERT INTO pontuacao (id_provas, id_sessoes, id_equipes, ponto_obtido, tempo_gasto) VALUES(:id_provas, :id_sessoes, :id_equipes, :ponto_obtido, :tempo_gasto)";
@@ -136,8 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
         
                                 echo json_encode(['pontuacao' => $pontuacao]);
                                 exit;
-                            } else {
-        
+                            } else {     
                                 echo json_encode(['error' => 'Erro ao salvar pontuação.']);
                                 exit;
                         }
@@ -247,9 +246,8 @@ if (isset($_GET['id'])) {
             </div>
         </div>
 
-
         <script>
-                $(document).ready(function(){
+            $(document).ready(function(){
                 $("#startButton").click(function(){
                     var iniciar = 'iniciar';
                     var idProva = <?php echo $id; ?>; 
@@ -264,8 +262,7 @@ if (isset($_GET['id'])) {
                     });
                 });
             });
-    </script>
-
+        </script>
 
 <script>
     var timerInterval;
@@ -295,9 +292,10 @@ if (isset($_GET['id'])) {
         timerRunning = false;
     }
 
-    function saveTimerState(totalTimeInSeconds, formVisible) {
+    function saveTimerState(totalTimeInSeconds, formVisible, tempoGasto) {
     localStorage.setItem('tempoRestante', totalTimeInSeconds);
     localStorage.setItem('formVisivel', formVisible);
+    localStorage.setItem('tempoGasto', tempoGasto);
 }
 
 
@@ -334,7 +332,7 @@ function stopTimer() {
     totalTimeInSeconds = initialTotalTimeInSeconds;
     updateDisplay();
     showPontuacaoForm(); 
-    saveTimerState(initialTotalTimeInSeconds, true);
+    saveTimerState(initialTotalTimeInSeconds, true, tempoGasto);
 }
 
 
@@ -364,18 +362,19 @@ function stopTimer() {
         }
 
     $.ajax({
-    type: "GET",
+    type: "POST",
     url: "adicionar_prova_manual_gastronomica.php",
     data: {
-        tempoFinalEmSegundos: tempoGasto,
+        tempoFinalEmSegundos: localStorage.getItem('tempoGasto'),
         idProva: idProva,
         sabor: sabor,
         atendimento: atendimento,
         organizacao: organizacao
     },
     success: function(response) {
-        console.log("Resposta do servidor:", response);
+        console.log(response);
         try {
+            
             var responseData = JSON.parse(response);
 
             if (responseData.error) {
@@ -386,9 +385,7 @@ function stopTimer() {
                     showCancelButton: false,
                     confirmButtonText: 'OK'
                 }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.reload();
-                    }
+                   
                 });
             } else {
                 var pontuacao = responseData.pontuacao;
@@ -405,7 +402,7 @@ function stopTimer() {
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.reload();  // Recarrega a página
+                             
                         }
                     });
                 } else {
@@ -416,7 +413,7 @@ function stopTimer() {
                         showCancelButton: false,
                         confirmButtonText: 'OK'
                     }).then((result) => {
-                        if (result.isConfirmed) {
+                        if (result.isConfirmed){
                             window.location.href = 'vivenciasPendentes.php';
                         }
                     });
@@ -443,7 +440,7 @@ function stopTimer() {
 });
 
 
-    localStorage.removeItem('tempoRestante');
+localStorage.removeItem('tempoRestante');
     totalTimeInSeconds = initialTotalTimeInSeconds;
     updateDisplay();
 }
@@ -499,9 +496,8 @@ function updateTimer() {
 
 </script>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet"/>
 </body>
 </html>
