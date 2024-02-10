@@ -1,7 +1,7 @@
 <?php
-include "header.php";
+require_once "header.php";
 require_once "conexao.php";
-include "adicionarPresenca.php";
+require_once "adicionarPresenca.php";
 include "temporizador.php";
 
 
@@ -184,10 +184,10 @@ if ($userType == 'limited') {
                             echo "<tr><td colspan='3' class='text-center align-middle'>Não há participantes ausentes nesta sessão.</td></tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='3'>Não há sessões pendentes.</td></tr>";
+                        echo "<tr><td colspan='3' class='text-center'>Não existe uma sessão pendente no memento!</td></tr>";
                     }
 
-    echo "</tbody>
+                    echo "</tbody>
                 </table>
             </div>
         </body>

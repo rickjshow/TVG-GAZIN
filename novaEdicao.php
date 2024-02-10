@@ -20,6 +20,18 @@ verificarPermissao($permission);
     <title>Painel TVG</title>
 </head>
 
+<?php
+
+$queryVerifica = "SELECT * FROM sessoes AS ses
+JOIN gerenciamento_sessao AS gs ON ses.id = gs.id_sessoes
+WHERE ses.situacao = 'Pendente'";
+$consultaVerifica = $pdo->prepare($queryVerifica);
+$consultaVerifica->execute();
+
+?>
+
+
+
 <body>
     <div class="box1 mt-4 text-center">
         <h3 class="mt-4" style="font-size: 20px;">Edição TVG</h3>
@@ -90,6 +102,24 @@ verificarPermissao($permission);
                 </tbody>
             </table>
         </div>
+
+
+
+        <?php
+
+            if($consultaVerifica->rowCount() < 1) {
+
+                echo "    
+                        <div class='container d-flex align-items-center justify-content-center' style='height: 30vh;'>
+                            <p>Não existem Edições pendentes no momento</p>
+                        </div>
+                "; 
+
+            }
+
+        ?>
+
+
 
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

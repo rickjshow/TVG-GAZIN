@@ -1,7 +1,6 @@
 <?php
 
 require_once "conexao.php";
-require_once "presenca.php";
 
 if (!function_exists('obterIdStatus')) {
     function obterIdStatus($nomeStatus)
@@ -77,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
         }
         if($stmtInsert){
             session_start();
-            $_SESSION['alertaSucesso'] = array('tipo' => 'success', 'mensagem' => 'Presença cadastrada com sucesso!'); 
+            $_SESSION['alertaSucesso'] = array('tipo' => 'success', 'mensagem' => 'Presença cadastrada com sucesso!');
             header("location: presenca.php");
             exit();
         }

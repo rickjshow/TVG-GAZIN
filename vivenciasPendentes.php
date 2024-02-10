@@ -1,8 +1,9 @@
 <?php
 
-require_once "conexao.php";
+include "conexao.php";
 include "header.php";
 include "temporizador.php";
+
 
 $username = $_SESSION['username'];
 
@@ -17,6 +18,33 @@ $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER B
 $stmtSessao = $pdo->prepare($querySessao);
 $stmtSessao->execute();
 $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
+
+         
+$querySession = "SELECT * FROM equipes_provas AS ep
+JOIN sessoes AS s ON ep.id_sessao = s.id
+WHERE s.situacao = 'Pendente'";
+$consultaSession = $pdo->prepare($querySession);
+$consultaSession->execute();
+
+
+    $queryPresenca = "SELECT COUNT(*) FROM presenca AS p
+    JOIN participantes AS part ON p.id_participantes = part.id
+    JOIN gerenciamento_sessao AS gs ON part.id = gs.id_participantes
+    JOIN sessoes AS s ON gs.id_sessoes = s.id
+    JOIN usuarios AS u ON gs.id_usuarios = u.id
+    WHERE s.id = :idSessao AND u.id = :idUser";
+    $consultaPresenca = $pdo->prepare($queryPresenca);
+    $consultaPresenca ->bindParam(":idSessao", $nomeSessao['id']);
+    $consultaPresenca ->bindParam(":idUser", $resultUser['id']);
+    $consultaPresenca->execute();
+    $numPresencas = $consultaPresenca->fetchColumn();
+
+    
+    if($numPresencas == 0 && $resultUser['permission'] == 'limited'){
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Realize a presença dos participantes antes!');
+        header("location: home.php");
+        exit();
+    }
 
 
 if ($resultUser['permission'] == 'limited') {
@@ -53,6 +81,8 @@ if ($resultUser['permission'] == 'limited') {
             <h4 class='mt-4'></h4>
             <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSession; ?></h4>
         </div>
+
+        
         <div class="container-fluid text-center">
 
             <?php
@@ -91,7 +121,7 @@ if ($resultUser['permission'] == 'limited') {
                           <div class='col-md-6 mx-auto  mt-4 '>
                               <div class='border rounded shadow'>
                                   <a href='lancarPontos.php?id={$row['prova_id']}' style='text-decoration: none; color: black;'>
-                                      <div class='card mt-4 border-0'> <!-- Add border-0 class here -->
+                                      <div class='card mt-4 border-0'> 
                                           <div class='card-body text-center'>
                                               <h5 class='card-title'>{$row['equipe_nome']}</h5>
                                               <p class='card-text'>{$row['prova_nome']}</p>
@@ -137,6 +167,16 @@ if ($resultUser['permission'] == 'limited') {
         echo "<h1 class='font-weight-bold mt-4 text-center' style='font-size: 20px;'>Vivências Pendentes</h1>";
         echo "<h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: $nomeSession </h4>";
 
+
+        if($consultaSession->rowCount() < 1){
+        echo "    
+        <div class='container d-flex align-items-center justify-content-center' style='height: 30vh;'>
+            <p>Não existem provas pendentes no momento</p>
+        </div>
+        
+        ";
+        }
+        
 
         echo "<div id='vivencias-container'></div>";
 
