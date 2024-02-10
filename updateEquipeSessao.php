@@ -86,72 +86,97 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
 
     $facilitador_id = $consultafacilitador->fetchColumn();
 
-    $sqlExcluiDadosSessao = "DELETE FROM gerenciamento_sessao WHERE id_sessoes = :id_sessoes AND id_equipe = :id_equipe";
-    $consulta = $pdo->prepare($sqlExcluiDadosSessao);
-    $consulta->bindParam(':id_sessoes', $sessao_id);
-    $consulta->bindParam(':id_equipe', $equipe_id);
-    $consulta->execute();
+    $queryRascunho = "SELECT COUNT(*) FROM rascunho_presenca WHERE id_sessao = :id_sessao AND id_user = :id_user";
+    $consultaRascunho = $pdo->prepare($queryRascunho);
+    $consultaRascunho->bindParam(':id_sessao', $sessao_id);
+    $consultaRascunho->bindParam(':id_user', $facilitador_id);
+    $consultaRascunho->execute();
+    $numRascunho = $consultaRascunho->fetchColumn();
 
+    $queryPresenca = "SELECT COUNT(*) FROM presenca WHERE id_sessao = :id_sessao AND id_user = :id_user";
+    $consultaPresenca = $pdo->prepare($queryPresenca);
+    $consultaPresenca->bindParam(':id_sessao', $sessao_id);
+    $consultaPresenca->bindParam(':id_user', $facilitador_id);
+    $consultaPresenca->execute();
+    $numPresenca = $consultaPresenca->fetchColumn();
 
-    foreach ($participantes as $key => $participanteNome) {
-        $sqlparticipantes = "SELECT id FROM participantes WHERE nome = :participante";
-        $conparticipantes = $pdo->prepare($sqlparticipantes);
-        $conparticipantes->bindParam(':participante', $participanteNome);
-        $conparticipantes->execute();
-
-        if ($conparticipantes->rowCount() == 0) {
-            echo "Erro: Participante inválido: $participanteNome. <br>";
-            continue;
-        }
-
-        $participantes_id = $conparticipantes->fetchColumn();
-
-        $id = $id_array[$key];
-
-        $sql = "INSERT INTO gerenciamento_sessao (id_equipe, id_usuarios, id_participantes, id_sessoes) VALUES (:id_equipe,:id_usuarios,:id_participantes,:id_sessoes)";
-        $consulta = $pdo->prepare($sql);
-        $consulta->bindParam(':id_equipe', $equipe_id);
-        $consulta->bindParam(':id_usuarios', $facilitador_id);
+    if($numRascunho == 0 && $numPresenca == 0){
+        $sqlExcluiDadosSessao = "DELETE FROM gerenciamento_sessao WHERE id_sessoes = :id_sessoes AND id_equipe = :id_equipe";
+        $consulta = $pdo->prepare($sqlExcluiDadosSessao);
         $consulta->bindParam(':id_sessoes', $sessao_id);
-        $consulta->bindParam(':id_participantes', $participantes_id);
+        $consulta->bindParam(':id_equipe', $equipe_id);
         $consulta->execute();
-    }
+    
+    
+        foreach ($participantes as $key => $participanteNome) {
+            $sqlparticipantes = "SELECT id FROM participantes WHERE nome = :participante";
+            $conparticipantes = $pdo->prepare($sqlparticipantes);
+            $conparticipantes->bindParam(':participante', $participanteNome);
+            $conparticipantes->execute();
+    
+            if ($conparticipantes->rowCount() == 0) {
+                echo "Erro: Participante inválido: $participanteNome. <br>";
+                continue;
+            }
+    
+            $participantes_id = $conparticipantes->fetchColumn();
+    
+            $id = $id_array[$key];
+    
+            $sql = "INSERT INTO gerenciamento_sessao (id_equipe, id_usuarios, id_participantes, id_sessoes) VALUES (:id_equipe,:id_usuarios,:id_participantes,:id_sessoes)";
+            $consulta = $pdo->prepare($sql);
+            $consulta->bindParam(':id_equipe', $equipe_id);
+            $consulta->bindParam(':id_usuarios', $facilitador_id);
+            $consulta->bindParam(':id_sessoes', $sessao_id);
+            $consulta->bindParam(':id_participantes', $participantes_id);
+            $consulta->execute();
+        }
+    
+        $sqlExcluiDadosEqpSessao = "DELETE FROM equipes_provas WHERE id_sessao = :id_sessoes AND id_equipes = :id_equipes";
+        $consulta = $pdo->prepare($sqlExcluiDadosEqpSessao);
+        $consulta->bindParam(':id_sessoes', $sessao_id);
+        $consulta->bindParam(':id_equipes', $equipe_id);
+        $consulta->execute();
+    
+        foreach ($provas as $key => $provasNome) {
+            $sqlprovas = "SELECT id FROM provas WHERE nome = :provas";
+            $conprovas = $pdo->prepare($sqlprovas);
+            $conprovas->bindParam(':provas', $provasNome);
+            $conprovas->execute();
+    
+            if ($conprovas->rowCount() == 0) {
+                echo "Erro: Prova inválida: $provasNome. <br>";
+                continue;
+            }
+    
+            $provas_id = $conprovas->fetchColumn();
+    
+    
+            $id2 = $id2_array[$key];
+    
+    
+            $sql_provas = "INSERT INTO equipes_provas (id_sessao, id_equipes, id_provas, situacao, andamento)  VALUES(:id_sessao, :id_equipes, :id_provas, 'Pendente', 'Aguardando')";
+            $consulta_provas = $pdo->prepare($sql_provas);
+            $consulta_provas->bindParam(':id_sessao', $sessao_id);
+            $consulta_provas->bindParam(':id_equipes', $equipe_id);
+            $consulta_provas->bindParam(':id_provas', $provas_id);
+            $consulta_provas->execute();
 
-    $sqlExcluiDadosEqpSessao = "DELETE FROM equipes_provas WHERE id_sessao = :id_sessoes AND id_equipes = :id_equipes";
-    $consulta = $pdo->prepare($sqlExcluiDadosEqpSessao);
-    $consulta->bindParam(':id_sessoes', $sessao_id);
-    $consulta->bindParam(':id_equipes', $equipe_id);
-    $consulta->execute();
-
-    foreach ($provas as $key => $provasNome) {
-        $sqlprovas = "SELECT id FROM provas WHERE nome = :provas";
-        $conprovas = $pdo->prepare($sqlprovas);
-        $conprovas->bindParam(':provas', $provasNome);
-        $conprovas->execute();
-
-        if ($conprovas->rowCount() == 0) {
-            echo "Erro: Prova inválida: $provasNome. <br>";
-            continue;
         }
 
-        $provas_id = $conprovas->fetchColumn();
+        if($consulta_provas){
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'A alteração foi feita com sucesso!');
+            header("location: novaEdicao.php");
+            exit();
+        }
 
-
-        $id2 = $id2_array[$key];
-
-
-        $sql_provas = "INSERT INTO equipes_provas (id_sessao, id_equipes, id_provas, situacao, andamento)  VALUES(:id_sessao, :id_equipes, :id_provas, 'Pendente', 'Aguardando')";
-        $consulta_provas = $pdo->prepare($sql_provas);
-        $consulta_provas->bindParam(':id_sessao', $sessao_id);
-        $consulta_provas->bindParam(':id_equipes', $equipe_id);
-        $consulta_provas->bindParam(':id_provas', $provas_id);
-
-
-        $consulta_provas->execute();
+    }else{
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Não é possível atualizar uma equipe que já esta em andamento no TVG!');
+        header("location: novaEdicao.php");
+        exit();
     }
-
-    header("location: novaEdicao.php");
-    exit();
 }
 
 ?>
@@ -283,13 +308,13 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Sucesso</h1>
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">Solicitação processada</h1>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            Alteração efetuada com sucesso!
+                            A solicitação foi enviada ao banco de dados.
                         </div>
                         <div class="modal-footer">
                             <button type="submit" name="confirmacao" value="sim" class="btn btn-secondary" data-bs-dismiss="modal" onclick="enviarFormulario()">OK</button>
