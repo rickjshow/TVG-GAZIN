@@ -70,15 +70,19 @@ $numRascunho = $consultaRascunho->fetchColumn();
                }
         </script>
 
-        <div class="box1 mt-4 text-center">
-            <h3 class="mt-4" style="font-size: 20px;">Listagem De Presença</h3>
-        </div>
+        <?php
+            if(isset($nomeSessao['nome'])){
+                $nomeSession = $nomeSessao['nome'];
+            }
+        ?>
 
-    <?php   
-        
-        if ($nomeSessao) {
-            echo "<h4 class='mt-1 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: {$nomeSessao['nome']}</h4>";
-        }
+            "<div class='container mt-4'>
+            <div class='box1 mt-4 text-center p-4 border rounded shadow'>
+                <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Lista de chamada</h3>
+                <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual:<?php echo $nomeSession ?></h4>
+            </div>"
+
+        <?php 
         
         if($numRascunho == 0){
             echo "<div class='container-fluid'>

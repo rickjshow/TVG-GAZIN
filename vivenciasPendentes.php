@@ -63,11 +63,10 @@ if(isset($nomeSessao['nome'])){
     $nomeSession = null;
 }
 
-echo "<body>
-<div class='box1 mt-4 text-center'>
-    <h1 class='mt-4' style='font-size: 20px;'>Vivências Pendentes</h1>
-    <h4 class='mt-4'></h4>
-    <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: " . $nomeSession . "</h4>
+echo "<div class='container mt-4'>
+<div class='box1 mt-4 text-center p-4 border rounded shadow'>
+    <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Vivências Pendentes</h3>
+    <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual: $nomeSession </h4>
 </div>";
 
 
