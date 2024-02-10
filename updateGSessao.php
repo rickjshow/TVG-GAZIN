@@ -23,9 +23,11 @@ verificarPermissao($permission);
 
 <body>
     
-        <div class="box1 mt-4 text-center">
-            <h1 class="mt-4 text-center" style='font-size: 25px;'>Equipes</h1>
+<div class="container mt-4">
+        <div class="box1 mt-4 text-center p-4 border rounded shadow">
+            <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Equipes</h3>
         </div>
+</div>
 
     <div class="container-fluid text-center">
         <?php
@@ -52,7 +54,7 @@ verificarPermissao($permission);
             $idGS = htmlspecialchars($idGS);
 
             echo "<div class='row'>
-                        <div class='col-sm-6 mb-3 mb-sm-0 mx-auto'>
+                        <div class='col-md-6 mx-auto'>
                             <a href='updateEquipeSessao.php?id={$row['id_equipe']}' style='text-decoration: none; color: black;'>
                                 <div class='card mt-5 p-3 shadow-sm rounded' style='background-color: #f8f9fa;'>
                                     <div class='card-body text-center'>
@@ -70,7 +72,7 @@ verificarPermissao($permission);
     </div>
     
         <div class="container-fluid text-center mt-1 p-4">
-            <button id="btnExcluirSessao" class="btn btn-danger" disabled style="font-size: 12px;">Excluir Sessão</button>
+            <button id="btnExcluirSessao" class="btn btn-danger mt-4" disabled style="font-size: 15px;">Excluir Sessão</button>
         </div>
 
 

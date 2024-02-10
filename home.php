@@ -13,7 +13,6 @@ require_once "conexao.php";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="alert.js"></script>
     <script src="alertSucess.js"></script>
     <title>Painel TVG</title>
     <style>
@@ -76,7 +75,6 @@ require_once "conexao.php";
             </div>
         </div>
     </div>
-    
 
     <div id="login-expired-message" style="color: black;"></div>
     <script>

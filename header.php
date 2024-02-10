@@ -100,19 +100,37 @@ require_once "permissao.php";
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
-                                            <form action="updateimg.php" method="post" enctype="multipart/form-data">
-                                                <div class="modal-body">
-                                                    <label for="fileInput">Escolher arquivo</label>
-                                                    <input type="file" id="fileInput" name="imgPerfil" accept="image/*" onchange="alterarFoto(this);">
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="fecharModal()">Fechar</button>
-                                                    <button type="submit" name="enviar" class="btn btn-primary">Enviar</button>
-                                                </div>
-                                            </form>
+                                                <form id="mainForm" action="updateimg.php" method="post" enctype="multipart/form-data">
+                                                    <div class="modal-body">
+                                                        <label for="fileInput">Escolher arquivo</label>
+                                                        <input type="file" id="fileInput" name="imgPerfil" accept="image/*" onchange="alterarFoto(this);">
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" onclick="removerImagem()" class="btn btn-secondary">Remover Imagem</button>
+                                                        <button type="submit" name="enviar" class="btn btn-primary">Enviar</button>
+                                                    </div>
+                                                </form>
+                                                <form action="remove_img_usuario.php" method="post" id="removeForm">
+                                                    <input type="submit" name="remove_img" id="removeImgBtn" style="display: none;">
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+
+                                    <script>
+                                        function fecharModal() {
+                                            $('#myModal').modal('hide');
+                                            $('#fileInput').val('');
+                                        }
+
+                                        function removerImagem() {
+                                            // Muda a ação do formulário principal para remover_img_usuario.php
+                                            document.getElementById('mainForm').action = 'remove_img_usuario.php';
+                                            // Aciona o botão escondido quando o botão visível é clicado
+                                            document.getElementById('removeImgBtn').click();
+                                        }
+                                    </script>
+
 
                                 <script>
                                     $(document).ready(function () {

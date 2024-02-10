@@ -78,13 +78,17 @@ if (isset($_POST['update_participantes'])) {
 
 <body>
 
-<div class="text-center mt-4"></div>
+
+<div class="container mt-4">
+        <div class="box1 mt-4 text-center p-4 border rounded shadow">
+            <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Atualizar Participantes</h3>
+        </div>
+</div>
    
 <div class="container">
     <div class="container mt-4 border rounded p-4 shadow">
         <form action="updateParticipantes.php" method="post" class="mx-auto">
             <input type="hidden" name="id" value="<?= $row['id'] ?>">
-            <h2 class="font-weight-bold  text-center">Atualizar Participantes</h2>
             <div class="form-group mt-4">
                 <label for="nome">Nome:</label>
                 <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">

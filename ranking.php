@@ -62,10 +62,19 @@
 </head>
 <body>
 
-    <div class="container mt-4">
-        <div class="text-center mt-4">
-            <h3 style="font-size: 35px;">Ranking</h3>
+
+
+    <div class='container mt-4'>
+        <div class='mt-4 text-center p-4 border rounded shadow text-primary ">
+            <h1 class='mt-4' style='font-size: 24px;'>Ranking</h1>
         </div>
+    </div>
+
+
+
+
+    <div class="container mt-4">
+       
         <div class="container-fluid">
             <table id="ranking-table" class="table table-striped mt-4" >
                 <thead>

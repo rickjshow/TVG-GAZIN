@@ -94,14 +94,17 @@ if (isset($_POST['update_prova'])) {
 <body>
 
 
-    <div class="text-center mt-4"></div>
+<div class="container mt-4">
+        <div class="box1 mt-4 text-center p-4 border rounded shadow">
+            <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Atualizar Vivência</h3>
+        </div>
+</div>
     
 <div class="container">
     <div class="container mt-4 border rounded p-4 shadow">
         <div class="mx-auto col-md-6">
             <form action="updateProva.php" method="post">
                 <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                <h2 class="font-weight-bold text-center">Atualizar Vivência</h2>
                 <div class="form-group">
                     <label for="nome" class="mt-4">Nome da Vivência:</label>
                     <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
@@ -186,8 +189,8 @@ if (isset($_POST['update_prova'])) {
     </script>
     </div>
 </div>
+<div class="text-center mt-4"></div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
-

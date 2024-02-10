@@ -11,4 +11,3 @@ function alertaSucesso(tipo, mensagem) {
         }
     });
 }
-

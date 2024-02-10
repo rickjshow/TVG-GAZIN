@@ -19,6 +19,7 @@ verificarPermissao($permission);
     <script src="alert.js"></script>
     <title>Painel TVG</title>
 </head>
+<body>
 
 <?php
 
@@ -32,10 +33,13 @@ $consultaVerifica->execute();
 
 
 
-<body>
-    <div class="box1 mt-4 text-center">
-        <h3 class="mt-4" style="font-size: 20px;">Edição TVG</h3>
-        <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Adicionar Edição</button>
+
+
+    <div class="container mt-4">
+        <div class="box1 mt-4 text-center p-4 border rounded shadow">
+            <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 20px;">Edição TVG</h3>
+            <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Edição</button>
+        </div>
     </div>
 
     <div class="container-fluid">

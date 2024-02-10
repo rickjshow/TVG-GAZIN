@@ -76,10 +76,12 @@ if ($resultUser['permission'] == 'limited') {
     ?>
 
     <body>
-        <div class="box1 mt-4 text-center">
-            <h1 class='mt-4' style='font-size: 20px;'>Vivências Pendentes</h1>
-            <h4 class='mt-4'></h4>
-            <h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: <?php echo $nomeSession; ?></h4>
+       
+
+        <div class="container mt-4">
+        <div class="box1 mt-4 text-center p-4 border rounded shadow">
+            <h3 class="mt-4 font-weight-bold display-4 text-primary"  style="font-size: 15px;">Vivências Pendentes</h3>
+            <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession; ?></h4>
         </div>
 
         
@@ -118,7 +120,7 @@ if ($resultUser['permission'] == 'limited') {
 
                 foreach ($data as $row) {
                     echo "<div class='row'>
-                          <div class='col-md-6 mx-auto  mt-4 '>
+                          <div class='col-md-10 mx-auto  mt-4 '>
                               <div class='border rounded shadow'>
                                   <a href='lancarPontos.php?id={$row['prova_id']}' style='text-decoration: none; color: black;'>
                                       <div class='card mt-4 border-0'> 
@@ -163,9 +165,22 @@ if ($resultUser['permission'] == 'limited') {
             $nomeSession = null;
         }
 
-        echo "<div class='mt-4'></div>";
-        echo "<h1 class='font-weight-bold mt-4 text-center' style='font-size: 20px;'>Vivências Pendentes</h1>";
-        echo "<h4 class='mt-4 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: $nomeSession </h4>";
+
+        echo "
+        <div class='container mt-4'>
+            <div class='box1 mt-4 text-center p-4 border rounded shadow'>
+            <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Vivências Pendentes</h3>
+                <div class='mt-4 text-center mx-auto' style=' color: black; max-width: 400px; font-size: 1.1em; padding: 10px; border: solid #000 1px;'>
+                    Sessão Atual: $nomeSession
+                </div>
+            </div>
+        </div>
+    ";
+
+
+      
+       
+        
 
 
         if($consultaSession->rowCount() < 1){
@@ -228,7 +243,7 @@ if ($resultUser['permission'] == 'limited') {
     });
 </script>
 
- <!--2024-02-07 2024-02-07 19:28:42-->
+
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
