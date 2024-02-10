@@ -270,7 +270,6 @@ if (isset($_GET['id'])) {
     var initialTotalTimeInSeconds = 2400;
     var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
     var initialTimeInSeconds = totalTimeInSeconds;
-    var tempoGasto;
 
     function startTimer() {
         if (!timerRunning) {

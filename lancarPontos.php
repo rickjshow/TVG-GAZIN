@@ -298,6 +298,10 @@ if (!empty($data)) {
                 }
             }
 
+            document.addEventListener('DOMContentLoaded', function () {
+                restoreTimerState();
+            });
+
             function stopTimer() {
 
                 if (!timerRunning) {
