@@ -292,6 +292,7 @@ if (isset($_GET['id'])) {
         clearInterval(timerInterval);
         timerRunning = false;
         localStorage.setItem('timerRunning', 'false');
+        localStorage.setItem('isPaused', 'true');
     }
 
     function saveTimerState(totalTimeInSeconds, formVisible, tempoGasto) {
@@ -303,13 +304,13 @@ if (isset($_GET['id'])) {
         function restoreTimerState() {
         var tempoArmazenado = localStorage.getItem('tempoRestante');
         var formVisivel = localStorage.getItem('formVisivel');
-        var timerRunning = localStorage.getItem('timerRunning'); // Adicione essa linha
+        var timerRunning = localStorage.getItem('timerRunning'); 
 
         if (tempoArmazenado) {
             totalTimeInSeconds = parseInt(tempoArmazenado);
             updateDisplay();
-            if (totalTimeInSeconds > 0 && timerRunning === 'true') { // Modifique essa linha
-                startTimer(); // Somente se o temporizador estiver em execução
+            if (totalTimeInSeconds > 0 && timerRunning === 'true') { 
+                startTimer(); 
             }
         }
         if (formVisivel === 'true') {

@@ -1,5 +1,17 @@
 <?php 
+
+    include "conexao.php";
     include "header.php";
+
+    $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+    $stmtSessao = $pdo->prepare($querySessao);
+    $stmtSessao->execute();
+    $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
+
+    if(isset($nomeSessao['nome'])){
+        $nomeSession = $nomeSessao['nome'];
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -62,16 +74,12 @@
 </head>
 <body>
 
-
-
     <div class='container mt-4'>
         <div class='mt-4 text-center p-4 border rounded shadow text-primary ">
-            <h1 class='mt-4' style='font-size: 24px;'>Ranking</h1>
+            <h1 class="mt-4' style='font-size: 24px;'>Ranking Tvg Gazin</h1>
+            <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 300px; font-size: 0.9em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession ?> </h4>
         </div>
     </div>
-
-
-
 
     <div class="container mt-4">
        

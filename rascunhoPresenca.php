@@ -25,15 +25,25 @@ $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
 
 $queryRascunho = "SELECT COUNT(*) FROM rascunho_presenca AS rp
 JOIN participantes AS part ON rp.id_participantes = part.id
-JOIN gerenciamento_sessao AS gs ON part.id = gs.id_participantes
-JOIN sessoes AS s ON gs.id_sessoes = s.id
-JOIN usuarios AS u ON gs.id_usuarios = u.id
+JOIN sessoes AS s ON rp.id_sessao = s.id
+JOIN usuarios AS u ON rp.id_user = u.id
 WHERE s.id = :idSessao AND u.id = :idUser";
 $consultaRascunho = $pdo->prepare($queryRascunho);
 $consultaRascunho ->bindParam(":idSessao", $nomeSessao['id']);
 $consultaRascunho ->bindParam(":idUser", $resultUser['id']);
 $consultaRascunho->execute();
 $numRascunho = $consultaRascunho->fetchColumn();
+
+$queryChamada = "SELECT COUNT(*) FROM presenca AS p
+JOIN participantes AS part ON p.id_participantes = part.id
+JOIN sessoes AS s ON p.id_sessao = s.id
+JOIN usuarios AS u ON p.id_user = u.id
+WHERE s.id = :idSessao AND u.id = :idUser";
+$consultaChamada = $pdo->prepare($queryChamada);
+$consultaChamada ->bindParam(":idSessao", $nomeSessao['id']);
+$consultaChamada ->bindParam(":idUser", $resultUser['id']);
+$consultaChamada->execute();
+$numChamada = $consultaChamada->fetchColumn();
 
 ?>
 
@@ -76,15 +86,30 @@ $numRascunho = $consultaRascunho->fetchColumn();
             }
         ?>
 
-            "<div class='container mt-4'>
+        <div class='container mt-4'>
             <div class='box1 mt-4 text-center p-4 border rounded shadow'>
                 <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Lista de chamada</h3>
                 <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual:<?php echo $nomeSession ?></h4>
-            </div>"
+            </div>
 
         <?php 
+
+        if ($resultUser) {
+            $userId = $resultUser['id'];
+            $queryPart = "SELECT p.nome AS participante FROM participantes AS p
+                JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
+                JOIN usuarios AS u ON gs.id_usuarios = u.id
+                JOIN sessoes AS s ON gs.id_sessoes = s.id
+                WHERE u.id = :userId AND s.situacao = 'Pendente'";
+            $stmtPart = $pdo->prepare($queryPart);
+            $stmtPart->bindParam(":userId", $userId);
+            $stmtPart->execute();
+            $data = $stmtPart->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            echo "<tr><td colspan='3'>Usuário não encontrado.</td></tr>";
+        }
         
-        if($numRascunho == 0){
+        if($numRascunho == 0 && $numChamada == 0 && $data > 0){
             echo "<div class='container-fluid'>
                 <form id='presencaForm' action='adicionarRascunho.php' method='post'>
                     <div class='table-responsive-sm mt-4'>
@@ -98,18 +123,6 @@ $numRascunho = $consultaRascunho->fetchColumn();
                             </thead>
                         <tbody>";
 
-                            if ($resultUser) {
-                                $userId = $resultUser['id'];
-                                $queryPart = "SELECT p.nome AS participante FROM participantes AS p
-                                      JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
-                                      JOIN usuarios AS u ON gs.id_usuarios = u.id
-                                      JOIN sessoes AS s ON gs.id_sessoes = s.id
-                                      WHERE u.id = :userId AND s.situacao = 'Pendente'";
-                                $stmtPart = $pdo->prepare($queryPart);
-                                $stmtPart->bindParam(":userId", $userId);
-                                $stmtPart->execute();
-                                $data = $stmtPart->fetchAll(PDO::FETCH_ASSOC);
-
                                 foreach ($data as $row) {
                                     echo "<tr>";
                                     echo "<td>{$row['participante']}</td>";
@@ -117,17 +130,18 @@ $numRascunho = $consultaRascunho->fetchColumn();
                                     echo "<td><input type='radio' name='presenca[{$row['participante']}]' value='Ausente'></td>";
                                     echo "</tr>";
                                 }
-                            } else {
-                                echo "<tr><td colspan='3'>Usuário não encontrado.</td></tr>";
-                            }
+            
                     echo "</tbody>
                     </table>
                     <input type='submit' class='btn btn-success mt-4' data-bs-toggle='modal' onclick='return validarFormulario()' name='adicionarRascunho' data-bs-target='#exampleModal' value='Gravar Rascunho'>
                 </div>              
             </form>
         </div>";
-
-        }elseif($numRascunho !== 0){          
+        }elseif($data <= 0){
+            echo "<div class='container d-flex align-items-center justify-content-center' style='height: 30vh;'>
+                <p>Não existem participantes na sua equipe, entre em contato com o time de RH.</p>
+            </div>";
+        }elseif($numRascunho !== 0 && $numChamada == 0){          
                 echo "<div class='container-fluid'>
                 <form id='presencaForm' action='editarRascunho.php' method='post'>
                     <div class='table-responsive-sm mt-4'>
@@ -183,6 +197,10 @@ $numRascunho = $consultaRascunho->fetchColumn();
                 </div>              
             </form>
             </div>";
+        }elseif($numRascunho == 0 && $numChamada > 0){
+           echo "<div class='container d-flex align-items-center justify-content-center' style='height: 30vh;'>
+                <p>A lista de chamada já foi finalizada.</p>
+            </div>";
         }
                         
                 if (isset($_SESSION['alertaSucesso'])) {
@@ -198,7 +216,25 @@ $numRascunho = $consultaRascunho->fetchColumn();
                             </script>";
                     unset($_SESSION['alerta']);
                     }
-            ?>                        
+            ?>
+            
+            <script>
+                function confirmarPresenca() {
+
+                    var confirmacao = confirm("Tem certeza de que deseja concluir a presença?");
+
+                    if (confirmacao) {
+
+                        var form = document.getElementById('presencaForm');
+                        
+                        form.submit();
+                    } else {
+
+                        return false;
+                    }
+                }
+            </script>
+
 
         <div id="login-expired-message" style="color: black;"></div>
         <script>

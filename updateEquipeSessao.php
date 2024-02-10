@@ -169,10 +169,10 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
 </head>
 
 <body>
-    <div class="box1 mt-4 text-center">
-        <h3 class="mt-4" style="font-size: 20px;">Gerenciamento Edição</h3>
-    </div>
-    <div class="container-fluid">
+<div class="text-center mt-4"></div>
+    <div class="text-center mt-4"></div>
+    <div class="container-fluid border rounded p-4 shadow  col-md-10">
+    <h2 class="font-weight-bold  text-center">Gerenciamento  de Edição</h2>
         <form action="updateEquipeSessao.php" method="post" id="meuFormulario">
             <div class="form-group">
                 <label for="sessao">Sessão</label>

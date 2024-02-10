@@ -261,30 +261,46 @@ if (!empty($data)) {
                 if (!timerRunning) {
                     timerInterval = setInterval(updateTimer, 1000);
                     timerRunning = true;
+                    localStorage.setItem('timerRunning', 'true');
                 }
             }
 
             function pauseTimer() {
-
                 if (!timerRunning) {
-
                     Swal.fire({
                         title: 'Aviso',
-                        text: 'É necessário iniciar o temporizador antes de pausar.',
+                        text: 'O temporizador já está pausado.',
                         icon: 'info'
                     });
                     return;
                 }
-
                 clearInterval(timerInterval);
                 timerRunning = false;
+                localStorage.setItem('timerRunning', 'false');
+                localStorage.setItem('isPaused', 'true');
             }
 
+            function saveTimerState(totalTimeInSeconds, tempoGasto) {
+                localStorage.setItem('tempoRestante', totalTimeInSeconds);
+                localStorage.setItem('tempoGasto', tempoGasto);
+            }
+
+            function restoreTimerState() {
+                var tempoArmazenado = localStorage.getItem('tempoRestante');
+                var timerRunning = localStorage.getItem('timerRunning'); 
+
+                if (tempoArmazenado) {
+                    totalTimeInSeconds = parseInt(tempoArmazenado);
+                    updateDisplay();
+                    if (totalTimeInSeconds > 0 && timerRunning === 'true') { 
+                        startTimer(); 
+                    }
+                }
+            }
 
             function stopTimer() {
 
                 if (!timerRunning) {
-                    // Se o temporizador não estiver em execução, exibir mensagem
                     Swal.fire({
                         title: 'Aviso',
                         text: 'É necessário iniciar o temporizador antes de finalizar.',
@@ -314,8 +330,8 @@ if (!empty($data)) {
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "GET",
-                            url: "lancarPontos.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva, //isso podia ser em outro arquivo ai vc mata aquele codico la cima joga pra outro arquvo 
-                            dataType: 'json', // Adicione isso para indicar que você espera uma resposta JSON
+                            url: "lancarPontos.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva, 
+                            dataType: 'json', 
                             contentType: 'application/json',
                             success: function(response) {
                                 console.log(response);
@@ -373,6 +389,7 @@ if (!empty($data)) {
                     timerRunning = false;
                 } else {
                     totalTimeInSeconds--;
+                    tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
                     localStorage.setItem('tempoRestante', totalTimeInSeconds);
                     updateDisplay();
                 }
@@ -381,37 +398,28 @@ if (!empty($data)) {
             function updateDisplay() {
                 var minutes = Math.floor(totalTimeInSeconds / 60);
                 var seconds = totalTimeInSeconds % 60;
-
                 var formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                 document.getElementById('timer').innerText = formattedTime;
             }
 
             function showTimeSpentAlert() {
-                var timeSpentInSeconds = initialTotalTimeInSeconds - totalTimeInSeconds;
-                var minutes = Math.floor(timeSpentInSeconds / 60);
-                var seconds = timeSpentInSeconds % 60;
-
+                var minutes = Math.floor(tempoGasto / 60);
+                var seconds = tempoGasto % 60;
                 var formattedTimeSpent = `${minutes} minutos e ${seconds} segundos`;
-
+                Swal.fire({
+                    title: 'Tempo Gasto',
+                    text: 'Você gastou ' + formattedTimeSpent + ' nesta prova.',
+                    icon: 'info'
+                });
             }
 
             window.onbeforeunload = function(event) {
-
                 if (event.target.performance.navigation.type !== 1) {
+                    // Sempre salve o tempo restante
                     localStorage.setItem('tempoRestante', totalTimeInSeconds);
+                
                 }
             };
-
-            document.addEventListener('DOMContentLoaded', function() {
-                var tempoArmazenado = localStorage.getItem('tempoRestante');
-                if (tempoArmazenado) {
-                    totalTimeInSeconds = parseInt(tempoArmazenado);
-                    updateDisplay();
-                    if (totalTimeInSeconds > 0 && !timerRunning) {
-                        startTimer();
-                    }
-                }
-            });
 
         </script>
 

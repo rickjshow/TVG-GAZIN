@@ -14,6 +14,7 @@ require_once "conexao.php";
     <link rel="stylesheet" href="index.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="alertSucess.js"></script>
+    <script src="alert.js"></script>
     <title>Painel TVG</title>
     <style>
         @media (max-width: 768px) {

@@ -26,12 +26,10 @@ WHERE s.situacao = 'Pendente'";
 $consultaSession = $pdo->prepare($querySession);
 $consultaSession->execute();
 
-
 $queryRascunho = "SELECT COUNT(*) FROM rascunho_presenca AS rp
 JOIN participantes AS part ON rp.id_participantes = part.id
-JOIN gerenciamento_sessao AS gs ON part.id = gs.id_participantes
-JOIN sessoes AS s ON gs.id_sessoes = s.id
-JOIN usuarios AS u ON gs.id_usuarios = u.id
+JOIN sessoes AS s ON rp.id_sessao = s.id
+JOIN usuarios AS u ON rp.id_user = u.id
 WHERE s.id = :idSessao AND u.id = :idUser";
 $consultaRascunho = $pdo->prepare($queryRascunho);
 $consultaRascunho ->bindParam(":idSessao", $nomeSessao['id']);
@@ -39,17 +37,16 @@ $consultaRascunho ->bindParam(":idUser", $resultUser['id']);
 $consultaRascunho->execute();
 $numRascunho = $consultaRascunho->fetchColumn();
 
-$queryPresenca = "SELECT COUNT(*) FROM presenca AS p
+$queryChamada = "SELECT COUNT(*) FROM presenca AS p
 JOIN participantes AS part ON p.id_participantes = part.id
-JOIN gerenciamento_sessao AS gs ON part.id = gs.id_participantes
-JOIN sessoes AS s ON gs.id_sessoes = s.id
-JOIN usuarios AS u ON gs.id_usuarios = u.id
+JOIN sessoes AS s ON p.id_sessao = s.id
+JOIN usuarios AS u ON p.id_user = u.id
 WHERE s.id = :idSessao AND u.id = :idUser";
-$consultaPresenca = $pdo->prepare($queryPresenca);
-$consultaPresenca ->bindParam(":idSessao", $nomeSessao['id']);
-$consultaPresenca ->bindParam(":idUser", $resultUser['id']);
-$consultaPresenca->execute();
-$numPresenca = $consultaPresenca->fetchColumn();
+$consultaChamada = $pdo->prepare($queryChamada);
+$consultaChamada ->bindParam(":idSessao", $nomeSessao['id']);
+$consultaChamada ->bindParam(":idUser", $resultUser['id']);
+$consultaChamada->execute();
+$numChamada = $consultaChamada->fetchColumn();
 
 if(isset($nomeSessao['id'])){
     $idSessao = $nomeSessao['id']; 
@@ -63,15 +60,16 @@ if(isset($nomeSessao['nome'])){
     $nomeSession = null;
 }
 
-echo "<div class='container mt-4'>
-<div class='box1 mt-4 text-center p-4 border rounded shadow'>
-    <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Vivências Pendentes</h3>
-    <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual: $nomeSession </h4>
-</div>";
+    echo "
+        <div class='container mt-4'>
+            <div class='box1 mt-4 text-center p-4 border rounded shadow'>
+            <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Vivências Pendentes</h3>
+            <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual: $nomeSession </h4>
+        </div>";
 
 
 if ($resultUser['permission'] == 'limited') {
-    if($numRascunho > 0 && $resultUser['permission'] == 'limited' || $numPresenca > 0 && $resultUser['permission'] == 'limited'){
+    if($numRascunho > 0 || $numChamada > 0){
         
             echo "<!DOCTYPE html>
             <html lang='en'>     
@@ -109,7 +107,7 @@ if ($resultUser['permission'] == 'limited') {
         
                         foreach ($data as $row) {
                             echo "<div class='row'>
-                                  <div class='col-md-6 mx-auto  mt-4 '>
+                                  <div class='col-md-6 mx-auto mt-4 '>
                                       <div class='border rounded shadow'>
                                           <a href='lancarPontos.php?id={$row['prova_id']}' style='text-decoration: none; color: black;'>
                                               <div class='card mt-4 border-0'> 
@@ -134,11 +132,12 @@ if ($resultUser['permission'] == 'limited') {
             </html>";
         }
     }else{
+        session_start();
         $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Realize a presença dos participantes antes!');
         header("location: home.php");
         exit();
-}
-}else{
+    }
+}elseif($resultUser['permission'] == 'admin'){
 
 
     echo"<!DOCTYPE html>
@@ -149,14 +148,6 @@ if ($resultUser['permission'] == 'limited') {
         <title>Document</title>
     </head>
         <body>";
-
-        
-        if(isset($nomeSessao['nome'])){
-            $nomeSession = $nomeSessao['nome'];
-        }else{
-            $nomeSession = null;
-        }
-
 
         if($consultaSession->rowCount() < 1){
         echo "    

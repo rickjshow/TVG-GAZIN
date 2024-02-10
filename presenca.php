@@ -4,6 +4,15 @@ require_once "conexao.php";
 require_once "adicionarPresenca.php";
 include "temporizador.php";
 
+$querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+$stmtSessao = $pdo->prepare($querySessao);
+$stmtSessao->execute();
+$nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
+
+if(isset($nomeSessao['nome'])){
+    $nomeSession = $nomeSessao['nome'];
+}
+
 ?>
 
  <!DOCTYPE html>
@@ -14,12 +23,13 @@ include "temporizador.php";
         <title>Lista de ausentes</title>
     </head>
     <body>
-    <div class='box1 mt-4 text-center'>
-        <h1 class='mt-4' style='font-size: 20px;'>Lista de participantes ausentes</h1>
-        <h4 class='mt-4'></h4>
-    </div>
-        <div class='container-fluid'>
-            <div class='table-responsive-sm mt-4' style='font-size: 12px;'>
+    <div class='container mt-4'>
+            <div class='box1 mt-4 text-center p-4 border rounded shadow'>
+                <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Lista de participantes Ausentes</h3>
+                <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual:<?php echo $nomeSession ?></h4>
+            </div>
+        <div class='container-fluid mt-4'>
+            <div class='table-responsive mt-4' style='font-size: 12px;'>
                 <table class='table table-sm table-hover table-striped mt-4'>
                     <thead>
                         <tr>
@@ -28,18 +38,10 @@ include "temporizador.php";
                             <th>Equipe</th>
                         </tr>
                     </thead>
-                    <tbody>";
+                    <tbody>
 
                     <?php
-
-                    $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
-                    $stmtSessao = $pdo->prepare($querySessao);
-                    $stmtSessao->execute();
-                    $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
-                    
-                    if ($nomeSessao) {
-                        echo "<h4 class='mt-1 text-center mx-auto' style='background-color: #163387; color: white; max-width: 400px; font-size: 1.3em; padding:5px; border:solid #000;'> Sessão Atual: {$nomeSessao['nome']}</h4>";
-                    
+                                       
                         $query = "SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador FROM presenca AS pre
                             JOIN status AS s ON pre.id_status = s.id
                             JOIN participantes AS p ON pre.id_participantes = p.id
@@ -64,9 +66,6 @@ include "temporizador.php";
                         } else {
                             echo "<tr><td colspan='3' class='text-center align-middle'>Não há participantes ausentes nesta sessão.</td></tr>";
                         }
-                    } else {
-                        echo "<tr><td colspan='3' class='text-center'>Não existe uma sessão pendente no memento!</td></tr>";
-                    }
 
                     ?>
 
