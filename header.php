@@ -174,6 +174,7 @@ require_once "permissao.php";
                                         <a href="novaEdicao.php" class="dashboard-nav-item"><i class="fa-solid fa-font-awesome"></i>TVG</a>
                                         <a href="acesso.php" class="dashboard-nav-item"><i class="fa-solid fa-user-plus"></i>Facilitadores</a>
                                         <a href="ranking.php" class="dashboard-nav-item"><i class="fa-solid fa-trophy"></i>Ranking</a>
+                                        <a href="presenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Participantes Ausentes</a>
                                         <div class='dashboard-nav-dropdown'>
                                             <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i class="fas fa-file-upload"></i>Relatorios</a>
                                             <div class='dashboard-nav-dropdown-menu'>
@@ -184,7 +185,9 @@ require_once "permissao.php";
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <a href="presenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Lista de chamada</a>
+                                <?php if($permissao === "limited") : ?>
+                                    <a href="rascunhoPresenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Lista de chamada</a>
+                                <?php endif; ?>
                                 <a href="vivenciasPendentes.php" class="dashboard-nav-item"><i class="fa fa-id-badge" aria-hidden="true"></i>Vivências Pendentes</a>
                                 <div class="nav-item-divider"></div>
                                 <a href="logout.php" class="dashboard-nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>

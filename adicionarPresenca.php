@@ -19,8 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
 
     $username = $_SESSION['username'];
 
-    $querySessao = "SELECT s.id AS id_sessao, s.situacao
-                    FROM sessoes AS s
+    $querySessao = "SELECT s.id AS id_sessao, s.situacao FROM sessoes AS s
                     JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
                     JOIN usuarios AS u ON gs.id_usuarios = u.id
                     WHERE u.nome = :username
