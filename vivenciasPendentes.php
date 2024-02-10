@@ -103,23 +103,31 @@ if ($resultUser['permission'] == 'limited') {
                         $consulta->bindParam(":userId", $userId);
                         $consulta->bindParam(":id_sessao", $idSessao);
                         $consulta->execute();
-                        $data = $consulta->fetchAll(PDO::FETCH_ASSOC);     
-        
-                        foreach ($data as $row) {
-                            echo "<div class='row'>
-                                  <div class='col-md-6 mx-auto mt-4 '>
-                                      <div class='border rounded shadow'>
-                                          <a href='lancarPontos.php?id={$row['prova_id']}' style='text-decoration: none; color: black;'>
-                                              <div class='card mt-4 border-0'> 
-                                                  <div class='card-body text-center'>
-                                                      <h5 class='card-title'>{$row['equipe_nome']}</h5>
-                                                      <p class='card-text'>{$row['prova_nome']}</p>
-                                                  </div>
-                                              </div>
-                                          </a>
-                                      </div>
-                                  </div>
-                              </div>";
+
+                        if($consulta->rowCount() > 0){
+
+                            $data = $consulta->fetchAll(PDO::FETCH_ASSOC); 
+
+                                foreach ($data as $row) {
+                                    echo "<div class='row'>
+                                        <div class='col-md-6 mx-auto mt-4 '>
+                                            <div class='border rounded shadow'>
+                                                <a href='lancarPontos.php?id={$row['prova_id']}' style='text-decoration: none; color: black;'>
+                                                    <div class='card mt-4 border-0'> 
+                                                        <div class='card-body text-center'>
+                                                            <h5 class='card-title'>{$row['equipe_nome']}</h5>
+                                                            <p class='card-text'>{$row['prova_nome']}</p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>";
+                                }
+                            }else{
+                            echo "<div class='container d-flex align-items-center justify-content-center' style='height: 30vh;'>
+                                <p>Não existem provas pendentes.</p>
+                            </div>";
                         }
               
                         echo "<script>
