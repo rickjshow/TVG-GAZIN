@@ -169,10 +169,15 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
 </head>
 
 <body>
-<div class="text-center mt-4"></div>
-    <div class="text-center mt-4"></div>
+
+
+<div class="container mt-4">
+        <div class="box1 mt-4 text-center p-4 border rounded shadow">
+            <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Gerenciamento Edição</h3>
+        </div>
+</div>
+<div class="container mt-4">
     <div class="container-fluid border rounded p-4 shadow  col-md-10">
-    <h2 class="font-weight-bold  text-center">Gerenciamento  de Edição</h2>
         <form action="updateEquipeSessao.php" method="post" id="meuFormulario">
             <div class="form-group">
                 <label for="sessao">Sessão</label>
@@ -258,7 +263,7 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
 
 
             <button type="button" class="btn btn-primary" style="font-size: 13px;" onclick="validarFormulario()">Atualizar</button>
-
+    </div>
             <script>
                 function validarFormulario() {
                     var sessao = document.getElementById('sessao').value;
