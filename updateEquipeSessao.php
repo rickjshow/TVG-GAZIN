@@ -140,7 +140,7 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
         $id2 = $id2_array[$key];
 
 
-        $sql_provas = "INSERT INTO equipes_provas (id_sessao, id_equipes, id_provas, situacao, andamento)  VALUES(:id_sessao, :id_equipes, :id_provas, 'Pendente', 'Andamento')";
+        $sql_provas = "INSERT INTO equipes_provas (id_sessao, id_equipes, id_provas, situacao, andamento)  VALUES(:id_sessao, :id_equipes, :id_provas, 'Pendente', 'Aguardando')";
         $consulta_provas = $pdo->prepare($sql_provas);
         $consulta_provas->bindParam(':id_sessao', $sessao_id);
         $consulta_provas->bindParam(':id_equipes', $equipe_id);
