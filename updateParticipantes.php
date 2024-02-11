@@ -6,6 +6,15 @@ include "temporizador.php";
 
 verificarPermissao($permission);
 
+$querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+$ConsultaSession = $pdo->prepare($querySession);
+$ConsultaSession->execute();
+$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);    
+
+if(isset($idSessao['id'])){
+    $idSession = $idSessao['id'];
+}
+
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
@@ -44,23 +53,53 @@ if (isset($_POST['update_participantes'])) {
     $consulta_departamento->execute();
     $resultado_departamento = $consulta_departamento->fetch(PDO::FETCH_ASSOC);
 
-    $sqlParticipante = "
-    UPDATE participantes
-    SET
-        nome = :nome,
-        id_departamentos = :id_departamento
-    WHERE id = :id 
-";
+    $queryPart = "SELECT COUNT(*) FROM gerenciamento_sessao WHERE id_sessoes = :id_sessoes AND id_participantes = :id_participantes";
+    $consultaPart = $pdo->prepare($queryPart);
+    $consultaPart->bindParam(':id_sessoes', $idSession);
+    $consultaPart->bindParam(':id_participantes', $id);
+    $consultaPart->execute();
 
-    $consulta = $pdo->prepare($sqlParticipante);
-    $consulta->bindValue(':nome', $nome);
-    $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
-    $consulta->bindValue(':id', $id);
-    $consulta->execute();
+    $resultPart =  $consultaPart->fetchColumn();
 
-    header('Location: participantes.php');
-    exit;
+    if($resultPart == 0){
+        $queryParticipante = "SELECT nome FROM participantes WHERE nome = :nome";
+        $consultaParticipante = $pdo->prepare($queryParticipante);
+        $consultaParticipante->bindParam(':nome', $nome);
+        $consultaParticipante->execute();
+
+        if($consultaParticipante->rowCount() > 0){
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Nome do participante já existente!');
+            header("location: participantes.php");
+            exit();
+        }else{
+            $sqlParticipante = "UPDATE participantes SET nome = :nome, id_departamentos = :id_departamento WHERE id = :id";
+            $consulta = $pdo->prepare($sqlParticipante);
+            $consulta->bindValue(':nome', $nome);
+            $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
+            $consulta->bindValue(':id', $id);
+            $consulta->execute();
+    
+            if($consulta){
+                session_start();
+                $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Participante alterado com sucesso!');
+                header("location: participantes.php");
+                exit();
+            }else{
+                session_start();
+                $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Erro ao atualizar participante!');
+                header("location: participantes.php");
+                exit();
+            }
+        }     
+    }else{
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Não é possível alterar participantes que estão participando do TVG!');
+        header("location: participantes.php");
+        exit();
+    }   
 }
+
 ?>
 
 
@@ -129,7 +168,6 @@ if (isset($_POST['update_participantes'])) {
         ?>
 
  <script>
-
 
     $(document).ready(function() {
         $("#btnExcluirPart").prop("disabled", false);

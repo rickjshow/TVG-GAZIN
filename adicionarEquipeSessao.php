@@ -88,11 +88,6 @@ if (isset($_POST["confirmacao"]) || isset($_POST["sessao"]) &&  isset($_POST["eq
         $consulta->bindParam(':id_equipe', $equipe_id);
         $consulta->bindParam(':id_usuarios', $facilitador_id);
 
-        $updateSituacao = "UPDATE usuarios SET situacao = 'Ativo' WHERE id = :id";
-        $consulta2 = $pdo->prepare($updateSituacao);
-        $consulta2->bindParam(':id', $facilitador_id);
-        $consulta2->execute();
-
         foreach ($participantes_ids as $participante_id) {
             $consulta->bindParam(':id_participantes', $participante_id);
             $consulta->execute();

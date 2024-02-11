@@ -11,12 +11,10 @@ if (isset($_POST['submit'])) {
         $fileExtension = pathinfo($_FILES['planilha']['name'], PATHINFO_EXTENSION);
 
         if (!in_array(strtolower($fileExtension), $allowedFileTypes)) {
-            session_start();
-            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Tipo de arquivo não suportado. Por favor, anexe uma planilha no formato .csv, .xlsx, .xls ou .ods.');
-            header("location: importar_participantes.php");
+            exibirAlerta('error', 'Tipo de arquivo não suportado. Por favor, anexe uma planilha no formato .csv, .xlsx, .xls ou .ods.');
             exit();
         }
-        
+
         $caminhoTemporario = $_FILES['planilha']['tmp_name'];
 
         $spreadsheet = IOFactory::load($caminhoTemporario);
@@ -57,7 +55,7 @@ if (isset($_POST['submit'])) {
             $result = $stmtInsertParticipante->execute(['nome' => $nome, 'id_departamento' => $idDepartamento]);
 
             if (!$result) {
-                echo "Erro na inserção para $nome";
+                exibirAlerta('error', "Erro na inserção para $nome");
             }
         }
 
@@ -66,21 +64,24 @@ if (isset($_POST['submit'])) {
         $stmtCheckNome = null;
         $pdo = null;
 
-        session_start();
-
         if (!empty($duplicateNames)) {
-            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Falha ao cadastrar participantes. Alguns participantes já existem no banco.');
+            $message = 'Os seguintes participantes já existem no banco de dados: <br>';
+            foreach ($duplicateNames as $name) {
+                $message .= "<br>- $name <br>";
+            }
+            exibirAlerta('warning', $message);
         } else {
-            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Cadastrado com sucesso!');
+            exibirAlerta('success', 'Cadastrado com sucesso!');
         }
-
-        header("location: importar_participantes.php");
-        exit();
     } else {
-        session_start();
-        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Por favor, anexe alguma planilha');
-        header("location: importar_participantes.php");
-        exit();
+        exibirAlerta('error', 'Por favor, anexe alguma planilha');
     }
-}   
+}
+
+function exibirAlerta($tipo, $mensagem) {
+    session_start();
+    $_SESSION['alerta'] = array('tipo' => $tipo, 'mensagem' => $mensagem);
+    header("location: importar_participantes.php");
+    exit();
+}
 ?>

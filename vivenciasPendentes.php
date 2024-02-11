@@ -57,13 +57,13 @@ if(isset($nomeSessao['id'])){
 if(isset($nomeSessao['nome'])){
     $nomeSession = $nomeSessao['nome'];
 }else{
-    $nomeSession = null;
+    $nomeSession = 'Não existem sessöes pendentes no momento';
 }
 
     echo "
         <div class='container mt-4'>
             <div class='box1 mt-4 text-center p-4 border rounded shadow'>
-            <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Vivências Pendentes</h3>
+            <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 18px;'>Vivências Pendentes</h3>
             <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual: $nomeSession </h4>
         </div>";
 

@@ -10,6 +10,8 @@
 
     if(isset($nomeSessao['nome'])){
         $nomeSession = $nomeSessao['nome'];
+    }else{
+        $nomeSession = "Não existem sessões pendentes no momento";
     }
 
 ?>
@@ -76,8 +78,8 @@
 
     <div class='container mt-4'>
         <div class='mt-4 text-center p-4 border rounded shadow text-primary ">
-            <h1 class="mt-4' style='font-size: 24px;'>Ranking Tvg Gazin</h1>
-            <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 300px; font-size: 0.9em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession ?> </h4>
+            <h1 class="mt-4 font-weight-bold' style='font-size: px;'>Ranking Tvg Gazin</h1>
+            <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 600px; font-size: 0.9em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession ?> </h4>
         </div>
     </div>
 

@@ -25,7 +25,7 @@ verificarPermissao($permission);
 
     <div class="container mt-4">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
-            <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Cadastro de Vivências TVG</h3>
+            <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 18px;">Cadastro de Vivências TVG</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Vivências</button>
         </div>
     </div>

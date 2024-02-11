@@ -11,6 +11,8 @@ $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
 
 if(isset($nomeSessao['nome'])){
     $nomeSession = $nomeSessao['nome'];
+}else{
+    $nomeSession = "Não existem sessões pendentes no momento";
 }
 
 ?>
@@ -25,8 +27,8 @@ if(isset($nomeSessao['nome'])){
     <body>
     <div class='container mt-4'>
             <div class='box1 mt-4 text-center p-4 border rounded shadow'>
-                <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 15px;'>Lista de participantes Ausentes</h3>
-                <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual:<?php echo $nomeSession ?></h4>
+                <h3 class='mt-4 font-weight-bold display-4 text-primary'  style='font-size: 18px;'>Lista de participantes Ausentes</h3>
+                <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession ?></h4>
             </div>
         <div class='container-fluid mt-4'>
             <div class='table-responsive mt-4' style='font-size: 12px;'>

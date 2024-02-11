@@ -7,6 +7,37 @@ include "temporizador.php";
 
 verificarPermissao($permission);
 
+if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
+
+    $idGS = $_POST['idGS'];
+
+    $querySessao = "SELECT u.id FROM usuarios AS u
+    JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+    JOIN sessoes AS s ON gs.id_sessoes = s.id
+    WHERE s.id = :id_sessao";
+    $consultaSessao = $pdo->prepare($querySessao);
+    $consultaSessao->bindParam(':id_sessao', $idGS);
+    $consultaSessao->execute();
+    $resultado = $consultaSessao->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($resultado as $row){
+        $queryUpdateUser = "UPDATE usuarios SET situacao = 'Ativo' WHERE id = :id";
+        $updateUser = $pdo->prepare( $queryUpdateUser);
+        $updateUser->bindParam(':id', $row['id']);
+        $updateUser->execute();
+
+        if($updateUser){
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'O TVG foi iniciado, boa sorte a todos!');
+            header("location: home.php");
+            exit();
+        }else{
+            header("location: novaEdicao.php");
+            exit(); 
+        }
+    }   
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -34,8 +65,6 @@ verificarPermissao($permission);
 
         if (isset($_GET['id'])) {
             $idGS = $_GET['id'];
-        } else {
-            echo "<script>alert('ID não encontrado!');</script>";
         }
 
         $queryGsession = "SELECT e.nome AS equipe_nome, e.id AS id_equipe FROM gerenciamento_sessao AS gs
@@ -67,22 +96,46 @@ verificarPermissao($permission);
                     </div>";
         }
 
-
         ?>
     </div>
     
-        <div class="container-fluid text-center mt-1 p-4">
-            <button id="btnExcluirSessao" class="btn btn-danger mt-4" disabled style="font-size: 15px;">Excluir Sessão</button>
+
+    <div class="container-fluid text-center mt-1 p-4">
+        <div class="row mx-auto">
+            <div class="col">
+                <?php  
+
+                    $querySessao = "SELECT COUNT(*) FROM usuarios AS u
+                    JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+                    JOIN sessoes AS s ON gs.id_sessoes = s.id
+                    WHERE s.id = :id_sessao AND u.situacao = 'Ativo' AND u.permission = 'limited'";
+                    $consultaSessao = $pdo->prepare($querySessao);
+                    $consultaSessao->bindParam(':id_sessao', $idGS);
+                    $consultaSessao->execute();
+
+                    $resultado = $consultaSessao->fetch(PDO::FETCH_ASSOC);
+
+                    if($resultado['COUNT(*)'] == 0){
+                        echo "<form action='updateGSessao.php' method='post'>
+                        <input type='hidden' name='idGS' value='$idGS'>
+                            <div class='container-fluid text-center mt-1 p-4'>
+                                <button type='submit' class='btn btn-success mt-4' name='Ativar' style='font-size: 15px;'>Iniciar TVG</button>
+                            </div>
+                    </form>";
+                    }else{
+                        echo '<p>TVG já foi iniciado!</p>';
+                    }             
+                ?>
+                <button id="btnExcluirSessao" class="btn btn-danger mt-4" disabled style="font-size: 15px;">Excluir Sessão</button>
+            </div>
         </div>
-
-
+    </div>
 
         <div class="container-fluid text-center mt-1 p-4">
             <?php 
+
                 if (isset($_GET['id'])) {
                     $idGS = $_GET['id'];
-                } else {
-                    echo "<script>alert('ID não encontrado!');</script>";
                 }
 
                 $query = "SELECT COUNT(*) AS total_provas_nao_finalizadas

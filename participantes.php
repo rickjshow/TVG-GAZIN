@@ -26,7 +26,7 @@ verificarPermissao($permission);
 
 <div class="container mt-4">
     <div class="box1 mt-4 text-center p-4 border rounded shadow">
-        <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Cadastro de Participantes</h3>
+        <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 18px;">Cadastro de Participantes</h3>
         <button class="btn btn-primary mt-4" data-toggle="modal" data-target="#exampleModal">Adicionar Participantes</button>
     </div>
 </div>
@@ -109,7 +109,6 @@ verificarPermissao($permission);
                                 unset($_SESSION['alerta']);
                             }
                          ?>
-
                     </div>
                 </div>
             </div>

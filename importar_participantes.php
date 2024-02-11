@@ -28,6 +28,30 @@ verificarPermissao($permission);
                 </div>
             </div>
         </div>
+
+            <?php
+
+                $dataNascimento = '1965-12-13';
+
+                $dataAtual = date('Y-m-d');
+ 
+                $dataNascimentoObj = new DateTime($dataNascimento);
+                $dataAtualObj = new DateTime($dataAtual);
+
+                if ($dataAtualObj >= new DateTime(date('Y') . '-12-13')) {
+
+                    $dataNascimentoObj->modify('+1 year');
+
+                }
+
+                $idade = $dataNascimentoObj->diff($dataAtualObj)->y;
+            
+            echo "<div class='row justify-content-center mt-4 font-weight-bold'>";
+                echo "Parabéns Gazin pelos seus " . $idade . " anos de idade!";
+            echo "</div>";
+
+            ?>
+
     </div>
 
     <!-- Modal -->
@@ -48,6 +72,7 @@ verificarPermissao($permission);
                         </div>
                         <button type="submit" id="arquivo" class="btn btn-primary" name="submit">Importar</button>
                     </form>
+
                     <?php
                         if (isset($_SESSION['alerta'])) {
                                 echo "<script>";

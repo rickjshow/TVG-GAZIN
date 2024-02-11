@@ -2,6 +2,15 @@
 include("header.php");
 require_once ("conexao.php");
 
+$querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+$ConsultaSession = $pdo->prepare($querySession);
+$ConsultaSession->execute();
+$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);    
+
+if(isset($idSessao['id'])){
+    $idSession = $idSessao['id'];
+}
+
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
@@ -49,29 +58,65 @@ if (isset($_POST['update_usuario'])) {
     $consulta_tipo->execute();
     $resultado_tipo = $consulta_tipo->fetch(PDO::FETCH_ASSOC);
 
-    $sqlUser = "
-    UPDATE usuarios
-    SET
-        nome = :nome,
-        senha = :senha,
-        permission = 'limited',
-        situacao = :situacao,
-        id_departamentos = :id_departamento,
-        id_tipo = :id_tipo
-    WHERE id = :id 
-    ";
+    $queryUser = "SELECT COUNT(*) FROM gerenciamento_sessao WHERE id_usuarios = :id_usuarios AND id_sessoes = :id_sessoes";
+    $consultaUser = $pdo->prepare($queryUser);
+    $consultaUser->bindParam(':id_usuarios', $id);
+    $consultaUser->bindParam(':id_sessoes', $idSession);
+    $consultaUser->execute();
 
-    $consulta = $pdo->prepare($sqlUser);
-    $consulta->bindValue(':nome', $nome);
-    $consulta->bindValue(':senha', $senha);
-    $consulta->bindValue(':situacao', $situacao);
-    $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
-    $consulta->bindParam(':id_tipo', $resultado_tipo["id"]);
-    $consulta->bindValue(':id', $id);
-    $consulta->execute();
+    $resultUser = $consultaUser->fetchColumn();
 
-    header('Location: ./acesso.php');
-    exit;
+    if($resultUser == 0){
+        $queryNome = "SELECT nome FROM usuarios WHERE nome = :nome";
+        $consultaNome = $pdo->prepare($queryNome);
+        $consultaNome->bindParam(':nome', $nome);
+        $consultaNome->execute();
+
+        if($consultaNome->rowCount() > 0){
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Nome de usuário já existente');
+            header("location: acesso.php");
+            exit();
+        }else{
+            $sqlUser = "
+            UPDATE usuarios
+            SET
+                nome = :nome,
+                senha = :senha,
+                permission = 'limited',
+                situacao = :situacao,
+                id_departamentos = :id_departamento,
+                id_tipo = :id_tipo
+            WHERE id = :id 
+            ";
+        
+            $consulta = $pdo->prepare($sqlUser);
+            $consulta->bindValue(':nome', $nome);
+            $consulta->bindValue(':senha', $senha);
+            $consulta->bindValue(':situacao', $situacao);
+            $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
+            $consulta->bindParam(':id_tipo', $resultado_tipo["id"]);
+            $consulta->bindValue(':id', $id);
+            $consulta->execute();
+        
+            if($consulta){
+                session_start();
+                $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Usuário Alterado com sucesso!');
+                header("location: acesso.php");
+                exit();
+            }else{
+                session_start();
+                $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Erro ao alterar usuário!');
+                header("location: acesso.php");
+                exit();
+            }
+        }
+    }else{
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Não é possível alterar um usuário que está participando do TVG!');
+        header("location: acesso.php");
+        exit();
+    } 
 }
 
 ?>

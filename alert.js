@@ -4,6 +4,6 @@ function alerta(tipo, mensagem) {
         icon: tipo,
         title: mensagem,
         showConfirmButton: false,
-        timer: 2000
+        timer: 3000
     });
 }

@@ -56,7 +56,7 @@ if (isset($_POST["add_user"])) {
                 } else {
                     $departamento_id = $consultaDepartamento->fetchColumn();
 
-                    $sql = "INSERT INTO usuarios(nome, senha, permission, situacao, id_departamentos, id_tipo, fotos) VALUES(:nome, :senha, :situacao, 'Ativo', :id_departamentos, :id_tipo, :fotos)";
+                    $sql = "INSERT INTO usuarios(nome, senha, permission, situacao, id_departamentos, id_tipo, fotos) VALUES(:nome, :senha, :situacao, 'Inativo', :id_departamentos, :id_tipo, :fotos)";
 
                     $caminho_imagem_predefinida = 'semfoto.jpg';
 

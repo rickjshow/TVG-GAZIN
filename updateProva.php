@@ -7,6 +7,15 @@ require_once "header.php";
 
 verificarPermissao($permission);
 
+$querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+$ConsultaSession = $pdo->prepare($querySession);
+$ConsultaSession->execute();
+$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);    
+
+if(isset($idSessao['id'])){
+    $idSession = $idSessao['id'];
+}
+
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
@@ -47,33 +56,62 @@ if (isset($_POST['update_prova'])) {
     $consultaTipo->execute();
     $resultado_tipo =  $consultaTipo->fetch(PDO::FETCH_ASSOC);
 
-    $sqlprova = "
-    UPDATE provas
-    SET
-        nome = :nome,
-        descricao = :descricao,
-        pergunta = :pergunta,
-        pontuacao_maxima = :pontos,
-        tipo_provas_id = :tipo_prova
-    WHERE id = :id 
-    ";
+    $queryProva = "SELECT COUNT(*) FROM equipes_provas WHERE id_sessao = :id_sessao AND id_provas = :id_provas";
+    $consultaProva = $pdo->prepare( $queryProva);
+    $consultaProva->bindValue(':id_sessao', $idSession);
+    $consultaProva->bindValue(':id_provas', $id);
+    $consultaProva->execute();
 
-    $consulta = $pdo->prepare($sqlprova);
-    $consulta->bindValue(':nome', $nome);
-    $consulta->bindValue(':descricao', $descricao);
-    $consulta->bindValue(':pergunta', $pergunta);
-    $consulta->bindValue(':pontos', $pontos);
-    $consulta->bindValue(':tipo_prova',  $resultado_tipo['id'], PDO::PARAM_INT);
-    $consulta->bindValue(':id', $id, PDO::PARAM_INT);
+    $resultProvas = $consultaProva->fetchColumn();
 
-    if ($consulta->execute()) {
-        session_start();
-        $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Atualizado sucesso!');
-        header("location: cadastro_provas.php");
-        exit();
+    if($resultProvas == 0){
+        $queryNome = "SELECT nome FROM provas WHERE nome = :nome";
+        $consultaNome = $pdo->prepare($queryNome);
+        $consultaNome->bindValue(':nome', $nome);
+        $consultaNome->execute();
+
+        if($consultaNome->rowCount() > 0){
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Nome de prova já existente!');
+            header("location: cadastro_provas.php");
+            exit();
+        }else{
+            $sqlprova = "
+            UPDATE provas
+            SET
+                nome = :nome,
+                descricao = :descricao,
+                pergunta = :pergunta,
+                pontuacao_maxima = :pontos,
+                tipo_provas_id = :tipo_prova
+            WHERE id = :id 
+            ";
+        
+            $consulta = $pdo->prepare($sqlprova);
+            $consulta->bindValue(':nome', $nome);
+            $consulta->bindValue(':descricao', $descricao);
+            $consulta->bindValue(':pergunta', $pergunta);
+            $consulta->bindValue(':pontos', $pontos);
+            $consulta->bindValue(':tipo_prova',  $resultado_tipo['id'], PDO::PARAM_INT);
+            $consulta->bindValue(':id', $id, PDO::PARAM_INT);
+            $consulta->execute();
+    
+            if ($consulta) {
+                session_start();
+                $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Prova atualizada com sucesso!');
+                header("location: cadastro_provas.php");
+                exit();
+            } else{
+                session_start();
+                $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Erro ao atualizar a Prova!');
+                header("location: cadastro_provas.php");
+                exit();
+            }
+        }
+
     } else {
         session_start();
-        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Falha ao atualizar prova');
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Não é possível atualizar provas que estejam vinculadas a um TVG pendente!');
         header("location: cadastro_provas.php");
         exit();
     }

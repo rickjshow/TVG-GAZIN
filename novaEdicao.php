@@ -37,7 +37,7 @@ $consultaVerifica->execute();
 
     <div class="container mt-4">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
-            <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 20px;">Edição TVG</h3>
+            <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Edição TVG</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Edição</button>
         </div>
     </div>
@@ -107,8 +107,6 @@ $consultaVerifica->execute();
             </table>
         </div>
 
-
-
         <?php
 
             if($consultaVerifica->rowCount() < 1) {
@@ -122,8 +120,6 @@ $consultaVerifica->execute();
             }
 
         ?>
-
-
 
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
