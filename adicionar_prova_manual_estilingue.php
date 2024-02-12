@@ -2,6 +2,7 @@
 
 include "conexao.php";
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['iniciar']) && isset($_GET['idProva'])) {
         echo json_encode($_GET['iniciar']);
@@ -159,7 +160,7 @@ if (isset($_GET['id'])) {
     $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
 }
-   
+
 ?>
 
 <!DOCTYPE html>
@@ -182,53 +183,32 @@ if (isset($_GET['id'])) {
     </style>
 </head>
 
-<script>
-    $(document).ready(function() {
-        <?php if (isset($id)): ?>
-            var id = <?php echo $id; ?>;
-            $.ajax({
-                type: "post",
-                url: "atualizarFormularioProva",
-                data: { id: id }, 
-                dataType: 'json',
-                success: function(response) {
-                    console.log(response);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Erro na requisição AJAX:', error);
-                }
-            });
-        <?php endif; ?>
-    });
-</script>
-
-
 <body>
 
     <div class='container-fluid mt-4'>
         <?php
-        foreach ($data as $row) {
-            echo "
-            <div class='accordion accordion-flush' id='accordionFlushExample'>
-                <div class='card mt-4'>
-                    <div class='accordion-item card-body text-center'>
-                        <div class='accordion-header'>
-                            <div class='accordion-button collapsed' data-bs-toggle='collapse' data-bs-target='#flush-collapseOne' aria-expanded='false' aria-controls='flush-collapseOne'>
-                                {$row['nome']}
+            foreach ($data as $row) {
+                echo "
+                <div class='accordion accordion-flush' id='accordionFlushExample'>
+                    <div class='card mt-4'>
+                        <div class='accordion-item card-body text-center'>
+                            <div class='accordion-header'>
+                                <div class='accordion-button collapsed' data-bs-toggle='collapse' data-bs-target='#flush-collapseOne' aria-expanded='false' aria-controls='flush-collapseOne'>
+                                    {$row['nome']}
+                                </div>
                             </div>
-                        </div>
-                        <hr class='my-3'> <!-- Adiciona o divisor -->
-                        <div id='flush-collapseOne' class='accordion-collapse collapse' data-bs-parent='#accordionFlushExample'>
-                            <div class='accordion-body text-left'>
-                                <p>{$row['descricao']}</p>
-                                <hr class='my-3'> <!-- Adiciona o divisor -->
-                                <p>{$row['pergunta']}</p>
+                            <hr class='my-3'> <!-- Adiciona o divisor -->
+                            <div id='flush-collapseOne' class='accordion-collapse collapse' data-bs-parent='#accordionFlushExample'>
+                                <div class='accordion-body text-left'>
+                                    <p>{$row['descricao']}</p>
+                                    <hr class='my-3'> <!-- Adiciona o divisor -->
+                                    <p>{$row['pergunta']}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>";
-        }
+                </div>";
+            }
         ?>
 
         <div class="row mt-4">
@@ -241,7 +221,7 @@ if (isset($_GET['id'])) {
                         <h1 id="timer">40:00</h1>
                     </div>
                     <div class="card-footer">
-                            <button id="startButton" class="btn btn-primary" onclick="startTimer()">Iniciar</button>
+                    <button id="startButton" class="btn btn-primary" onclick="startTimer()">Iniciar</button>
                             <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
                             <button class="btn btn-danger" onclick="stopTimer()">Finalizar</button>
                     </div>
@@ -249,7 +229,104 @@ if (isset($_GET['id'])) {
             </div>
         </div>
 
-        <div id="conteudoDinamico"></div>
+        <script>
+            $(document).ready(function(){
+                $("#startButton").click(function(){
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 1000);
+                });
+            });
+        </script>
+
+<?php               
+
+        $queryProva = "SELECT id FROM provas WHERE nome = 'Estilingue'";
+        $consultaProva = $pdo->prepare($queryProva);
+        $consultaProva->execute();
+        $resultProva = $consultaProva->fetch(PDO::FETCH_ASSOC);
+        
+        $id = $resultProva['id'];
+        
+        $username = $_SESSION['username'];
+        
+        $queryUser = "SELECT id, permission FROM usuarios WHERE nome = :username";
+        $stmtUser = $pdo->prepare($queryUser);
+        $stmtUser->bindParam(":username", $username);
+        $stmtUser->execute();
+        
+        $resultUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
+        
+        $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+        $stmtSessao = $pdo->prepare($querySessao);
+        $stmtSessao->execute();
+        $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
+        
+        if(isset($nomeSessao['id'])){
+            $idSessao = $nomeSessao['id'];
+        }
+        
+        $userId = $resultUser['id'];
+        
+        $queryProvas = "SELECT COUNT(*) FROM equipes_provas WHERE id_sessao = :id_sessao AND id_provas = :id_provas AND andamento = 'Execultando'";
+        $consulta = $pdo->prepare($queryProvas);
+        $consulta->bindParam(":id_sessao", $idSessao);
+        $consulta->bindParam("id_provas", $id);
+        $consulta->execute();
+        $resultado = $consulta->fetchColumn();
+        
+        
+        if ($resultado > 0) {
+            echo "<div class='row mt-4'>
+                    <div class='col-md-6 offset-md-3'>
+                        <div id='pontuacaoCard' class='card text-center'>
+                            <div class='card text-center'>
+                                <div class='card-body'>
+                                    <div class='form-group mt-3'>
+                                        <label for='valorPontuacao'>Adicionar Valor:</label>
+                                        <select class='form-control select2' id='valorPontuacao'>
+                                            <option value='10'>10</option>
+                                            <option value='15'>15</option>
+                                            <option value='20'>20</option>
+                                            <option value='25'>25</option>
+                                            <option value='30'>30</option>
+                                            <option value='35'>35</option>
+                                            <option value='40'>40</option>
+                                            <option value='45'>45</option>
+                                            <option value='50'>50</option>
+                                            <option value='55'>55</option>
+                                            <option value='60'>60</option>
+                                            <option value='65'>65</option>
+                                            <option value='70'>70</option>
+                                            <option value='75'>75</option>
+                                            <option value='80'>80</option>
+                                            <option value='85'>85</option>
+                                            <option value='90'>90</option>
+                                            <option value='95'>95</option>
+                                            <option value='100'>100</option>
+                                            <option value='120'>120</option>
+                                            <option value='150'>150</option>
+                                            <option value='200'>200</option>
+                                        </select>
+                                    </div>
+                                    <button class='btn btn-success' onclick='adicionarPontuacao()'>Adicionar Pontuação</button>
+                                    <input type='hidden' id='inputPontuacao' name='inputPontuacao'>
+                                </div>
+        
+                                <div class='form-group mt-3'>
+                                    <ul id='pontuacaoList' class='list-group'>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            <div class='mt-4'></div>
+            <div class='mt-4'></div>
+            </div>";
+        
+        }
+
+?>
 
 <script>
 var valoresAcumulados = [];
@@ -298,17 +375,17 @@ function exibirValoresAcumulados() {
 function removerPontuacao(index) {
     valoresAcumulados.splice(index, 1);
 
-    // Atualizar a pontuação na lista
+ 
     exibirValoresAcumulados();
 
-    // Salvar os valores no input hidden
+ 
     $('#inputPontuacao').val(valoresAcumulados.join(','));
 
-    // Calcular a pontuação total e exibir
+
     var pontuacaoTotal = calcularPontuacaoTotal();
     exibirPontuacaoTotal(pontuacaoTotal);
 
-    // Salvar os valores no localStorage
+
     salvarValoresLocalStorage();
 }
 
@@ -318,7 +395,7 @@ function carregarValoresLocalStorage() {
         valoresAcumulados = JSON.parse(valoresArmazenados);
         exibirValoresAcumulados();
 
-        // Calcular a pontuação total e exibir
+
         var pontuacaoTotal = calcularPontuacaoTotal();
         exibirPontuacaoTotal(pontuacaoTotal);
     }
@@ -329,7 +406,7 @@ function salvarValoresLocalStorage() {
 }
 
 function calcularPontuacaoTotal() {
-    // Calcular a soma dos valores acumulados
+
     var pontuacaoTotal = valoresAcumulados.reduce(function (acumulador, valor) {
         return acumulador + valor;
     }, 0);
@@ -344,14 +421,11 @@ function exibirPontuacaoTotal(pontuacaoTotal) {
 
 </script>
 
-
-</script>
-        <script>
-
-                $(document).ready(function(){
-                $("#startButton").click(function(){
-                    var iniciar = 'iniciar';
-                    var idProva = <?php echo $id; ?>; 
+    <script>
+            $(document).ready(function(){
+            $("#startButton").click(function(){
+                var iniciar = 'iniciar';
+                var idProva = <?php echo $id; ?>; 
                     $.ajax({
                         type: "GET",
                         url: "adicionar_prova_manual_estilingue.php?iniciar=" + iniciar + "&idProva=" + idProva,
@@ -365,69 +439,64 @@ function exibirPontuacaoTotal(pontuacaoTotal) {
             });
     </script>
 
+    <script>
+        var timerInterval;
+        var timerRunning = false;
+        var initialTotalTimeInSeconds = 2400;
+        var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
+        var initialTimeInSeconds = totalTimeInSeconds;
 
-        <script>
-            var timerInterval;
-            var timerRunning = false;
-            var initialTotalTimeInSeconds = 2400;
-            var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
-            var initialTimeInSeconds = totalTimeInSeconds;
+        function calcularPontuacaoTotal() {
 
-            function calcularPontuacaoTotal() {
-                // Calcular a soma dos valores acumulados
-                var pontuacaoTotal = valoresAcumulados.reduce(function (acumulador, valor) {
-                    return acumulador + valor;
-                }, 0);
+            var pontuacaoTotal = valoresAcumulados.reduce(function (acumulador, valor) {
+                return acumulador + valor;
+            }, 0);
 
-                return pontuacaoTotal;
+            return pontuacaoTotal;
+        }
+
+        function startTimer() {
+            if (!timerRunning) {
+                timerInterval = setInterval(updateTimer, 1000);
+                timerRunning = true;
+                localStorage.setItem('timerRunning', 'true');
             }
+        }
 
+        function pauseTimer() {
+            if (!timerRunning) {
+                Swal.fire({
+                    title: 'Aviso',
+                    text: 'O temporizador já está pausado.',
+                    icon: 'info'
+                });
+                return;
+            }
+            clearInterval(timerInterval);
+            timerRunning = false;
+            localStorage.setItem('timerRunning', 'false');
+            localStorage.setItem('isPaused', 'true');
+        }
 
+        function saveTimerState(totalTimeInSeconds, tempoGasto) {
+            localStorage.setItem('tempoRestante', totalTimeInSeconds);
+            localStorage.setItem('tempoGasto', tempoGasto);
+        }
 
-            function startTimer() {
-                if (!timerRunning) {
-                    timerInterval = setInterval(updateTimer, 1000);
-                    timerRunning = true;
-                    localStorage.setItem('timerRunning', 'true');
+        function restoreTimerState() {
+            var tempoArmazenado = localStorage.getItem('tempoRestante');
+            var timerRunning = localStorage.getItem('timerRunning'); 
+            if (tempoArmazenado) {
+                totalTimeInSeconds = parseInt(tempoArmazenado);
+                updateDisplay();
+                if (totalTimeInSeconds > 0 && timerRunning === 'true') { 
+                    startTimer(); 
                 }
             }
-
-            function pauseTimer() {
-                if (!timerRunning) {
-                    Swal.fire({
-                        title: 'Aviso',
-                        text: 'O temporizador já está pausado.',
-                        icon: 'info'
-                    });
-                    return;
-                }
-                clearInterval(timerInterval);
-                timerRunning = false;
-                localStorage.setItem('timerRunning', 'false');
-                localStorage.setItem('isPaused', 'true');
-            }
-
-            function saveTimerState(totalTimeInSeconds, tempoGasto) {
-                localStorage.setItem('tempoRestante', totalTimeInSeconds);
-                localStorage.setItem('tempoGasto', tempoGasto);
-            }
-
-            function restoreTimerState() {
-                var tempoArmazenado = localStorage.getItem('tempoRestante');
-                var timerRunning = localStorage.getItem('timerRunning'); 
-
-                if (tempoArmazenado) {
-                    totalTimeInSeconds = parseInt(tempoArmazenado);
-                    updateDisplay();
-                    if (totalTimeInSeconds > 0 && timerRunning === 'true') { 
-                        startTimer(); 
-                    }
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                restoreTimerState();
-            });
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            restoreTimerState();
+        });
 
             function stopTimer() {
     if (!timerRunning) {
@@ -459,70 +528,70 @@ function exibirPontuacaoTotal(pontuacaoTotal) {
     cancelButtonColor: '#d33',
     confirmButtonText: 'Sim, finalizar!',
     cancelButtonText: 'Cancelar'
-}).then((result) => {
-    if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Tempo Gasto',
-                text: `Você gastou ${Math.floor(tempoGasto / 60)} minutos e ${tempoGasto % 60} segundos nesta prova.`,
-                icon: 'info'
-            }).then(() => {
-                valoresAcumulados = [];
-                $('#inputPontuacao').val('');
-                exibirValoresAcumulados();
-$.ajax({
-    type: "GET",
-    url: "adicionar_prova_manual_estilingue.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva + "&pontuacaoTotal=" + pontuacaoTotal,
-    dataType: 'json',
-    contentType: 'application/json',
-    success: function(response) {
-        console.log(response);
-        if (response.pontuacao) {
-            var pontuacao = response.pontuacao;
+    }).then((result) => {
+        if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Tempo Gasto',
+                    text: `Você gastou ${Math.floor(tempoGasto / 60)} minutos e ${tempoGasto % 60} segundos nesta prova.`,
+                    icon: 'info'
+                }).then(() => {
+                    valoresAcumulados = [];
+                    $('#inputPontuacao').val('');
+                    exibirValoresAcumulados();
+                        $.ajax({
+                            type: "GET",
+                            url: "adicionar_prova_manual_estilingue.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva + "&pontuacaoTotal=" + pontuacaoTotal,
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            success: function(response) {
+                                console.log(response);
+                                if (response.pontuacao) {
+                                    var pontuacao = response.pontuacao;
 
-            Swal.fire({
-                title: 'Pontuação Final',
-                text: 'Sua pontuação final é: ' + pontuacao,
-                icon: 'success',
-                showCancelButton: false,
-                confirmButtonText: 'OK'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.clear();
-                    window.location.href = 'vivenciasPendentes.php';
-                }
-            });
+                            Swal.fire({
+                                title: 'Pontuação Final',
+                                text: 'Sua pontuação final é: ' + pontuacao,
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonText: 'OK'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    localStorage.clear();
+                                    window.location.href = 'vivenciasPendentes.php';
+                                }
+                            });
 
-        } else if (response.error) {
-            console.error(response.error);
-            Swal.fire({
-                title: 'Erro',
-                text: 'Ocorreu um erro ao processar a pontuação.',
-                icon: 'error'
-            });
-        } else {
-            console.error("Resposta inesperada do servidor:", response);
-        }
-    },
-    error: function(xhr, status, error) {
-        console.error("Erro na requisição AJAX:", error);
-        Swal.fire({
-            title: 'Erro',
-            text: 'Ocorreu um erro na requisição AJAX.',
-            icon: 'error'
-        });
-    }
-}).catch(function(error) {
-    console.error("Erro inesperado:", error);
-    Swal.fire({
-        title: 'Erro',
-        text: 'Ocorreu um erro inesperado.',
-        icon: 'error'
-    });
-});
+                                } else if (response.error) {
+                                    console.error(response.error);
+                                    Swal.fire({
+                                        title: 'Erro',
+                                        text: 'Ocorreu um erro ao processar a pontuação.',
+                                        icon: 'error'
+                                    });
+                                } else {
+                                    console.error("Resposta inesperada do servidor:", response);
+                                }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error("Erro na requisição AJAX:", error);
+                                    Swal.fire({
+                                        title: 'Erro',
+                                        text: 'Ocorreu um erro na requisição AJAX.',
+                                        icon: 'error'
+                                    });
+                                }
+                                }).catch(function(error) {
+                                    console.error("Erro inesperado:", error);
+                                    Swal.fire({
+                                        title: 'Erro',
+                                        text: 'Ocorreu um erro inesperado.',
+                                        icon: 'error'
+                                    });
+                                });
 
-                localStorage.removeItem('tempoRestante');
+                    localStorage.removeItem('tempoRestante');
 
-                totalTimeInSeconds = initialTotalTimeInSeconds;
+                    totalTimeInSeconds = initialTotalTimeInSeconds;
                 updateDisplay();
             });
         } else {
@@ -533,62 +602,42 @@ $.ajax({
     });
 }
 
-            function updateTimer() {
-                if (totalTimeInSeconds === 0) {
-                    clearInterval(timerInterval);
-                    timerRunning = false;
-                } else {
-                    totalTimeInSeconds--;
-                    tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
-                    updateDisplay();
-                }
+    function updateTimer() {
+        if (totalTimeInSeconds === 0) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+        } else {
+            totalTimeInSeconds--;
+            tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+            localStorage.setItem('tempoRestante', totalTimeInSeconds);
+            updateDisplay();
+        }
+    }
+    function updateDisplay() {
+        var minutes = Math.floor(totalTimeInSeconds / 60);
+        var seconds = totalTimeInSeconds % 60;
+        var formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('timer').innerText = formattedTime;
+    }
+    function showTimeSpentAlert() {
+        var minutes = Math.floor(tempoGasto / 60);
+        var seconds = tempoGasto % 60;
+        var formattedTimeSpent = `${minutes} minutos e ${seconds} segundos`;
+        Swal.fire({
+            title: 'Tempo Gasto',
+            text: 'Você gastou ' + formattedTimeSpent + ' nesta prova.',
+            icon: 'info'
+        });
+    }
+        window.onbeforeunload = function(event) {
+            if (event.target.performance.navigation.type !== 1) {
+
+                localStorage.setItem('tempoRestante', totalTimeInSeconds);
+            
             }
+        };
 
-            function updateDisplay() {
-                var minutes = Math.floor(totalTimeInSeconds / 60);
-                var seconds = totalTimeInSeconds % 60;
-                var formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                document.getElementById('timer').innerText = formattedTime;
-            }
-
-            function showTimeSpentAlert() {
-                var minutes = Math.floor(tempoGasto / 60);
-                var seconds = tempoGasto % 60;
-                var formattedTimeSpent = `${minutes} minutos e ${seconds} segundos`;
-                Swal.fire({
-                    title: 'Tempo Gasto',
-                    text: 'Você gastou ' + formattedTimeSpent + ' nesta prova.',
-                    icon: 'info'
-                });
-            }
-
-            window.onbeforeunload = function(event) {
-                if (event.target.performance.navigation.type !== 1) {
-                    // Sempre salve o tempo restante
-                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
-                
-                }
-            };
-
-        </script>
-
-        <script>
-            setInterval(function() {
-
-                $.ajax({
-                    url: 'atualizarFormularioProva.php', 
-                    type: 'GET', 
-                    success: function(response) {
-
-                        $('#conteudoDinamico').html(response);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Erro na requisição AJAX:', error);
-                    }
-                });
-            }, 3000); 
-        </script>
+    </script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
