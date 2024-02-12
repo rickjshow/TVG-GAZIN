@@ -270,6 +270,7 @@ if (isset($_GET['id'])) {
     var initialTotalTimeInSeconds = 2400;
     var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
     var initialTimeInSeconds = totalTimeInSeconds;
+    var tempoGasto;
 
     function startTimer() {
         if (!timerRunning) {
@@ -291,7 +292,6 @@ if (isset($_GET['id'])) {
         clearInterval(timerInterval);
         timerRunning = false;
         localStorage.setItem('timerRunning', 'false');
-        localStorage.setItem('isPaused', 'true');
     }
 
     function saveTimerState(totalTimeInSeconds, formVisible, tempoGasto) {
@@ -308,7 +308,7 @@ if (isset($_GET['id'])) {
         if (tempoArmazenado) {
             totalTimeInSeconds = parseInt(tempoArmazenado);
             updateDisplay();
-            if (totalTimeInSeconds > 0 && timerRunning === 'true') { 
+            if (totalTimeInSeconds > 0 && timerRunning === 'true') {
                 startTimer(); 
             }
         }
@@ -316,7 +316,6 @@ if (isset($_GET['id'])) {
             showPontuacaoForm();
         }
     }
-
 
     function stopTimer() {
         if (!timerRunning) {
@@ -326,16 +325,29 @@ if (isset($_GET['id'])) {
                 icon: 'info'
             });
             return;
-        }
-        clearInterval(timerInterval);
-        timerRunning = false;
-        updateDisplay();
-        tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-        showTimeSpentAlert();
-        totalTimeInSeconds = initialTotalTimeInSeconds;
-        updateDisplay();
-        showPontuacaoForm();
-        saveTimerState(initialTotalTimeInSeconds, true, tempoGasto);
+        }   
+            Swal.fire({
+            title: 'Confirmação',
+            text: 'Tem certeza de que deseja finalizar o temporizador?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                updateDisplay();
+                tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+                showTimeSpentAlert();
+                totalTimeInSeconds = initialTotalTimeInSeconds;
+                updateDisplay();
+                showPontuacaoForm();
+                saveTimerState(initialTotalTimeInSeconds, true, tempoGasto);
+            }
+        });
     }
 
     function showPontuacaoForm() {
