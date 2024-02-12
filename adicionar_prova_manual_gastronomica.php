@@ -443,13 +443,33 @@ if (isset($_GET['id'])) {
     function updateTimer() {
         if (totalTimeInSeconds === 0) {
             clearInterval(timerInterval);
-            timerRunning = false;
-        } else {
-            totalTimeInSeconds--;
-            tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-            localStorage.setItem('tempoRestante', totalTimeInSeconds);
-            updateDisplay();
+            showTimeIsUpAlert(); 
+            showPontuacaoForm();
+            return; 
         }
+
+        totalTimeInSeconds--;
+        tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+        localStorage.setItem('tempoRestante', totalTimeInSeconds);
+        updateDisplay();
+    }
+
+        function showTimeIsUpAlert() {
+        Swal.fire({
+            title: 'Tempo Esgotado',
+            text: 'O tempo acabou!',
+            icon: 'info'
+        }).then(() => {
+            clearInterval(timerInterval);
+                timerRunning = false;
+                updateDisplay();
+                tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+                showTimeSpentAlert();
+                totalTimeInSeconds = initialTotalTimeInSeconds;
+                updateDisplay();
+                showPontuacaoForm();
+                saveTimerState(initialTotalTimeInSeconds, true, tempoGasto);
+        });
     }
 
     function updateDisplay() {

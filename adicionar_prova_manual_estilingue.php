@@ -217,7 +217,7 @@ if (isset($_GET['id'])) {
                         <h3>Tempo Prova</h3>
                     </div>
                     <div class="card-body">
-                        <h1 id="timer">00:30</h1>
+                        <h1 id="timer">40:00</h1>
                     </div>
                     <div class="card-footer">
                     <button id="startButton" class="btn btn-primary" onclick="startTimer()">Iniciar</button>
@@ -441,7 +441,7 @@ function exibirPontuacaoTotal(pontuacaoTotal) {
     <script>
         var timerInterval;
         var timerRunning = false;
-        var initialTotalTimeInSeconds = 30;
+        var initialTotalTimeInSeconds = 2400;
         var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
         var initialTimeInSeconds = totalTimeInSeconds;
 
@@ -487,10 +487,6 @@ function exibirPontuacaoTotal(pontuacaoTotal) {
         document.addEventListener('DOMContentLoaded', function () {
             restoreTimerState();
         });
-
-        var pontuacaoTotal = calcularPontuacaoTotal();
-        console.log(pontuacaoTotal);
-
 
         function handleConfirmedResult() {
             var tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
@@ -554,7 +550,7 @@ function exibirPontuacaoTotal(pontuacaoTotal) {
             updateDisplay();
         }
 
-    function stopTimer() {
+function stopTimer() {
         if (!timerRunning) {
             Swal.fire({
                 title: 'Aviso',
