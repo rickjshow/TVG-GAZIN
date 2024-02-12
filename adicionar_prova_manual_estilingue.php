@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $consulta->bindValue(":nome", $username, PDO::PARAM_STR);
         $consulta->execute();
         $userId = $consulta->fetchColumn();
-
+    
         if (!$userId) {
             echo "Usuário não encontrado.";
             exit;
@@ -29,12 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $consulta1->bindValue(":id", $userId, PDO::PARAM_INT);
             $consulta1->execute();
             $dadosSessao = $consulta1->fetchAll(PDO::FETCH_ASSOC);
-
+    
             if (!$dadosSessao) {
                 echo "Dados da sessão não encontrados.";
                 exit;
             } else {
-
+    
                 foreach ($dadosSessao as $dados) {
                     $idSessao = $dados['id_sessao'];
                     $idEquipe = $dados['id_equipe'];
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos']) && isset($_GET['idProva'])) {
-
+   
     $idProva = $_GET['idProva'];
     $tempoTotal = json_decode($_GET['tempoFinalEmSegundos'], true);
 
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['tempoFinalEmSegundos'])
                     $pontoMaximo = $ponto['ponto_max'];
                 }
 
-
+                
                 $pontuacaoTotal = isset($_GET['pontuacaoTotal']) ? $_GET['pontuacaoTotal'] : 0;
 
                 $queryPonto = "INSERT INTO pontuacao (id_provas, id_sessoes, id_equipes, ponto_obtido, tempo_gasto) VALUES(:id_provas, :id_sessoes, :id_equipes, :ponto_obtido, :tempo_gasto)";
@@ -157,6 +157,7 @@ if (isset($_GET['id'])) {
     $consulta->bindValue(":id", $id, PDO::PARAM_INT);
     $consulta->execute();
     $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
 }
 
 ?>
@@ -175,8 +176,8 @@ if (isset($_GET['id'])) {
     <style>
         .pontuacaoListItem {
             margin-right: 10px;
-            margin-left: 10px;
-            margin-top: 10px;
+            margin-left: 10px; 
+            margin-top: 10px; 
         }
     </style>
 </head>
@@ -185,8 +186,8 @@ if (isset($_GET['id'])) {
 
     <div class='container-fluid mt-4'>
         <?php
-        foreach ($data as $row) {
-            echo "
+            foreach ($data as $row) {
+                echo "
                 <div class='accordion accordion-flush' id='accordionFlushExample'>
                     <div class='card mt-4'>
                         <div class='accordion-item card-body text-center'>
@@ -206,7 +207,7 @@ if (isset($_GET['id'])) {
                         </div>
                     </div>
                 </div>";
-        }
+            }
         ?>
 
         <div class="row mt-4">
@@ -219,17 +220,17 @@ if (isset($_GET['id'])) {
                         <h1 id="timer">40:00</h1>
                     </div>
                     <div class="card-footer">
-                        <button id="startButton" class="btn btn-primary" onclick="startTimer()">Iniciar</button>
-                        <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
-                        <button class="btn btn-danger" onclick="stopTimer()">Finalizar</button>
+                    <button id="startButton" class="btn btn-primary" onclick="startTimer()">Iniciar</button>
+                            <button class="btn btn-secondary" onclick="pauseTimer()">Pausar</button>
+                            <button class="btn btn-danger" onclick="stopTimer()">Finalizar</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <script>
-            $(document).ready(function() {
-                $("#startButton").click(function() {
+            $(document).ready(function(){
+                $("#startButton").click(function(){
                     setTimeout(function() {
                         window.location.reload();
                     }, 1000);
@@ -237,43 +238,43 @@ if (isset($_GET['id'])) {
             });
         </script>
 
-        <?php
+<?php               
 
         $queryProva = "SELECT id FROM provas WHERE nome = 'Estilingue'";
         $consultaProva = $pdo->prepare($queryProva);
         $consultaProva->execute();
         $resultProva = $consultaProva->fetch(PDO::FETCH_ASSOC);
-
+        
         $id = $resultProva['id'];
-
+        
         $username = $_SESSION['username'];
-
+        
         $queryUser = "SELECT id, permission FROM usuarios WHERE nome = :username";
         $stmtUser = $pdo->prepare($queryUser);
         $stmtUser->bindParam(":username", $username);
         $stmtUser->execute();
-
+        
         $resultUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
-
+        
         $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
         $stmtSessao = $pdo->prepare($querySessao);
         $stmtSessao->execute();
         $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
-
-        if (isset($nomeSessao['id'])) {
+        
+        if(isset($nomeSessao['id'])){
             $idSessao = $nomeSessao['id'];
         }
-
+        
         $userId = $resultUser['id'];
-
+        
         $queryProvas = "SELECT COUNT(*) FROM equipes_provas WHERE id_sessao = :id_sessao AND id_provas = :id_provas AND andamento = 'Execultando'";
         $consulta = $pdo->prepare($queryProvas);
         $consulta->bindParam(":id_sessao", $idSessao);
         $consulta->bindParam("id_provas", $id);
         $consulta->execute();
         $resultado = $consulta->fetchColumn();
-
-
+        
+        
         if ($resultado > 0) {
             echo "<div class='row mt-4'>
                     <div class='col-md-6 offset-md-3'>
@@ -321,107 +322,109 @@ if (isset($_GET['id'])) {
             <div class='mt-4'></div>
             <div class='mt-4'></div>
             </div>";
+        
         }
 
-        ?>
+?>
 
-        <script>
-            var valoresAcumulados = [];
+<script>
+var valoresAcumulados = [];
 
-            $(document).ready(function() {
+$(document).ready(function () {
+    
+    carregarValoresLocalStorage();
 
-                carregarValoresLocalStorage();
+    
+    $('#adicionarPontuacaoBtn').click(function() {
+        adicionarPontuacao();
+    });
+});
 
+function adicionarPontuacao() {
+    var valorSelecionado = $('#valorPontuacao').val();
+    valoresAcumulados.push(parseInt(valorSelecionado));
 
-                $('#adicionarPontuacaoBtn').click(function() {
-                    adicionarPontuacao();
-                });
-            });
+   
+    exibirValoresAcumulados();
 
-            function adicionarPontuacao() {
-                var valorSelecionado = $('#valorPontuacao').val();
-                valoresAcumulados.push(parseInt(valorSelecionado));
+    
+    $('#inputPontuacao').val(valoresAcumulados.join(','));
 
+    
+    var pontuacaoTotal = calcularPontuacaoTotal();
+    exibirPontuacaoTotal(pontuacaoTotal);
 
-                exibirValoresAcumulados();
+   
+    salvarValoresLocalStorage();
+}
 
+function exibirValoresAcumulados() {
+    var pontuacaoList = $('#pontuacaoList');
+    pontuacaoList.empty();
 
-                $('#inputPontuacao').val(valoresAcumulados.join(','));
-
-
-                var pontuacaoTotal = calcularPontuacaoTotal();
-                exibirPontuacaoTotal(pontuacaoTotal);
-
-
-                salvarValoresLocalStorage();
-            }
-
-            function exibirValoresAcumulados() {
-                var pontuacaoList = $('#pontuacaoList');
-                pontuacaoList.empty();
-
-                for (var i = 0; i < valoresAcumulados.length; i++) {
-                    var listItem = $('<li>').addClass('list-group-item pontuacaoListItem d-flex justify-content-between align-items-center').html(`
+    for (var i = 0; i < valoresAcumulados.length; i++) {
+        var listItem = $('<li>').addClass('list-group-item pontuacaoListItem d-flex justify-content-between align-items-center').html(`
             ${valoresAcumulados[i]}
             <button type="button" class="btn btn-danger btn-sm" onclick="removerPontuacao(${i})">Remover</button>
         `);
-                    pontuacaoList.append(listItem);
-                }
-            }
+        pontuacaoList.append(listItem);
+    }
+}
 
-            function removerPontuacao(index) {
-                valoresAcumulados.splice(index, 1);
+function removerPontuacao(index) {
+    valoresAcumulados.splice(index, 1);
 
+ 
+    exibirValoresAcumulados();
 
-                exibirValoresAcumulados();
-
-
-                $('#inputPontuacao').val(valoresAcumulados.join(','));
-
-
-                var pontuacaoTotal = calcularPontuacaoTotal();
-                exibirPontuacaoTotal(pontuacaoTotal);
+ 
+    $('#inputPontuacao').val(valoresAcumulados.join(','));
 
 
-                salvarValoresLocalStorage();
-            }
-
-            function carregarValoresLocalStorage() {
-                var valoresArmazenados = localStorage.getItem('valoresAcumulados');
-                if (valoresArmazenados) {
-                    valoresAcumulados = JSON.parse(valoresArmazenados);
-                    exibirValoresAcumulados();
+    var pontuacaoTotal = calcularPontuacaoTotal();
+    exibirPontuacaoTotal(pontuacaoTotal);
 
 
-                    var pontuacaoTotal = calcularPontuacaoTotal();
-                    exibirPontuacaoTotal(pontuacaoTotal);
-                }
-            }
+    salvarValoresLocalStorage();
+}
+
+function carregarValoresLocalStorage() {
+    var valoresArmazenados = localStorage.getItem('valoresAcumulados');
+    if (valoresArmazenados) {
+        valoresAcumulados = JSON.parse(valoresArmazenados);
+        exibirValoresAcumulados();
 
 
-            function salvarValoresLocalStorage() {
-                localStorage.setItem('valoresAcumulados', JSON.stringify(valoresAcumulados));
-            }
+        var pontuacaoTotal = calcularPontuacaoTotal();
+        exibirPontuacaoTotal(pontuacaoTotal);
+    }
+}
 
-            function calcularPontuacaoTotal() {
 
-                var pontuacaoTotal = valoresAcumulados.reduce(function(acumulador, valor) {
-                    return acumulador + valor;
-                }, 0);
+function salvarValoresLocalStorage() {
+    localStorage.setItem('valoresAcumulados', JSON.stringify(valoresAcumulados));
+}
 
-                return pontuacaoTotal;
-            }
+function calcularPontuacaoTotal() {
 
-            function exibirPontuacaoTotal(pontuacaoTotal) {
-                $('#pontuacaoTotal').text('Pontuação Total: ' + pontuacaoTotal);
-            }
-        </script>
+    var pontuacaoTotal = valoresAcumulados.reduce(function (acumulador, valor) {
+        return acumulador + valor;
+    }, 0);
 
-        <script>
-            $(document).ready(function() {
-                $("#startButton").click(function() {
-                    var iniciar = 'iniciar';
-                    var idProva = <?php echo $id; ?>;
+    return pontuacaoTotal;
+}
+
+function exibirPontuacaoTotal(pontuacaoTotal) {
+    $('#pontuacaoTotal').text('Pontuação Total: ' + pontuacaoTotal);
+}
+
+</script>
+
+    <script>
+            $(document).ready(function(){
+            $("#startButton").click(function(){
+                var iniciar = 'iniciar';
+                var idProva = <?php echo $id; ?>; 
                     $.ajax({
                         type: "GET",
                         url: "adicionar_prova_manual_estilingue.php?iniciar=" + iniciar + "&idProva=" + idProva,
@@ -433,213 +436,207 @@ if (isset($_GET['id'])) {
                     });
                 });
             });
-        </script>
+    </script>
 
-        <script>
-            var timerInterval;
-            var timerRunning = false;
-            var initialTotalTimeInSeconds = 2400;
-            var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
-            var initialTimeInSeconds = totalTimeInSeconds;
+    <script>
+        var timerInterval;
+        var timerRunning = false;
+        var initialTotalTimeInSeconds = 2400;
+        var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
+        var initialTimeInSeconds = totalTimeInSeconds;
 
-            function startTimer() {
-                if (!timerRunning) {
-                    timerInterval = setInterval(updateTimer, 1000);
-                    timerRunning = true;
-                    localStorage.setItem('timerRunning', 'true');
-                }
+        function startTimer() {
+            if (!timerRunning) {
+                timerInterval = setInterval(updateTimer, 1000);
+                timerRunning = true;
+                localStorage.setItem('timerRunning', 'true');
             }
+        }
 
-            function pauseTimer() {
-                if (!timerRunning) {
-                    Swal.fire({
-                        title: 'Aviso',
-                        text: 'O temporizador já está pausado.',
-                        icon: 'info'
-                    });
-                    return;
-                }
-                clearInterval(timerInterval);
-                timerRunning = false;
-                localStorage.setItem('timerRunning', 'false');
-                localStorage.setItem('isPaused', 'true');
-            }
-
-            function saveTimerState(totalTimeInSeconds, tempoGasto) {
-                localStorage.setItem('tempoRestante', totalTimeInSeconds);
-                localStorage.setItem('tempoGasto', tempoGasto);
-            }
-
-            function restoreTimerState() {
-                var tempoArmazenado = localStorage.getItem('tempoRestante');
-                var timerRunning = localStorage.getItem('timerRunning');
-                if (tempoArmazenado) {
-                    totalTimeInSeconds = parseInt(tempoArmazenado);
-                    updateDisplay();
-                    if (totalTimeInSeconds > 0 && timerRunning === 'true') {
-                        startTimer();
-                    }
-                }
-            }
-            document.addEventListener('DOMContentLoaded', function() {
-                restoreTimerState();
-            });
-
-            var pontuacaoTotal = calcularPontuacaoTotal();
-            console.log(pontuacaoTotal);
-
-
-            function handleConfirmedResult() {
-                var tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-                var idProva = <?php echo $id; ?>;
-                var pontuacaoTotal = calcularPontuacaoTotal(); //
-
-                $.ajax({
-                    type: "GET",
-                    url: "adicionar_prova_manual_estilingue.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva + "&pontuacaoTotal=" + pontuacaoTotal,
-                    dataType: 'json',
-                    contentType:'application/json',
-                    success: function(response) {
-                        console.log(response);
-                        if (response.pontuacao) {
-                            var pontuacao = response.pontuacao;
-
-                            Swal.fire({
-                                title: 'Pontuação Final',
-                                text: 'Sua pontuação final é: ' + pontuacao,
-                                icon: 'success',
-                                showCancelButton: false,
-                                confirmButtonText: 'OK'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    localStorage.clear();
-                                    window.location.href = 'vivenciasPendentes.php';
-                                }
-                            });
-
-                        } else if (response.error) {
-                            console.error(response.error);
-                            Swal.fire({
-                                title: 'Erro',
-                                text: 'Ocorreu um erro ao processar a pontuação.',
-                                icon: 'error'
-                            });
-                        } else {
-                            console.error("Resposta inesperada do servidor:", response);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Erro na requisição AJAX:", error);
-                        Swal.fire({
-                            title: 'Erro',
-                            text: 'Ocorreu um erro na requisição AJAX.',
-                            icon: 'error'
-                        });
-                    }
-                }).catch(function(error) {
-                    console.error("Erro inesperado:", error);
-                    Swal.fire({
-                        title: 'Erro',
-                        text: 'Ocorreu um erro inesperado.',
-                        icon: 'error'
-                    });
-                });
-
-                localStorage.removeItem('tempoRestante');
-
-                totalTimeInSeconds = initialTotalTimeInSeconds;
-                updateDisplay();
-            }
-
-            function stopTimer() {
-                if (!timerRunning) {
-                    Swal.fire({
-                        title: 'Aviso',
-                        text: 'É necessário iniciar o temporizador antes de finalizar.',
-                        icon: 'info'
-                    });
-                    return;
-                }
-
-                clearInterval(timerInterval);
-                timerRunning = false;
-                updateDisplay();
-                showTimeSpentAlert();
-
-                if (totalTimeInSeconds === 0) {
-
-                    Swal.fire({
-                        title: 'Tempo Esgotado',
-                        text: 'O tempo acabou!',
-                        icon: 'info'
-                    }).then(() => {
-                        handleConfirmedResult();
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Você tem certeza?',
-                        text: 'Isso finalizará o temporizador e lançará os pontos.',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Sim, finalizar!',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            handleConfirmedResult();
-                        } else {
-                            if (!timerRunning) {
-                                startTimer();
-                            }
-                        }
-                    });
-                }
-            }
-
-            function updateTimer() {
-                if (totalTimeInSeconds === 0) {
-                    clearInterval(timerInterval);
-                    stopTimer();
-                } else {
-                    totalTimeInSeconds--;
-                    tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
-                    updateDisplay();
-                }
-            }
-
-
-            function updateDisplay() {
-                var minutes = Math.floor(totalTimeInSeconds / 60);
-                var seconds = totalTimeInSeconds % 60;
-                var formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                document.getElementById('timer').innerText = formattedTime;
-            }
-
-            function showTimeSpentAlert() {
-                var minutes = Math.floor(tempoGasto / 60);
-                var seconds = tempoGasto % 60;
-                var formattedTimeSpent = `${minutes} minutos e ${seconds} segundos`;
+        function pauseTimer() {
+            if (!timerRunning) {
                 Swal.fire({
-                    title: 'Tempo Gasto',
-                    text: 'Você gastou ' + formattedTimeSpent + ' nesta prova.',
+                    title: 'Aviso',
+                    text: 'O temporizador já está pausado.',
                     icon: 'info'
                 });
+                return;
             }
-            window.onbeforeunload = function(event) {
-                if (event.target.performance.navigation.type !== 1) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            localStorage.setItem('timerRunning', 'false');
+            localStorage.setItem('isPaused', 'true');
+        }
 
-                    localStorage.setItem('tempoRestante', totalTimeInSeconds);
+        function saveTimerState(totalTimeInSeconds, tempoGasto) {
+            localStorage.setItem('tempoRestante', totalTimeInSeconds);
+            localStorage.setItem('tempoGasto', tempoGasto);
+        }
 
+        function restoreTimerState() {
+            var tempoArmazenado = localStorage.getItem('tempoRestante');
+            var timerRunning = localStorage.getItem('timerRunning'); 
+            if (tempoArmazenado) {
+                totalTimeInSeconds = parseInt(tempoArmazenado);
+                updateDisplay();
+                if (totalTimeInSeconds > 0 && timerRunning === 'true') { 
+                    startTimer(); 
                 }
-            };
-        </script>
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function () {
+            restoreTimerState();
+        });
+
+        function handleConfirmedResult() {
+            var tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+            var idProva = <?php echo $id; ?>;
+            var pontuacaoTotal = calcularPontuacaoTotal(); //
+
+            $.ajax({
+                type: "GET",
+                url: "adicionar_prova_manual_estilingue.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva + "&pontuacaoTotal=" + pontuacaoTotal,
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response);
+                    if (response.pontuacao) {
+                        var pontuacao = response.pontuacao;
+
+                        Swal.fire({
+                            title: 'Pontuação Final',
+                            text: 'Sua pontuação final é: ' + pontuacao,
+                            icon: 'success',
+                            showCancelButton: false,
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                localStorage.clear();
+                                window.location.href = 'vivenciasPendentes.php';
+                            }
+                        });
+
+                    } else if (response.error) {
+                        console.error(response.error);
+                        Swal.fire({
+                            title: 'Erro',
+                            text: 'Ocorreu um erro ao processar a pontuação.',
+                            icon: 'error'
+                        });
+                    } else {
+                        console.error("Resposta inesperada do servidor:", response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Erro na requisição AJAX:", error);
+                    Swal.fire({
+                        title: 'Erro',
+                        text: 'Ocorreu um erro na requisição AJAX.',
+                        icon: 'error'
+                    });
+                }
+            }).catch(function (error) {
+                console.error("Erro inesperado:", error);
+                Swal.fire({
+                    title: 'Erro',
+                    text: 'Ocorreu um erro inesperado.',
+                    icon: 'error'
+                });
+            });
+
+            localStorage.removeItem('tempoRestante');
+
+            totalTimeInSeconds = initialTotalTimeInSeconds;
+            updateDisplay();
+        }
+
+function stopTimer() {
+        if (!timerRunning) {
+            Swal.fire({
+                title: 'Aviso',
+                text: 'É necessário iniciar o temporizador antes de finalizar.',
+                icon: 'info'
+            });
+            return;
+        }
+
+    clearInterval(timerInterval);
+    timerRunning = false;
+    updateDisplay();
+    showTimeSpentAlert();
+
+    if (totalTimeInSeconds === 0) {
+
+        Swal.fire({
+            title: 'Tempo Esgotado',
+            text: 'O tempo acabou!',
+            icon: 'info'
+        }).then(() => {
+            handleConfirmedResult();
+        });
+    } else {
+        Swal.fire({
+            title: 'Você tem certeza?',
+            text: 'Isso finalizará o temporizador e lançará os pontos.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, finalizar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                handleConfirmedResult();
+            } else {
+                if (!timerRunning) {
+                    startTimer();
+                }
+            }
+        });
+    }
+}
+    function updateTimer() {
+        if (totalTimeInSeconds === 0) {
+            clearInterval(timerInterval);
+            stopTimer(); 
+        }else {
+            totalTimeInSeconds--;
+            tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+            localStorage.setItem('tempoRestante', totalTimeInSeconds);
+            updateDisplay();
+        }
+    }
+    
+    function updateDisplay() {
+        var minutes = Math.floor(totalTimeInSeconds / 60);
+        var seconds = totalTimeInSeconds % 60;
+        var formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('timer').innerText = formattedTime;
+    }
+    function showTimeSpentAlert() {
+        var minutes = Math.floor(tempoGasto / 60);
+        var seconds = tempoGasto % 60;
+        var formattedTimeSpent = `${minutes} minutos e ${seconds} segundos`;
+        Swal.fire({
+            title: 'Tempo Gasto',
+            text: 'Você gastou ' + formattedTimeSpent + ' nesta prova.',
+            icon: 'info'
+        });
+    }
+        window.onbeforeunload = function(event) {
+            if (event.target.performance.navigation.type !== 1) {
+
+                localStorage.setItem('tempoRestante', totalTimeInSeconds);
+            
+            }
+        };
+
+    </script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
-
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet"/>
+        
 
 </body>
 
