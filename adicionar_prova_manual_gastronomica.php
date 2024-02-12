@@ -213,7 +213,7 @@ if (isset($_GET['id'])) {
                         <h3>Tempo Prova</h3>
                     </div>
                     <div class="card-body">
-                        <h1 id="timer">40:00</h1>
+                        <h1 id="timer">00:05</h1>
                     </div>
                     <div class="card-footer">
                             <button id="startButton" class="btn btn-primary" onclick="startTimer()">Iniciar</button>
@@ -267,10 +267,9 @@ if (isset($_GET['id'])) {
 <script>
     var timerInterval;
     var timerRunning = false;
-    var initialTotalTimeInSeconds = 2400;
+    var initialTotalTimeInSeconds = 5;
     var totalTimeInSeconds = localStorage.getItem('tempoRestante') || initialTotalTimeInSeconds;
     var initialTimeInSeconds = totalTimeInSeconds;
-    var tempoGasto;
 
     function startTimer() {
         if (!timerRunning) {
@@ -292,6 +291,7 @@ if (isset($_GET['id'])) {
         clearInterval(timerInterval);
         timerRunning = false;
         localStorage.setItem('timerRunning', 'false');
+        localStorage.setItem('isPaused', 'true');
     }
 
     function saveTimerState(totalTimeInSeconds, formVisible, tempoGasto) {
@@ -308,7 +308,7 @@ if (isset($_GET['id'])) {
         if (tempoArmazenado) {
             totalTimeInSeconds = parseInt(tempoArmazenado);
             updateDisplay();
-            if (totalTimeInSeconds > 0 && timerRunning === 'true') {
+            if (totalTimeInSeconds > 0 && timerRunning === 'true') { 
                 startTimer(); 
             }
         }
@@ -317,38 +317,27 @@ if (isset($_GET['id'])) {
         }
     }
 
+
     function stopTimer() {
-        if (!timerRunning) {
-            Swal.fire({
-                title: 'Aviso',
-                text: 'É necessário iniciar o temporizador antes de finalizar.',
-                icon: 'info'
-            });
-            return;
-        }   
-            Swal.fire({
-            title: 'Confirmação',
-            text: 'Tem certeza de que deseja finalizar o temporizador?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sim',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                clearInterval(timerInterval);
-                timerRunning = false;
-                updateDisplay();
-                tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
-                showTimeSpentAlert();
-                totalTimeInSeconds = initialTotalTimeInSeconds;
-                updateDisplay();
-                showPontuacaoForm();
-                saveTimerState(initialTotalTimeInSeconds, true, tempoGasto);
-            }
+    if (!timerRunning) {
+        Swal.fire({
+            title: 'Aviso',
+            text: 'É necessário iniciar o temporizador antes de finalizar.',
+            icon: 'info'
         });
+        return;
     }
+
+    clearInterval(timerInterval);
+    timerRunning = false;
+    updateDisplay();
+    tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
+    showTimeSpentAlert();
+    totalTimeInSeconds = initialTotalTimeInSeconds;
+    updateDisplay();
+    finishProva(); // Chame a função finishProva() aqui
+    saveTimerState(initialTotalTimeInSeconds, true, tempoGasto);
+}
 
     function showPontuacaoForm() {
         document.getElementById('pontuacaoForm').style.display = 'block';
@@ -358,6 +347,21 @@ if (isset($_GET['id'])) {
     document.addEventListener('DOMContentLoaded', function () {
         restoreTimerState();
     });
+
+
+
+
+    function finishProva() {
+    // Exiba a pontuação e realize as ações necessárias
+    showPontuacaoForm();
+
+    // Adicione lógica adicional aqui, se necessário
+}
+
+
+
+
+
 
     function enviarPontos() {
         var idProva = <?php echo $id; ?>;
@@ -479,7 +483,10 @@ if (isset($_GET['id'])) {
         }
     };
 
-    console.log(localStorage);
+ 
+
+
+
 
 
 </script>

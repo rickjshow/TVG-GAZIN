@@ -302,36 +302,9 @@ if (!empty($data)) {
                 restoreTimerState();
             });
 
-            function stopTimer() {
-
-                if (!timerRunning) {
-                    Swal.fire({
-                        title: 'Aviso',
-                        text: 'É necessário iniciar o temporizador antes de finalizar.',
-                        icon: 'info'
-                    });
-                    return;
-                }
-
-                clearInterval(timerInterval);
-                timerRunning = false;
-                updateDisplay();
-                showTimeSpentAlert();
-
+            function enviarPontos(){
                 var tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
                 var idProva = <?php echo $id; ?>;
-
-                Swal.fire({
-                    title: 'Você tem certeza?',
-                    text: 'Isso finalizará o temporizador e lançará os pontos.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sim, finalizar!',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
                         $.ajax({
                             type: "GET",
                             url: "lancarPontos.php?tempoFinalEmSegundos=" + tempoGasto + "&idProva=" + idProva, 
@@ -375,22 +348,63 @@ if (!empty($data)) {
                             }
                         });
 
-                        localStorage.removeItem('tempoRestante');
+                    localStorage.removeItem('tempoRestante');
 
-                        totalTimeInSeconds = initialTotalTimeInSeconds;
-                        updateDisplay();
+                    totalTimeInSeconds = initialTotalTimeInSeconds;
+                    updateDisplay();
+                }
+
+            function stopTimer() {
+
+                if (!timerRunning) {
+                    Swal.fire({
+                        title: 'Aviso',
+                        text: 'É necessário iniciar o temporizador antes de finalizar.',
+                        icon: 'info'
+                    });
+                    return;
+                }
+
+                clearInterval(timerInterval);
+                timerRunning = false;
+                updateDisplay();
+                showTimeSpentAlert();
+
+                if (totalTimeInSeconds === 0) {
+
+                    Swal.fire({
+                        title: 'Tempo Esgotado',
+                        text: 'O tempo acabou!',
+                        icon: 'info'
+                    }).then(() => {
+                        enviarPontos();
+                    });
                     } else {
-                        if (!timerRunning) {
-                            startTimer();
+                    Swal.fire({
+                        title: 'Você tem certeza?',
+                        text: 'Isso finalizará o temporizador e lançará os pontos.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, finalizar!',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            enviarPontos();
+                        } else {
+                            if (!timerRunning) {
+                                startTimer();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             function updateTimer() {
                 if (totalTimeInSeconds === 0) {
                     clearInterval(timerInterval);
-                    timerRunning = false;
+                    stopTimer();
                 } else {
                     totalTimeInSeconds--;
                     tempoGasto = initialTotalTimeInSeconds - totalTimeInSeconds;
