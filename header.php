@@ -1,6 +1,6 @@
 <?php
 ob_start();
-// Não precisa de session_start() aqui, pois já é chamado em "permissao.php"
+
 require_once "permissao.php";
 ?>
 <!DOCTYPE html>
@@ -45,8 +45,15 @@ require_once "permissao.php";
         <div class='dashboard-app'>
         <header class='dashboard-toolbar  align-items-center justify-content-center'>
             <a class="menu-toggle"><i class="fas fa-bars"></i></a>
-            <img src="gazin_logo.png" id="logo" alt="logogazin" class="mx-auto" style="width: 150px;">
+           <img src="gazin_logo.png" id="logo" alt="logogazin" class="mx-auto" onclick="enviaHome()" style="width: 150px;">
         </header>
+        <script>
+                function enviaHome() {
+                    window.location.href = 'home.php';
+                }
+        </script>
+
+
         <div class='dashboard-content'>
             <div class='container'>
                 <div class="row">

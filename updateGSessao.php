@@ -20,23 +20,24 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
     $consultaSessao->execute();
     $resultado = $consultaSessao->fetchAll(PDO::FETCH_ASSOC);
 
-    foreach($resultado as $row){
+    foreach ($resultado as $row) {
         $queryUpdateUser = "UPDATE usuarios SET situacao = 'Ativo' WHERE id = :id";
-        $updateUser = $pdo->prepare( $queryUpdateUser);
+        $updateUser = $pdo->prepare($queryUpdateUser);
         $updateUser->bindParam(':id', $row['id']);
         $updateUser->execute();
+    }
+    
+    session_start();
+    if ($updateUser) {
+        $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'O TVG foi iniciado, boa sorte a todos!');
+        header("location: home.php");
+        exit();
+    } else {
+        header("location: novaEdicao.php");
+        exit();
+    }
+}   
 
-        if($updateUser){
-            session_start();
-            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'O TVG foi iniciado, boa sorte a todos!');
-            header("location: home.php");
-            exit();
-        }else{
-            header("location: novaEdicao.php");
-            exit(); 
-        }
-    }   
-}
 
 ?>
 

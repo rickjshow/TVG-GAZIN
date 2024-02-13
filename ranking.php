@@ -14,6 +14,7 @@
         $nomeSession = "Não existem sessões pendentes no momento";
     }
 
+
 ?>
 
 <!DOCTYPE html>
@@ -81,17 +82,16 @@
             <h1 class="mt-4 font-weight-bold' style='font-size: px;'>Ranking Tvg Gazin</h1>
             <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 600px; font-size: 0.9em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession ?> </h4>
         </div>
-    </div>
 
     <div class="container mt-4">
-       
         <div class="container-fluid">
             <table id="ranking-table" class="table table-striped mt-4" >
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Nome</th>
-                        <th scope="col">Pontuação <i class="fas fa-sort"></i></th>
+                        <th scope="col"><i class="fa-solid fa-trophy"></i></th>
+                        <th scope="col">Equipe</th>
+                        <th scope="col">Pontuação </i></th>
+                        <th scope="col">Lider</th>
                     </tr>
                 </thead>
                 <tbody id="ranking-body">
