@@ -31,6 +31,7 @@ if(isset($nomeSessao['nome'])){
                 <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 500px; font-size: 1.1em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession ?></h4>
             </div>
         <div class='container-fluid mt-4'>
+            <div class="container mt-sm-4 border rounded shadow">
             <div class='table-responsive mt-4' style='font-size: 12px;'>
                 <table class='table table-sm table-hover table-striped mt-4'>
                     <thead>

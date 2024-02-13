@@ -42,13 +42,14 @@ $consultaVerifica->execute();
         </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container mt-4">
+        <div class="container mt-sm-4 border rounded shadow">
         <div class="table-responsive-sm mt-4" style="font-size: 12px;">
             <table class="table table-sm table-hover table-striped">
                 <thead>
                     <tr>
                         <th>Nome</th>
-                        <th>Data TVG</th>
+                        <th>Data</th>
                         <th>Situação</th>
                         <th>Editar</th>
                     </tr>
@@ -95,9 +96,9 @@ $consultaVerifica->execute();
                                 $paginaRedirecionar = ($equipesCadastradas) ? 'updateGSessao.php' : 'gerenciamentoEdicao.php';
 
                                     if($row['situacao'] != 'Finalizado')  : ?>
-                                        <a href="<?php echo $paginaRedirecionar; ?>?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a>            
+                                        <a href="<?php echo $paginaRedirecionar; ?>?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Update</a>            
                                     <?php elseif($row['situacao'] != 'Pendente') : ?>
-                                        <button class="btn btn-success" disabled style="font-size: 12px;">Atualizar</button>                           
+                                        <button class="btn btn-success" disabled style="font-size: 12px;">Update</button>                           
                                     <?php  endif; ?>                                         
                             </td>
                         </tr>
@@ -113,7 +114,7 @@ $consultaVerifica->execute();
 
                 echo "    
                         <div class='container d-flex align-items-center justify-content-center' style='height: 30vh;'>
-                            <p>Não existem Edições pendentes no momento</p>
+                            <p>Sem TVG pendente no momento!</p>
                         </div>
                 "; 
 

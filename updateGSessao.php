@@ -149,21 +149,42 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
                 $resultado = $consulta->fetch(PDO::FETCH_ASSOC);
 
                 $totalProvasNaoFinalizadas = $resultado['total_provas_nao_finalizadas'];
+
+                $queryRascunho = "SELECT COUNT(*) as total_rascunho FROM rascunho_presenca WHERE id_sessao = :id_sessao";
+                $consultarRascunho = $pdo->prepare($queryRascunho);
+                $consultarRascunho->bindValue(':id_sessao', $idGS);  
+                $consultarRascunho->execute();
+                $Rascunho = $consultarRascunho->fetch(PDO::FETCH_ASSOC);
+
+                $resultadoRascunho = $Rascunho['total_rascunho'];
+
+                $queryPresenca = "SELECT COUNT(*) as total_presenca FROM presenca WHERE id_sessao = :id_sessao";
+                $consultaPresenca = $pdo->prepare($queryPresenca);
+                $consultaPresenca->bindValue(':id_sessao', $idGS);  
+                $consultaPresenca->execute();
+                $Presenca = $consultaPresenca->fetch(PDO::FETCH_ASSOC);
+
+                $resultadoPresenca = $Presenca['total_presenca'];            
+
             ?>
 
-            <div class="container-fluid text-center mt-1 p-4">
+            <div class="container-fluid text-center p-4">
                 <?php
-                    if ($totalProvasNaoFinalizadas > 0) {
+                    if ($resultadoRascunho <= 0 && $resultadoPresenca <= 0){
+                        echo '<p>A chamada ainda não foi feita, grave o rascunho e confirme a presença. Não é possível encerrar a sessão.</p>';
+                    }elseif($totalProvasNaoFinalizadas > 0){
                         echo '<p>Ainda há provas não finalizadas. Não é possível encerrar a sessão.</p>';
-                    } elseif($totalProvasNaoFinalizadas <= 0) {
+                    }elseif($resultadoRascunho > 0 && $resultadoPresenca <= 0){
+                        echo '<p>Ainda á rascunho de presença, finalize as listas de chamada. Não é possível encerrar a sessão.</p>';
+                    }elseif($totalProvasNaoFinalizadas <= 0 && $resultadoRascunho <= 0 && $resultadoPresenca > 0) {
                     echo "<form action='finalizarSessao.php' method='post'>
                             <a href='finalizarSessao.php?id={$idGS}' type='submit' class='btn btn-secondary' data-dismiss='modal'>Finalizar Sessão</a>
                         </form>";
                     }
-                ?>
+                ?>      
             </div>
-        </div>
-        
+        </div>  
+             
  <script>
 
 

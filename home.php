@@ -39,7 +39,6 @@ require_once "conexao.php";
 
         ?>
 
-   
         <div class='dashboard-content mt-5'>
             <div class='container'>
                 <div class='card mx-auto d-flex text-center'> 
@@ -71,11 +70,11 @@ require_once "conexao.php";
                             echo "<p class='mt-1'> Tipo de usuario não encontrado.</p>";
                         }
                         ?>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <div id="login-expired-message" style="color: black;"></div>
     <script>
