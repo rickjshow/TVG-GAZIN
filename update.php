@@ -67,49 +67,59 @@ if (isset($_POST['update_usuario'])) {
     $resultUser = $consultaUser->fetchColumn();
 
     if($resultUser == 0){
-        $queryNome = "SELECT nome FROM usuarios WHERE nome = :nome";
-        $consultaNome = $pdo->prepare($queryNome);
-        $consultaNome->bindParam(':nome', $nome);
-        $consultaNome->execute();
+        // Verifique se o nome é diferente do original
+        $queryOriginalName = "SELECT nome FROM usuarios WHERE id = :id";
+        $consultaOriginalName = $pdo->prepare($queryOriginalName);
+        $consultaOriginalName->bindParam(':id', $id);
+        $consultaOriginalName->execute();
+        $originalName = $consultaOriginalName->fetch(PDO::FETCH_ASSOC)['nome'];
 
-        if($consultaNome->rowCount() > 0){
-            session_start();
-            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Nome de usuário já existente');
-            header("location: acesso.php");
-            exit();
-        }else{
-            $sqlUser = "
-            UPDATE usuarios
-            SET
-                nome = :nome,
-                senha = :senha,
-                permission = 'limited',
-                situacao = :situacao,
-                id_departamentos = :id_departamento,
-                id_tipo = :id_tipo
-            WHERE id = :id 
-            ";
-        
-            $consulta = $pdo->prepare($sqlUser);
-            $consulta->bindValue(':nome', $nome);
-            $consulta->bindValue(':senha', $senha);
-            $consulta->bindValue(':situacao', $situacao);
-            $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
-            $consulta->bindParam(':id_tipo', $resultado_tipo["id"]);
-            $consulta->bindValue(':id', $id);
-            $consulta->execute();
-        
-            if($consulta){
+        if ($nome !== $originalName) {
+            // Verifique se o novo nome já existe no banco de dados
+            $queryNome = "SELECT nome FROM usuarios WHERE nome = :nome";
+            $consultaNome = $pdo->prepare($queryNome);
+            $consultaNome->bindParam(':nome', $nome);
+            $consultaNome->execute();
+
+            if($consultaNome->rowCount() > 0){
                 session_start();
-                $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Usuário Alterado com sucesso!');
-                header("location: acesso.php");
-                exit();
-            }else{
-                session_start();
-                $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Erro ao alterar usuário!');
+                $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Nome de usuário já existente');
                 header("location: acesso.php");
                 exit();
             }
+        }
+        
+        $sqlUser = "
+        UPDATE usuarios
+        SET
+            nome = :nome,
+            senha = :senha,
+            permission = 'limited',
+            situacao = :situacao,
+            id_departamentos = :id_departamento,
+            id_tipo = :id_tipo
+        WHERE id = :id 
+        ";
+    
+        $consulta = $pdo->prepare($sqlUser);
+        $consulta->bindValue(':nome', $nome);
+        $consulta->bindValue(':senha', $senha);
+        $consulta->bindValue(':situacao', $situacao);
+        $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
+        $consulta->bindParam(':id_tipo', $resultado_tipo["id"]);
+        $consulta->bindValue(':id', $id);
+        $consulta->execute();
+    
+        if($consulta){
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Usuário Alterado com sucesso!');
+            header("location: acesso.php");
+            exit();
+        }else{
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Erro ao alterar usuário!');
+            header("location: acesso.php");
+            exit();
         }
     }else{
         session_start();

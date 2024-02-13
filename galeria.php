@@ -79,7 +79,7 @@ $Edicao = $resultadoEdicao->fetchAll(PDO::FETCH_ASSOC);
             $stmtSessao->execute();
             $IdSession = $stmtSessao->fetch(PDO::FETCH_ASSOC); 
 
-            if(isset($IdSession)){
+            if(isset($IdSession['id'])){
                 $id = $IdSession['id'];
             }
 

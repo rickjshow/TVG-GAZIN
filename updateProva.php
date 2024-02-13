@@ -14,6 +14,8 @@ $idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);
 
 if(isset($idSessao['id'])){
     $idSession = $idSessao['id'];
+}else{
+    $idSession = null;
 }
 
 if (isset($_GET['id'])) {
@@ -65,17 +67,27 @@ if (isset($_POST['update_prova'])) {
     $resultProvas = $consultaProva->fetchColumn();
 
     if($resultProvas == 0){
-        $queryNome = "SELECT nome FROM provas WHERE nome = :nome";
-        $consultaNome = $pdo->prepare($queryNome);
-        $consultaNome->bindValue(':nome', $nome);
-        $consultaNome->execute();
+
+        $queryNomeOrig = "SELECT nome FROM provas WHERE id = :id";
+        $consultaProva = $pdo->prepare($queryNomeOrig);
+        $consultaProva->bindValue(':id', $id);
+        $consultaProva->execute();
+        $ProvaResult = $consultaProva->fetch(PDO::FETCH_ASSOC)['nome'];
+
+        if($ProvaResult !== $nome){
+
+            $queryNome = "SELECT nome FROM provas WHERE nome = :nome";
+            $consultaNome = $pdo->prepare($queryNome);
+            $consultaNome->bindValue(':nome', $nome);
+            $consultaNome->execute();
 
         if($consultaNome->rowCount() > 0){
             session_start();
             $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Nome de prova já existente!');
             header("location: cadastro_provas.php");
             exit();
-        }else{
+        }
+    }
             $sqlprova = "
             UPDATE provas
             SET
@@ -95,6 +107,7 @@ if (isset($_POST['update_prova'])) {
             $consulta->bindValue(':tipo_prova',  $resultado_tipo['id'], PDO::PARAM_INT);
             $consulta->bindValue(':id', $id, PDO::PARAM_INT);
             $consulta->execute();
+        
     
             if ($consulta) {
                 session_start();
@@ -107,15 +120,13 @@ if (isset($_POST['update_prova'])) {
                 header("location: cadastro_provas.php");
                 exit();
             }
-        }
-
-    } else {
+    }else {
         session_start();
         $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Não é possível atualizar provas que estejam vinculadas a um TVG pendente!');
         header("location: cadastro_provas.php");
         exit();
     }
-}
+} 
 
 ?>
 
