@@ -31,7 +31,8 @@ verificarPermissao($permission);
     </div>
 </div>
 
-    <div class="container-fluid">
+    <div class="container mt-4">
+        <div class="container mt-sm-4 border rounded shadow">
         <div class="table-responsive-sm mt-4" style="font-size: 12px;">
             <table class="table table-sm table-hover table-striped">
                 <thead>

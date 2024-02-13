@@ -160,7 +160,7 @@ if ($resultUser['permission'] == 'limited') {
         if($consultaSession->rowCount() < 1){
         echo "    
         <div class='container d-flex align-items-center justify-content-center' style='height: 30vh;'>
-            <p>Não existem provas pendentes no momento</p>
+            <p>Sem provas pendentes no momento!</p>
         </div>";
         }
         

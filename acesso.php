@@ -26,13 +26,14 @@ verificarPermissao($permission);
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Usuarios</button>
         </div>
     </div>
-    <div class="container-fluid ">    
+    <div class="container mt-4">
+        <div class="container mt-sm-4 border rounded shadow">
         <div class="table-responsive-sm mt-4" style="font-size: 12px;">
             <table class="table table-sm table-hover table-striped">
                 <thead>
                     <tr>
                         <th>Usuario</th>
-                        <th>Departamento</th>
+                        <th>Setor</th>
                         <th>Editar</th>
                         <th>Situação</th>
                     </tr>
@@ -52,7 +53,7 @@ verificarPermissao($permission);
                         <tr>
                             <th><?php echo $row['nome']; ?></th>
                             <th><a><?php echo $row['name']; ?></a></th>
-                            <td><a href="update.php?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a></td>
+                            <td><a href="update.php?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Update</a></td>
                             <td>
                                 <a class="btn btn-<?php echo ($row['situacao'] == 'Ativo') ? 'success' : 'danger'; ?>" style="font-size: 12px;" id="btn">
                                     <?php echo $row['situacao']; ?>
