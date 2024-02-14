@@ -184,13 +184,12 @@ include "header.php";
             checkbox.checked = true;
             updateTaskStatus(checkbox);
 
-            // Adiciona a classe de estilo "done"
+           
             button.parentElement.parentElement.classList.add('done');
-            // Remove a classe de estilo "not-done" (caso ela exista)
+            
             button.parentElement.parentElement.classList.remove('not-done');
 
-            // Aqui você pode adicionar uma lógica para atualizar o status no banco de dados
-            // usando uma solicitação AJAX semelhante ao método addTask
+          
         }
 
         function markTaskAsNotDone(button, taskId) {
@@ -198,13 +197,12 @@ include "header.php";
             checkbox.checked = false;
             updateTaskStatus(checkbox);
 
-            // Adiciona a classe de estilo "not-done"
+            
             button.parentElement.parentElement.classList.add('not-done');
-            // Remove a classe de estilo "done" (caso ela exista)
+         
             button.parentElement.parentElement.classList.remove('done');
 
-            // Aqui você pode adicionar uma lógica para atualizar o status no banco de dados
-            // usando uma solicitação AJAX semelhante ao método addTask
+        
         }
     </script>
 
