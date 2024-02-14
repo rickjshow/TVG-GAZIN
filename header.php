@@ -182,6 +182,7 @@ require_once "permissao.php";
                                         <a href="acesso.php" class="dashboard-nav-item"><i class="fa-solid fa-user-plus"></i>Facilitadores</a>
                                         <a href="ranking.php" class="dashboard-nav-item"><i class="fa-solid fa-trophy"></i>Ranking</a>
                                         <a href="presenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Participantes Ausentes</a>
+                                        <a href="checklist.php" class="dashboard-nav-item"><i class="fa-solid fa-pen-to-square"></i>Checklist</a>
                                         <div class='dashboard-nav-dropdown'>
                                             <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i class="fas fa-file-upload"></i>Relatorios</a>
                                             <div class='dashboard-nav-dropdown-menu'>
@@ -196,7 +197,7 @@ require_once "permissao.php";
                                     <a href="rascunhoPresenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Lista de chamada</a>
                                 <?php endif; ?>
                                 <a href="vivenciasPendentes.php" class="dashboard-nav-item"><i class="fa fa-id-badge" aria-hidden="true"></i>Vivências Pendentes</a>
-                                <a href="galeria.php" class="dashboard-nav-item"><i class="fa fa-camera" aria-hidden="true"></i>Galeria</a>
+                                <a href="galeria.php" class="dashboard-nav-item"><i class="fa-solid fa-image"></i></i>Galeria</a>
                                 <div class="nav-item-divider"></div>
                                 <a href="logout.php" class="dashboard-nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
                             </nav>
