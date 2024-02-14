@@ -10,7 +10,7 @@ verificarPermissao($permission);
 $querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
 $ConsultaSession = $pdo->prepare($querySession);
 $ConsultaSession->execute();
-$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);    
+$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);
 
 if(isset($idSessao['id'])){
     $idSession = $idSessao['id'];

@@ -4,7 +4,6 @@ include "conexao.php";
 include "header.php";
 include "temporizador.php";
 
-
 $username = $_SESSION['username'];
 
 $queryUser = "SELECT id, permission FROM usuarios WHERE nome = :username";

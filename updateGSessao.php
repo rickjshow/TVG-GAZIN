@@ -38,7 +38,6 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
     }
 }   
 
-
 ?>
 
 <!DOCTYPE html>
@@ -175,7 +174,7 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
                         echo '<p>A chamada ainda não foi feita, grave o rascunho e confirme a presença. Não é possível encerrar a sessão.</p>';
                     }elseif($totalProvasNaoFinalizadas > 0){
                         echo '<p>Ainda há provas não finalizadas. Não é possível encerrar a sessão.</p>';
-                    }elseif($resultadoRascunho > 0 && $resultadoPresenca <= 0){
+                    }elseif($resultadoRascunho > 0 || $resultadoPresenca <= 0){
                         echo '<p>Ainda á rascunho de presença, finalize as listas de chamada. Não é possível encerrar a sessão.</p>';
                     }elseif($totalProvasNaoFinalizadas <= 0 && $resultadoRascunho <= 0 && $resultadoPresenca > 0) {
                     echo "<form action='finalizarSessao.php' method='post'>

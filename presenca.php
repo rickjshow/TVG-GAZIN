@@ -2,7 +2,10 @@
 require_once "header.php";
 require_once "conexao.php";
 require_once "adicionarPresenca.php";
+require_once "permissao.php";
 include "temporizador.php";
+
+verificarPermissao($permission);
 
 $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
 $stmtSessao = $pdo->prepare($querySessao);

@@ -1,6 +1,7 @@
 <?php
 include("header.php");
 require_once ("conexao.php");
+include "temporizador.php";
 
 $querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
 $ConsultaSession = $pdo->prepare($querySession);
