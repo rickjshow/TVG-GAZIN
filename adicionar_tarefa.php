@@ -1,5 +1,5 @@
 <?php
-require_once "conexao.php"; // Certifique-se de que este arquivo está incluído e a conexão é estabelecida
+require_once "conexao.php"; 
 
 if (isset($_POST["newTask"])) {
     if (empty($_POST["newTask"])) {
