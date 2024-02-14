@@ -137,6 +137,32 @@ verificarPermissao($permission);
 
 
     <div id="login-expired-message" style="color: black;"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+                function verificarSituacaoUsuario() {
+                    $.ajax({
+                        url: 'verificarUser.php',
+                        method: 'POST',
+                        success: function(response) {
+                            var data = JSON.parse(response);
+                            if (data.status === 'inativo') {
+                                // Redirecionar para a página de logout ou mostrar uma mensagem
+                                window.location.href = 'logout.php';
+                            } else {
+                                // Usuário ativo, pode continuar normalmente
+                                console.log('Usuário está ativo.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                }
+                setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+            });
+
+    </script>
     <script>
         resetTimer();
     </script>
