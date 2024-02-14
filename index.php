@@ -2,7 +2,6 @@
 session_start();
 require_once "conexao.php";
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if(empty($_POST['nome']) || empty($_POST['senha'])){
         echo "<script>alert('Por favor, preencha todos os campos!');</script>";
@@ -44,7 +43,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="alert.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" 
+    rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <title>TVG GAZIN</title>
 </head>
 
@@ -69,5 +71,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button class="btn mt-3">Login</button>
         </form>
     </div>
+    <?php 
+    
+        if (isset($_SESSION['alerta'])) {
+            echo "<script>
+                    alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');
+                    </script>";
+            unset($_SESSION['alerta']);
+            session_destroy();
+        }
+    
+    ?>
 </body>
 </html>

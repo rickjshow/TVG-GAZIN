@@ -1,8 +1,8 @@
 <?php
-// Verifica se a requisição é uma requisição AJAX
-if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-    include 'conexao.php';
 
+include "conexao.php";
+
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
     if (isset($_SESSION['username'])) {
         $username = $_SESSION['username'];
 
