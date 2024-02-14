@@ -299,7 +299,32 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
             </div>
         </form>
 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                        function verificarSituacaoUsuario() {
+                            $.ajax({
+                                url: 'verificarUser.php',
+                                method: 'POST',
+                                success: function(response) {
+                                    var data = JSON.parse(response);
+                                    if (data.status === 'inativo') {
+                                        // Redirecionar para a página de logout ou mostrar uma mensagem
+                                        window.location.href = 'logout.php';
+                                    } else {
+                                        // Usuário ativo, pode continuar normalmente
+                                        console.log('Usuário está ativo.');
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+                    });
 
+            </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />

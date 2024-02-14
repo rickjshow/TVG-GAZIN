@@ -27,13 +27,11 @@ function obterPermissaoDoBancoDeDados($username)
     $queryPerm = "SELECT permission FROM usuarios WHERE nome = :username";
     $stmt = $pdo->prepare($queryPerm);
     $stmt->bindParam(":username", $username);
-
+    
     $stmt->execute();
 
     $stmt->bindColumn("permission", $permissao);
-
     $stmt->fetch(PDO::FETCH_BOUND);
-
     $stmt->closeCursor();
 
     return $permissao;

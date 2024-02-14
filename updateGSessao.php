@@ -38,7 +38,6 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
     }
 }   
 
-
 ?>
 
 <!DOCTYPE html>
@@ -175,7 +174,7 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
                         echo '<p>A chamada ainda não foi feita, grave o rascunho e confirme a presença. Não é possível encerrar a sessão.</p>';
                     }elseif($totalProvasNaoFinalizadas > 0){
                         echo '<p>Ainda há provas não finalizadas. Não é possível encerrar a sessão.</p>';
-                    }elseif($resultadoRascunho > 0 && $resultadoPresenca <= 0){
+                    }elseif($resultadoRascunho > 0 || $resultadoPresenca <= 0){
                         echo '<p>Ainda á rascunho de presença, finalize as listas de chamada. Não é possível encerrar a sessão.</p>';
                     }elseif($totalProvasNaoFinalizadas <= 0 && $resultadoRascunho <= 0 && $resultadoPresenca > 0) {
                     echo "<form action='finalizarSessao.php' method='post'>
@@ -227,9 +226,33 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
         });
     });
 
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                    function verificarSituacaoUsuario() {
+                        $.ajax({
+                            url: 'verificarUser.php',
+                            method: 'POST',
+                            success: function(response) {
+                                var data = JSON.parse(response);
+                                if (data.status === 'inativo') {
+                                    // Redirecionar para a página de logout ou mostrar uma mensagem
+                                    window.location.href = 'logout.php';
+                                } else {
+                                    // Usuário ativo, pode continuar normalmente
+                                    console.log('Usuário está ativo.');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+                    setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+                });
 
-</script>
-    
+        </script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

@@ -10,7 +10,7 @@ verificarPermissao($permission);
 $querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
 $ConsultaSession = $pdo->prepare($querySession);
 $ConsultaSession->execute();
-$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);    
+$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);
 
 if(isset($idSessao['id'])){
     $idSession = $idSessao['id'];
@@ -239,6 +239,32 @@ if (isset($_POST['update_prova'])) {
     </div>
 </div>
 <div class="text-center mt-4"></div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+                function verificarSituacaoUsuario() {
+                    $.ajax({
+                        url: 'verificarUser.php',
+                        method: 'POST',
+                        success: function(response) {
+                            var data = JSON.parse(response);
+                            if (data.status === 'inativo') {
+                                // Redirecionar para a página de logout ou mostrar uma mensagem
+                                window.location.href = 'logout.php';
+                            } else {
+                                // Usuário ativo, pode continuar normalmente
+                                console.log('Usuário está ativo.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                }
+                setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+            });
+
+    </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
 </body>
