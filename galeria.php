@@ -40,63 +40,68 @@ $resultUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
         }
     </style>
 
-    <div class="container mt-4">
-        <div class="box1 mt-4 text-center p-4 border rounded shadow">
-            <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Galeria de Fotos</h3>
+        <div class="container mt-4">
+            <div class="box1 mt-4 text-center p-4 border rounded shadow">
+                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Galeria de Fotos</h3>
                 <?php 
                     if(isset($Edicao) && !empty($Edicao)){
-                        echo "<button class='btn btn-primary mt-4' data-toggle='modal' style='font-size: 15px;' data-target='#importModal'>Adicionar Imagens</button>";            
+                        echo "<button class='btn btn-primary mt-4' data-toggle='modal' style='font-size: 15px;' data-target='#importModal'>Adicionar Imagens</button>";           
                     }else{
-                      echo"<p class='mt-4'>Sem TVG pendente no momento!</p>";  
-                    }                
-                ?>
-                <?php
-
+                        echo"<p class='mt-4'>Sem TVG pendente no momento!</p>";  
+                    }                           
+                    if($resultUser['permission'] == 'admin'){
+                        echo "<div class='container'>";
+                        echo "<button id='downloadTodasAsImagens' class='btn btn-primary mt-4'>Baixar todas as fotos</button>";
+                        echo "</div>";
+                    }
+                    
                     if($resultUser['permission'] == 'admin'){
                         echo "<form method='post' action='galeria.php' class='mt-4'>
-                            <div class='form-row align-items-center justify-content-center'>
-                                <div class='col-auto'>
-                                    <label class='sr-only' for='tvg'>Selecione o TVG:</label>
-                                    <select class='custom-select mr-sm-2' name='tvg' id='tvg'>";                                  
-                                        
+                                <div class='form-row align-items-center justify-content-center'>
+                                    <div class='col-auto'>
+                                        <label class='sr-only' for='tvg'>Selecione o TVG:</label>
+                                        <select class='custom-select mr-sm-2' name='tvg' id='tvg'>";                                  
+                                            
                                             $query = "SELECT * FROM sessoes ORDER BY data_criacao DESC";
                                             $querySessao = $pdo->prepare($query);
                                             $querySessao->execute();
                                             $SessaoName = $querySessao->fetchAll(PDO::FETCH_ASSOC);
 
-                                            foreach ($SessaoName as $row){
-                                                echo "<option value='" . $row['nome'] . "' " . ($row['nome'] == "" ? 'selected' : '') . ">
+                                            $nomeSelecionado = isset($_POST['tvg']) ? $_POST['tvg'] : '';
+
+                                            foreach ($SessaoName as $row) {
+                                                $selected = ($row['nome'] == $nomeSelecionado) ? 'selected' : '';
+                                                echo "<option value='" . $row['nome'] . "' $selected>
                                                     " . $row['nome'] . "
                                                 </option>";
-                                            }                                 
-                                    
-                                    echo "</select>
+                                            }                                                                           
+                                        
+                                        echo "</select>
+                                    </div>
+                                    <div class='col-auto'>
+                                        <button type='submit' name='filtrar' class='btn btn-primary'>Filtrar</button>
+                                    </div>
                                 </div>
-                                <div class='col-auto'>
-                                    <button type='submit' name='filtrar' class='btn btn-primary'>Filtrar</button>
-                                </div>
-                            </div>
-                        </form>";
+                            </form>";
                     }elseif($resultUser['permission'] == 'limited'){
                         echo "<form method='post' action='galeria.php' class='mt-4'>
-                            <div class='form-row align-items-center justify-content-center'>
-                                <div class='col-auto'>
-                                    <label class='sr-only' for='tvg'>Selecione o TVG:</label>
-                                    <select class='custom-select mr-sm-2' name='tvg' id='tvg'>                                                   
-                                        <option value='geral'>Geral</option>
-                                        <option value='proprio'>Meus anexos</option>";
-                                    echo "</select>
+                                <div class='form-row align-items-center justify-content-center'>
+                                    <div class='col-auto'>
+                                        <label class='sr-only' for='tvg'>Selecione o TVG:</label>
+                                        <select class='custom-select mr-sm-2' name='tvg' id='tvg'>                                                   
+                                            <option value='geral'>Geral</option>
+                                            <option value='proprio'>Meus anexos</option>";
+                                        echo "</select>
+                                    </div>
+                                    <div class='col-auto'>
+                                        <button type='submit' name='filtrar' class='btn btn-primary'>Filtrar</button>
+                                    </div>
                                 </div>
-                                <div class='col-auto'>
-                                    <button type='submit' name='filtrar' class='btn btn-primary'>Filtrar</button>
-                                </div>
-                            </div>
-                        </form>"; 
+                            </form>"; 
                     }
-                   
                 ?>
+            </div> 
         </div>
-    </div>
     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -136,7 +141,7 @@ if(isset($_POST['filtrar'])){
 
             $queryImagem = "SELECT id, imagem FROM galeria WHERE id_sessoes = :id_sessoes";
             $stmtimagem = $pdo->prepare($queryImagem);
-            $stmtimagem->bindParam(':id_sessoes', $Edicao);
+            $stmtimagem->bindParam(':id_sessoes', $row['id']);
             $stmtimagem->execute();
 
             if($stmtimagem->rowCount() <= 0){
@@ -203,13 +208,13 @@ if(isset($_POST['filtrar'])){
                 }elseif($resultUser['permission'] == 'admin'){
                     echo '<div class="col-6 col-md-4 col-lg-3 mb-4 mt-4 position-relative">
                     <img src="data:image/jpeg;base64,'.$imagemBase64.'" class="img-fluid mb-2 fixed-size-image" alt="">
-                    <a href="excluir_imagem.php?id='.$imagemId.'" class="position-absolute top-0 end-0 text-danger" style="margin-top: -13px; margin-right: 10px; font-size: 20px;">
+                    <a href="excluir_imagem.php?id='.$imagemId.'" class="position-absolute top-0 end-0 text-danger" style="margin-top: -13px; margin-right: 5px; font-size: 20px;">
                         <i class="fas fa-times-circle fa-xs"></i>
                     </a>
                   </div>';
                 }           
             }
-            // Fecha o container da galeria
+
             echo '</div>
                 </div>';
         } else {
@@ -243,6 +248,72 @@ if(isset($_POST['filtrar'])){
                 setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
             });
 
+    </script>
+
+    <script>
+        // Evento de clique no botão "Baixar todas as fotos"
+        document.getElementById('downloadTodasAsImagens').addEventListener('click', function() {
+            // Selecione todas as imagens exibidas
+            var imagens = document.querySelectorAll('.fixed-size-image');
+            
+            // Verifique se há imagens
+            if (imagens.length > 0) {
+                // Itere sobre cada imagem
+                imagens.forEach(function(imagem, index) {
+                    // Converta a imagem em um URL de dados
+                    var imgSrc = imagem.getAttribute('src');
+                    var imagemBase64 = imgSrc.split(',')[1];
+                    var blob = b64toBlob(imagemBase64, 'image/jpeg');
+                    var url = window.URL.createObjectURL(blob);
+                    
+                    // Crie um link de download para a imagem
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'imagem' + index + '.jpeg';
+                    
+                    // Adicione o link ao corpo do documento
+                    document.body.appendChild(link);
+                    
+                    // Simule um clique no link para iniciar o download
+                    link.click();
+                    
+                    // Remova o link do corpo do documento
+                    document.body.removeChild(link);
+                });
+            } else {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: 'Não existem fotos para baixar!',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        });
+
+        // Função auxiliar para converter base64 em Blob
+        function b64toBlob(b64Data, contentType, sliceSize) {
+            contentType = contentType || '';
+            sliceSize = sliceSize || 512;
+
+            var byteCharacters = atob(b64Data);
+            var byteArrays = [];
+
+            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+                var byteNumbers = new Array(slice.length);
+                for (var i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }
+
+                var byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }
+
+            var blob = new Blob(byteArrays, { type: contentType });
+            return blob;
+        }
     </script>
 
 
