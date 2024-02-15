@@ -142,23 +142,34 @@ verificarPermissao($permission);
 
             </script>
 
-           <script>
-                function atualizarBusca() {
-                    var busca = document.getElementById('campoBusca').value;
+            <script>
+                window.onload = function() {
 
+                    atualizarBusca('');
+                };
+
+                function atualizarBusca(busca) {
                     $.ajax({
-                        url: 'busca.php', // Arquivo PHP para processar a busca
+                        url: 'buscaUsuarios.php', 
                         method: 'POST',
-                        data: { buscar: true, search: busca }, // Parâmetros da busca
+                        data: { buscar: true, search: busca }, 
                         success: function(response) {
-                            $('#tabelaResultados').html(response); // Atualiza a tabela com os resultados
+                            $('#tabelaResultados').html(response); 
                         },
                         error: function(xhr, status, error) {
-                            console.error(error); // Manipula erros, se houver
+                            console.error(error); 
                         }
                     });
                 }
+
+                $(document).ready(function() {
+                    $('#campoBusca').keyup(function() {
+                        var busca = $(this).val();
+                        atualizarBusca(busca);
+                    });
+                });
             </script>
+
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>

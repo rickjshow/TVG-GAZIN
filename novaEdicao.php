@@ -32,9 +32,6 @@ $consultaVerifica->execute();
 ?>
 
 
-
-
-
     <div class="container mt-4 mb-3">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
             <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Edição TVG</h3>
@@ -141,10 +138,10 @@ $consultaVerifica->execute();
                         success: function(response) {
                             var data = JSON.parse(response);
                             if (data.status === 'inativo') {
-                                // Redirecionar para a página de logout ou mostrar uma mensagem
+
                                 window.location.href = 'logout.php';
                             } else {
-                                // Usuário ativo, pode continuar normalmente
+
                                 console.log('Usuário está ativo.');
                             }
                         },
@@ -153,28 +150,40 @@ $consultaVerifica->execute();
                         }
                     });
                 }
-                setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+                setInterval(verificarSituacaoUsuario, 10000); 
             });
 
     </script>
 
-        <script>
-            function atualizarBusca() {
-                var busca = document.getElementById('campoBusca').value;
+<script>
+    window.onload = function() {
 
-                $.ajax({
-                    url: 'buscaEdicao.php', // Arquivo PHP para processar a busca
-                    method: 'POST',
-                    data: { buscar: true, search: busca }, // Parâmetros da busca
-                    success: function(response) {
-                        $('#tabelaResultados').html(response); // Atualiza a tabela com os resultados
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(error); // Manipula erros, se houver
-                    }
-                });
+        atualizarBusca('');
+    };
+
+    function atualizarBusca(busca) {
+        $.ajax({
+            url: 'buscaEdicao.php', 
+            method: 'POST',
+            data: { buscar: true, search: busca }, 
+            success: function(response) {
+                $('#tabelaResultados').html(response); 
+            },
+            error: function(xhr, status, error) {
+                console.error(error); 
             }
-        </script>
+        });
+    }
+
+    $(document).ready(function() {
+        $('#campoBusca').keyup(function() {
+            var busca = $(this).val();
+            atualizarBusca(busca);
+        });
+    });
+</script>
+
+
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

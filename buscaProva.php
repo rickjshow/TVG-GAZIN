@@ -11,7 +11,7 @@ include "conexao.php";
             $consulta = $pdo->prepare($query);
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-            }else{
+            }elseif(isset($_POST['buscar']) && empty($_POST['search'])){
                 $query = "SELECT * FROM provas";
                 $consulta = $pdo->prepare($query);
                 $consulta->execute();

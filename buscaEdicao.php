@@ -13,7 +13,7 @@ include "conexao.php";
         $consulta->execute();
         $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-        }else{
+        }elseif(isset($_POST['buscar']) && empty($_POST['search'])){
             $query = "SELECT * FROM sessoes ORDER BY data_criacao DESC LIMIT 8";
             $consulta = $pdo->prepare($query);
             $consulta->execute();
