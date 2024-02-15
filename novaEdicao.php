@@ -35,14 +35,27 @@ $consultaVerifica->execute();
 
 
 
-    <div class="container mt-4">
+    <div class="container mt-4 mb-3">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
             <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Edição TVG</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Edição</button>
         </div>
     </div>
 
-    <div class="container mt-4">
+    <form action="buscaEdicao.php" method="POST">
+        <div class="container mt-4">
+            <div class="input-group mb-3">
+                <input type="text" id="campoBusca" class="form-control" name="search" placeholder="Buscar TVG por nome" onkeyup="atualizarBusca()">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit" name="buscar" id="botaoBusca">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="container mt-2">
         <div class="container mt-sm-4 border rounded shadow">
         <div class="table-responsive-sm mt-4" style="font-size: 12px;">
             <table class="table table-sm table-hover table-striped">
@@ -55,55 +68,7 @@ $consultaVerifica->execute();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $query = "SELECT * FROM sessoes";
-                    $consulta = $pdo->prepare($query);
-                    $consulta->execute();
-                    $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
-                    $queryG = "SELECT s.id AS sessao_id FROM gerenciamento_sessao AS gs
-                    JOIN sessoes AS s ON gs.id_sessoes = s.id";
-                    $consulta2 = $pdo->prepare($queryG);
-                    $consulta2->execute();
-                    $dados = $consulta2->fetchAll(PDO::FETCH_ASSOC);
-
-                    foreach ($dados as $dado);
-                    ?>
-
-                    <?php
-                       foreach ($data as $row) :
-                        ?>
-                        <tr>
-                            <th><?php echo $row['nome']; ?></th>
-                            <th><a><?php echo $row['data_TVG']; ?></a></th>
-                            <td>
-                                <a class="btn btn-<?php echo ($row['situacao'] == 'Pendente') ? 'danger' : 'success'; ?>" style="font-size: 12px;" id="btn">
-                                    <?php echo $row['situacao']; ?>
-                                </a>
-                            </td>
-                            <td>
-                                <?php
-                                
-                                $queryG = "SELECT s.id AS sessao_id FROM gerenciamento_sessao AS gs
-                                            JOIN sessoes AS s ON gs.id_sessoes = s.id
-                                            WHERE s.id = :sessao_id";
-                                $consulta2 = $pdo->prepare($queryG);
-                                $consulta2->bindValue(':sessao_id', $row['id']);
-                                $consulta2->execute();
-                                $equipesCadastradas = $consulta2->fetch(PDO::FETCH_ASSOC);
-                    
-                             
-                                $paginaRedirecionar = ($equipesCadastradas) ? 'updateGSessao.php' : 'gerenciamentoEdicao.php';
-
-                                    if($row['situacao'] != 'Finalizado')  : ?>
-                                        <a href="<?php echo $paginaRedirecionar; ?>?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Update</a>            
-                                    <?php elseif($row['situacao'] != 'Pendente') : ?>
-                                        <button class="btn btn-success" disabled style="font-size: 12px;">Update</button>                           
-                                    <?php  endif; ?>                                         
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-
+                    <tbody id="tabelaResultados"> 
                 </tbody>
             </table>
         </div>
@@ -192,6 +157,24 @@ $consultaVerifica->execute();
             });
 
     </script>
+
+        <script>
+            function atualizarBusca() {
+                var busca = document.getElementById('campoBusca').value;
+
+                $.ajax({
+                    url: 'buscaEdicao.php', // Arquivo PHP para processar a busca
+                    method: 'POST',
+                    data: { buscar: true, search: busca }, // Parâmetros da busca
+                    success: function(response) {
+                        $('#tabelaResultados').html(response); // Atualiza a tabela com os resultados
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error); // Manipula erros, se houver
+                    }
+                });
+            }
+        </script>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

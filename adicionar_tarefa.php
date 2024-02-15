@@ -16,18 +16,17 @@ if (isset($_POST["newTask"])) {
     $stmt1->bindParam(':nome', $taskText);
     $stmt1->bindParam(':situacao', $situacaoPadrao);
 
-    if ($stmt1->execute()) {
-        session_start();
-        $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Tarefa Cadastrada com sucesso!');
-        header("location:checklist.php");
-        exit();
-    } else {
-        session_start();
-        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Falha ao cadastrar a tarefa');
-        header("location: checklist.php");
-        exit();
+        if ($stmt1->execute()) {
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Tarefa Cadastrada com sucesso!');
+            header("location:tarefas.php");
+            exit();
+        } else {
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Falha ao cadastrar a tarefa');
+            header("location: tarefas.php");
+            exit();
+        }
     }
-}
-
 }
 ?>

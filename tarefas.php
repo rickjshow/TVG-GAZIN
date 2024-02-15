@@ -162,13 +162,11 @@ include "header.php";
                     </div>
             </form>
 
-
             <?php
             $tarefasretorno = "SELECT * FROM tarefas";
             $consulta = $pdo->prepare($tarefasretorno);
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-
           
 
             if ($data) {

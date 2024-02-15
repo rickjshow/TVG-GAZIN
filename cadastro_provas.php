@@ -30,6 +30,19 @@ verificarPermissao($permission);
         </div>
     </div>
 
+    <form action="buscaProva.php" method="POST">
+        <div class="container mt-4">
+            <div class="input-group mb-3">
+                <input type="text" id="campoBusca" class="form-control" name="search" placeholder="Buscar vivência por nome" onkeyup="atualizarBusca()">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit" name="buscar" id="botaoBusca">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
     <div class="container">
         <div class="container mt-4 border rounded shadow">
 
@@ -42,19 +55,7 @@ verificarPermissao($permission);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        $query = "SELECT * FROM provas";
-                        $consulta = $pdo->prepare($query);
-                        $consulta->execute();
-                        $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-                        ?>
-
-                        <?php foreach ($data as $row) : ?>
-                            <tr>
-                                <th><?php echo $row['nome']; ?></th>
-                                <td><a href="updateProva.php?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a></td>
-                            </tr>
-                        <?php endforeach; ?>
+                        <tbody id="tabelaResultados"> 
                     </tbody>
                 </table>
             </div>
@@ -154,6 +155,24 @@ verificarPermissao($permission);
                 setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
             });
 
+    </script>
+
+    <script>
+        function atualizarBusca() {
+            var busca = document.getElementById('campoBusca').value
+
+            $.ajax({
+                url: 'buscaProva.php', 
+                method: 'POST',
+                data: { buscar: true, search: busca }, 
+                success: function(response) {
+                    $('#tabelaResultados').html(response); 
+                },
+                error: function(xhr, status, error) {
+                    console.error(error); 
+                }
+            });
+        }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
