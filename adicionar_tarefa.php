@@ -31,9 +31,3 @@ if (isset($_POST["newTask"])) {
 
 }
 ?>
-
-
-
-
-
-

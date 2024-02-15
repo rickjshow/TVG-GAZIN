@@ -38,5 +38,3 @@
         echo "<tr><td colspan='4' class='text-center'>Nenhuma sessão pendente ou prova finalizada no momento</td></tr>";
     }
 ?>
-
-

@@ -182,7 +182,7 @@ require_once "permissao.php";
                                         <a href="acesso.php" class="dashboard-nav-item"><i class="fa-solid fa-user-plus"></i>Facilitadores</a>
                                         <a href="ranking.php" class="dashboard-nav-item"><i class="fa-solid fa-trophy"></i>Ranking</a>
                                         <a href="presenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Participantes Ausentes</a>
-                                        <a href="checklist.php" class="dashboard-nav-item"><i class="fa-solid fa-pen-to-square"></i>Checklist</a>
+                                        <a href="tarefas.php" class="dashboard-nav-item"><i class="fa-solid fa-pen-to-square"></i>Tarefas</a>
                                         <div class='dashboard-nav-dropdown'>
                                             <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i class="fas fa-file-upload"></i>Relatorios</a>
                                             <div class='dashboard-nav-dropdown-menu'>
