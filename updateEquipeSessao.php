@@ -39,6 +39,7 @@ if (isset($_GET['id'])) {
     }
 }
 
+
 if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["equipe"]) && isset($_POST["facilitador"]) && isset($_POST["participante"]) && isset($_POST["provas"]) && isset($_POST["id"]) && isset($_POST["id2"]))) {
 
     $sessao = $_POST["sessao"];
@@ -156,6 +157,24 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
 
 ?>
 
+<?php 
+
+    $queryVerificar = "SELECT COUNT(*) FROM equipes_provas WHERE id_sessao = :id_sessao AND id_equipes = :id_equipes AND situacao = 'Finalizado' OR andamento = 'Execultando'";
+    $consultaVerificar = $pdo->prepare($queryVerificar);
+    $consultaVerificar->bindParam(':id_sessao', $sesId);
+    $consultaVerificar->bindParam(':id_equipes', $id_equipe);
+    $consultaVerificar->execute();
+    $result = $consultaVerificar->fetchColumn();
+
+    if($result > 0){
+        session_start();
+        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'A equipe já possui provas em andamento, não é possível editar!');
+        header("location: novaEdicao.php");
+        exit;
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -163,6 +182,7 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="./fontawesome-free-6.5.1-web/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Editar equipe TVG</title>
@@ -327,7 +347,6 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
             </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
         <script>
             $(".select2").select2();

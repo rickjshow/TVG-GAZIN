@@ -130,7 +130,6 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
             </div>
         </div>
     </div>
-
         <div class="container-fluid text-center mt-1 p-4">
             <?php 
 
