@@ -32,7 +32,7 @@ verificarPermissao($permission);
     </div>
 </div>
 
-<form action="busca.php" method="POST">
+<form id="formBusca">
     <div class="container mt-4">
         <div class="input-group mb-3">
             <input type="text" id="campoBusca" class="form-control" name="search" placeholder="Buscar participante por nome" onkeyup="atualizarBusca()">
@@ -150,7 +150,7 @@ verificarPermissao($permission);
 
                 function atualizarBusca(busca) {
                     $.ajax({
-                        url: 'buscaUsuarios.php', 
+                        url: 'busca.php', 
                         method: 'POST',
                         data: { buscar: true, search: busca }, 
                         success: function(response) {

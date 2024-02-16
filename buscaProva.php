@@ -11,11 +11,13 @@ include "conexao.php";
             $consulta = $pdo->prepare($query);
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
             }elseif(isset($_POST['buscar']) && empty($_POST['search'])){
-                $query = "SELECT * FROM provas";
+
+                $query = "SELECT * FROM provas ORDER BY nome ASC LIMIT 8";
                 $consulta = $pdo->prepare($query);
                 $consulta->execute();
-                $data = $consulta->fetchAll(PDO::FETCH_ASSOC);  
+                $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 

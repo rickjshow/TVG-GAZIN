@@ -80,6 +80,7 @@ require_once "conexao.php";
     <script>
         resetTimer();
     </script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -104,7 +105,6 @@ require_once "conexao.php";
                 }
                 setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
             });
-
     </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

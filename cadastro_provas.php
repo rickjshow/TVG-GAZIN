@@ -30,7 +30,7 @@ verificarPermissao($permission);
         </div>
     </div>
 
-    <form action="buscaProva.php" method="POST">
+    <form id="formBusca">
         <div class="container mt-4">
             <div class="input-group mb-3">
                 <input type="text" id="campoBusca" class="form-control" name="search" placeholder="Buscar vivência por nome" onkeyup="atualizarBusca()">
@@ -153,9 +153,8 @@ verificarPermissao($permission);
                         }
                     });
                 }
-                setInterval(verificarSituacaoUsuario, 10000); 
+                setInterval(verificarSituacaoUsuario, 10000);
             });
-
     </script>
 
     <script>

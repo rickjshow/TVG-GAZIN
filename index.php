@@ -21,26 +21,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($user) {
                 if ($user['situacao'] == 'Ativo') {
 
-                    $id = $user['id'];
+                    $_SESSION["username"] = $username;
+                    header("location: home.php");
 
-                    $queryUser = "SELECT COUNT(*) FROM sessao_usuario WHERE id_usuario = :id_usuario";
-                    $stmtUser = $pdo->prepare($queryUser);
-                    $stmtUser->bindParam(":id_usuario", $id);
-                    $stmtUser->execute();
-                    $sessao = $stmtUser->fetchColumn();
-
-                        if($sessao <= 0){
-
-                        $querySessao = "INSERT INTO sessao_usuario (id_usuario) VALUES (:id_usuario)";
-                        $stmtSessao = $pdo->prepare($querySessao);
-                        $stmtSessao->bindParam(":id_usuario", $id);
-                        $stmtSessao->execute();     	
-
-                        $_SESSION["username"] = $username;
-                        header("location: home.php");
-                        }else{
-                            echo "<script>alert('Esse usuário já está logado!');</script>";
-                        }
                 } elseif ($user['situacao'] == 'Inativo') {
                     echo "<script>alert('Usuário Inativo Temporariamente!');</script>";
                 }
