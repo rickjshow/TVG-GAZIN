@@ -28,10 +28,6 @@ $resultUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="alert.js"></script>
-    <title>Document</title>
-</head>
-<body>
-
     <style>
         .fixed-size-image {
             width: 200px; 
@@ -39,22 +35,26 @@ $resultUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
             object-fit: cover; 
         }
     </style>
+    <title>Document</title> 
+</head>
+<body>
+
+
+    <div class="container mt-4">
+        <div class="box1 mt-4 text-center p-4 border rounded shadow">
+            <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Galeria de Fotos</h3>
+        </div>
+    </div>
 
         <div class="container mt-4">
             <div class="box1 mt-4 text-center p-4 border rounded shadow">
-                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Galeria de Fotos</h3>
                 <?php 
                     if(isset($Edicao) && !empty($Edicao)){
                         echo "<button class='btn btn-primary mt-4' data-toggle='modal' style='font-size: 15px;' data-target='#importModal'>Adicionar Imagens</button>";           
                     }else{
                         echo"<p class='mt-4'>Sem TVG pendente no momento!</p>";  
                     }                           
-                    if($resultUser['permission'] == 'admin'){
-                        echo "<div class='container'>";
-                        echo "<button id='downloadTodasAsImagens' class='btn btn-primary mt-4'>Baixar todas as fotos</button>";
-                        echo "</div>";
-                    }
-                    
+                   
                     if($resultUser['permission'] == 'admin'){
                         echo "<form method='post' action='galeria.php' class='mt-4'>
                                 <div class='form-row align-items-center justify-content-center'>
@@ -215,13 +215,28 @@ if(isset($_POST['filtrar'])){
                 }           
             }
 
-            echo '</div>
-                </div>';
+                if ($resultUser['permission'] == 'admin') {
+                    echo "</div>"; 
+
+                    echo "<div class='container'>
+                            <div class='row justify-content-end'>
+                                <div class='col-auto'>
+                                    <button id='downloadTodasAsImagens' class='btn btn-primary '>download</button>
+                                     <div class='text-center mt-4'></div>
+                                </div>
+                            </div>
+                        </div>";
+                    echo '</div>';
+                    echo '</div>';
+                }
+               
+            echo "  <div class='text-center mt-4'></div>";
         } else {
             echo $mensagem;
         }
     }
 }
+
 ?>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

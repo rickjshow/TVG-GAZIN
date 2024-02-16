@@ -14,7 +14,6 @@ require_once "conexao.php";
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
     }else{
-
         $query = "SELECT u.*, d.name
         FROM usuarios as u
         JOIN departamentos as d ON u.id_departamentos = d.id
