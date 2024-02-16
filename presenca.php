@@ -42,13 +42,14 @@ if(isset($nomeSessao['nome'])){
                             <th>Facilitador</th>
                             <th>Participante</th>
                             <th>Equipe</th>
+                            <th>Rascunho</th>
                         </tr>
                     </thead>
                     <tbody>
 
                     <?php
                                        
-                        $query = "SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador 
+                        $query = "SELECT 'presenca' AS origem, p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador 
                         FROM presenca AS pre
                         JOIN status AS s ON pre.id_status = s.id
                         JOIN participantes AS p ON pre.id_participantes = p.id
@@ -58,7 +59,7 @@ if(isset($nomeSessao['nome'])){
                         JOIN equipes AS e ON gs.id_equipe = e.id
                         WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente' AND gs.id_sessoes = :id_sessao
                         UNION
-                        SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador 
+                        SELECT 'rascunho_presenca' AS origem, p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador 
                         FROM rascunho_presenca AS rp
                         JOIN status AS s ON rp.id_status = s.id
                         JOIN participantes AS p ON rp.id_participantes = p.id
@@ -78,10 +79,15 @@ if(isset($nomeSessao['nome'])){
                                 echo "<th style='font-weight: normal;'>{$row['nome_facilitador']}</th>";
                                 echo "<th style='font-weight: normal;'>{$row['participante_nome']}</th>";
                                 echo "<th style='font-weight: normal;'>{$row['equipe_nome']}</th>";
-                                echo "</tr>";
+                                if($row['origem'] == 'presenca'){
+                                    echo "<th style='font-weight: normal;'>NÃO</th>";
+                                }elseif($row['origem'] == 'rascunho_presenca'){
+                                    echo "<th style='font-weight: normal;'>SIM</th>"; 
+                                }
+                               
                             }
                         } else {
-                            echo "<tr><td colspan='3' class='text-center align-middle'>Não há participantes ausentes nesta sessão.</td></tr>";
+                            echo "<tr><td colspan='4' class='text-center align-middle'>Não há participantes ausentes nesta sessão.</td></tr>";
                         }
 
                     ?>
@@ -91,6 +97,7 @@ if(isset($nomeSessao['nome'])){
             </div>
         </body>
         </html>
+
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script>
                 $(document).ready(function() {
