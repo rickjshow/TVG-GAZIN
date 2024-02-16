@@ -24,7 +24,7 @@ include "conexao.php";
     <?php if(isset($data) && !empty($data)) : ?>
         <?php foreach ($data as $row) : ?>
             <tr>
-                <th><?php echo $row['nome']; ?></th>
+                <th style="font-weight: normal;"><?php echo $row['nome']; ?></th>
                 <td><a href="updateProva.php?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Atualizar</a></td>
             </tr>
         <?php endforeach; ?>

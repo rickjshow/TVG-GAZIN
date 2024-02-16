@@ -110,7 +110,6 @@ if (isset($_POST['update_participantes'])) {
 
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -124,7 +123,6 @@ if (isset($_POST['update_participantes'])) {
 </head>
 
 <body>
-
 
 <div class="container mt-4">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">

@@ -36,8 +36,8 @@ include "conexao.php";
        foreach ($data as $row) :
         ?>
         <tr>
-            <th><?php echo $row['nome']; ?></th>
-            <th><a><?php echo $row['data_TVG']; ?></a></th>
+            <th style="font-weight: normal;"><?php echo $row['nome']; ?></th>
+            <th style="font-weight: normal;"><a><?php echo $row['data_TVG']; ?></a></th>
             <td>
                 <a class="btn btn-<?php echo ($row['situacao'] == 'Pendente') ? 'danger' : 'success'; ?>" style="font-size: 12px;" id="btn">
                     <?php echo $row['situacao']; ?>

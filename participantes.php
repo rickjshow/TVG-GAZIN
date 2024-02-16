@@ -51,7 +51,7 @@ verificarPermissao($permission);
             <table class="table table-sm table-hover table-striped">
                 <thead>
                     <tr>
-                        <th>Usuario</th>
+                        <th>Particpante</th>
                         <th>Departamento</th>
                         <th>Editar</th>
                     </tr>
@@ -125,10 +125,8 @@ verificarPermissao($permission);
                                 success: function(response) {
                                     var data = JSON.parse(response);
                                     if (data.status === 'inativo') {
-                                        // Redirecionar para a página de logout ou mostrar uma mensagem
                                         window.location.href = 'logout.php';
-                                    } else {
-                                        // Usuário ativo, pode continuar normalmente
+                                    } else {  
                                         console.log('Usuário está ativo.');
                                     }
                                 },
@@ -137,7 +135,7 @@ verificarPermissao($permission);
                                 }
                             });
                         }
-                        setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+                        setInterval(verificarSituacaoUsuario, 10000); 
                     });
 
             </script>
@@ -150,7 +148,7 @@ verificarPermissao($permission);
 
                 function atualizarBusca(busca) {
                     $.ajax({
-                        url: 'buscaUsuarios.php', 
+                        url: 'busca.php', 
                         method: 'POST',
                         data: { buscar: true, search: busca }, 
                         success: function(response) {
