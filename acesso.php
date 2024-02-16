@@ -41,7 +41,7 @@ verificarPermissao($permission);
         </div>
     </form>
 
-
+    
     <div class="container mt-4">
         <div class="container mt-sm-4 border rounded shadow">
         <div class="table-responsive-sm " style="font-size: 12px;">
@@ -59,7 +59,6 @@ verificarPermissao($permission);
                 </tbody>
             </table>
         </div>
-
         
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -163,28 +162,40 @@ verificarPermissao($permission);
     </script>
 
 
-    <script>
-        function atualizarBusca() {
-            var busca = document.getElementById('campoBusca').value;
-            $.ajax({
-                url: 'buscaUsuarios.php', 
-                method: 'POST',
-                data: { buscar: true, search: busca }, 
-                success: function(response) {
-                    $('#tabelaResultados').html(response); 
-                },
-                error: function(xhr, status, error) {
-                    console.error(error); 
-                }
-            });
-            atualizarBusca(); 
-        }
-    </script>
+<script>
+    window.onload = function() {
+
+        atualizarBusca('');
+    };
+
+    function atualizarBusca(busca) {
+        $.ajax({
+            url: 'buscaUsuarios.php', 
+            method: 'POST',
+            data: { buscar: true, search: busca }, 
+            success: function(response) {
+                $('#tabelaResultados').html(response); 
+            },
+            error: function(xhr, status, error) {
+                console.error(error); 
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('#campoBusca').keyup(function() {
+            var busca = $(this).val();
+            atualizarBusca(busca);
+        });
+    });
+</script>
 
 
 <script>
     resetTimer();
 </script>
+
+
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

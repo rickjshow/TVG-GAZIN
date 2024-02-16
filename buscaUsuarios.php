@@ -1,6 +1,6 @@
 <?php
 
-require_once "conexao.php";
+include "conexao.php";
 
     if (isset($_POST['buscar']) && isset($_POST['search']) && !empty($_POST['search'])) {
 
@@ -13,14 +13,14 @@ require_once "conexao.php";
             $consulta = $pdo->prepare($query);
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
-    }else{
-        $query = "SELECT u.*, d.name
-        FROM usuarios as u
+
+    }elseif(isset($_POST['buscar']) && empty($_POST['search'])){
+        $query = "SELECT u.*, d.name FROM usuarios as u
         JOIN departamentos as d ON u.id_departamentos = d.id
         WHERE u.permission = 'limited' ORDER BY u.nome ASC LIMIT 8";
-        $consulta = $pdo->prepare( $consulta);
+        $consulta = $pdo->prepare($query);
         $consulta->execute();
-        $data =  $consulta->fetchAll(PDO::FETCH_ASSOC);
+        $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
         
     }
 
@@ -43,4 +43,3 @@ require_once "conexao.php";
             <tr><td colspan='4' class='text-center'>Sem resultados para essa consulta!</td></tr>;
         </tr>
     <?php endif; ?>
-
