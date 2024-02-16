@@ -131,7 +131,8 @@ verificarPermissao($permission);
         </div>
     </div>
 </div>
-
+</div>
+<div class='text-center mt-4'></div>
 
     <div id="login-expired-message" style="color: black;"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

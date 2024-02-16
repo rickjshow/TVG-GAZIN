@@ -345,5 +345,3 @@ if(isset($_POST['filtrar'])){
     
 </body>
 </html>
-
-

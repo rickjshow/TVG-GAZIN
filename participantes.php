@@ -60,6 +60,7 @@ verificarPermissao($permission);
                     <tbody id="tabelaResultados"> 
                 </tbody>
             </table>
+            
 
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -108,10 +109,14 @@ verificarPermissao($permission);
                     </div>
                 </div>
             </div>
-        </div>
+         </div>
+    </div>
+</div>
+<div class='text-center mt-4'></div>
 
         <!-- chamada temporizador -->
         <div id="login-expired-message" style="color: black;"></div>
+       
         <script>
             resetTimer();
         </script>

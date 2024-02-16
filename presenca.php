@@ -75,9 +75,9 @@ if(isset($nomeSessao['nome'])){
                         if ($consulta->rowCount() > 0) {
                             foreach ($consulta as $row) {
                                 echo "<tr>";
-                                echo "<th>{$row['nome_facilitador']}</th>";
-                                echo "<th>{$row['participante_nome']}</th>";
-                                echo "<th>{$row['equipe_nome']}</th>";
+                                echo "<th style='font-weight: normal;'>{$row['nome_facilitador']}</th>";
+                                echo "<th style='font-weight: normal;'>{$row['participante_nome']}</th>";
+                                echo "<th style='font-weight: normal;'>{$row['equipe_nome']}</th>";
                                 echo "</tr>";
                             }
                         } else {
