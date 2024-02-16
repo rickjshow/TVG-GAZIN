@@ -39,7 +39,7 @@ $consultaVerifica->execute();
         </div>
     </div>
 
-    <form action="buscaEdicao.php" method="POST">
+    <form id="formBusca">
         <div class="container mt-4">
             <div class="input-group mb-3">
                 <input type="text" id="campoBusca" class="form-control" name="search" placeholder="Buscar TVG por nome" onkeyup="atualizarBusca()">

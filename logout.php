@@ -22,11 +22,6 @@ session_start();
 
     if($resultado['situacao'] == 'Ativo'){
 
-        $queryLogout = "DELETE FROM sessao_usuario WHERE id_usuario = :id_usuario";
-        $stmtLogout = $pdo->prepare( $queryLogout);
-        $stmtLogout->bindParam(":id_usuario", $UserId);
-        $stmtLogout->execute();
-
         session_unset();
 
         session_destroy();
@@ -34,11 +29,6 @@ session_start();
         header("location:index.php");
         exit();
     }else{
-
-        $queryLogout = "DELETE FROM sessao_usuario WHERE id_usuario = :id_usuario";
-        $stmtLogout = $pdo->prepare( $queryLogout);
-        $stmtLogout->bindParam(":id_usuario", $UserId);
-        $stmtLogout->execute();
 
         session_start();
         $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'O seu usuário foi inativado!');

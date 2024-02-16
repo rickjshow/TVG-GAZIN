@@ -14,9 +14,11 @@ include "conexao.php";
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
         }elseif(isset($_POST['buscar']) && empty($_POST['search'])){
+
             $query = "SELECT p.*, d.name
             FROM participantes as p
             JOIN departamentos as d ON p.id_departamentos = d.id ORDER BY p.nome ASC LIMIT 8";
+            
             $consulta = $pdo->prepare($query);
             $consulta->execute();
             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
