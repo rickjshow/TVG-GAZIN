@@ -85,19 +85,25 @@ $resultUser = $stmtUser->fetch(PDO::FETCH_ASSOC);
                             </form>";
                     }elseif($resultUser['permission'] == 'limited'){
                         echo "<form method='post' action='galeria.php' class='mt-4'>
-                                <div class='form-row align-items-center justify-content-center'>
-                                    <div class='col-auto'>
-                                        <label class='sr-only' for='tvg'>Selecione o TVG:</label>
-                                        <select class='custom-select mr-sm-2' name='tvg' id='tvg'>                                                   
-                                            <option value='geral'>Geral</option>
-                                            <option value='proprio'>Meus anexos</option>";
-                                        echo "</select>
-                                    </div>
-                                    <div class='col-auto'>
-                                        <button type='submit' name='filtrar' class='btn btn-primary'>Filtrar</button>
-                                    </div>
+                            <div class='form-row align-items-center justify-content-center'>
+                                <div class='col-auto'>
+                                    <label class='sr-only' for='tvg'>Selecione o TVG:</label>
+                                    <select class='custom-select mr-sm-2' name='tvg' id='tvg'>";
+
+                                    // Verifica o valor enviado pelo formulário
+                                    $tvgSelecionado = isset($_POST['tvg']) ? $_POST['tvg'] : '';
+
+                                    // Adiciona as opções com base no valor selecionado
+                                    echo "<option value='geral' " . ($tvgSelecionado == 'geral' ? 'selected' : '') . ">Geral</option>";
+                                    echo "<option value='proprio' " . ($tvgSelecionado == 'proprio' ? 'selected' : '') . ">Meus anexos</option>";
+                                    
+                                    echo "</select>
                                 </div>
-                            </form>"; 
+                                <div class='col-auto'>
+                                    <button type='submit' name='filtrar' class='btn btn-primary'>Filtrar</button>
+                                </div>
+                            </div>
+                        </form>"; 
                     }
                 ?>
             </div> 
@@ -141,7 +147,7 @@ if(isset($_POST['filtrar'])){
 
             $queryImagem = "SELECT id, imagem FROM galeria WHERE id_sessoes = :id_sessoes";
             $stmtimagem = $pdo->prepare($queryImagem);
-            $stmtimagem->bindParam(':id_sessoes', $row['id']);
+            $stmtimagem->bindParam(':id_sessoes', $Edicao);
             $stmtimagem->execute();
 
             if($stmtimagem->rowCount() <= 0){

@@ -48,14 +48,25 @@ if(isset($nomeSessao['nome'])){
 
                     <?php
                                        
-                        $query = "SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador FROM presenca AS pre
-                            JOIN status AS s ON pre.id_status = s.id
-                            JOIN participantes AS p ON pre.id_participantes = p.id
-                            JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
-                            JOIN usuarios AS u ON gs.id_usuarios = u.id
-                            JOIN sessoes AS ses ON pre.id_sessao = ses.id
-                            JOIN equipes AS e ON gs.id_equipe = e.id
-                            WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente' AND gs.id_sessoes = :id_sessao";
+                        $query = "SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador 
+                        FROM presenca AS pre
+                        JOIN status AS s ON pre.id_status = s.id
+                        JOIN participantes AS p ON pre.id_participantes = p.id
+                        JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
+                        JOIN usuarios AS u ON gs.id_usuarios = u.id
+                        JOIN sessoes AS ses ON pre.id_sessao = ses.id
+                        JOIN equipes AS e ON gs.id_equipe = e.id
+                        WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente' AND gs.id_sessoes = :id_sessao
+                        UNION
+                        SELECT p.nome AS participante_nome, s.nome AS status_nome, e.nome AS equipe_nome, u.nome AS nome_facilitador 
+                        FROM rascunho_presenca AS rp
+                        JOIN status AS s ON rp.id_status = s.id
+                        JOIN participantes AS p ON rp.id_participantes = p.id
+                        JOIN gerenciamento_sessao AS gs ON p.id = gs.id_participantes
+                        JOIN usuarios AS u ON gs.id_usuarios = u.id
+                        JOIN sessoes AS ses ON rp.id_sessao = ses.id
+                        JOIN equipes AS e ON gs.id_equipe = e.id
+                        WHERE s.nome = 'Ausente' AND ses.situacao = 'Pendente' AND gs.id_sessoes = :id_sessao";
                     
                         $consulta = $pdo->prepare($query);
                         $consulta->bindParam(":id_sessao", $nomeSessao['id']);
