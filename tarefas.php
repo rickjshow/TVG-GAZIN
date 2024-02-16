@@ -310,4 +310,3 @@ function deleteTask(button) {
 
 </body>
 </html>
-

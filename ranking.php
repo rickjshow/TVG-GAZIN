@@ -92,7 +92,7 @@
             <table id="ranking-table" class="table table-striped mt-4" >
                 <thead>
                     <tr>
-                        <th scope="col"> <div class="container"><i class="fa-solid fa-trophy"></i></div></th>
+                        <th scope="col"><i class="fa-solid fa-trophy"></i></th>
                         <th scope="col">Equipe</th>
                         <th scope="col">Pontuação </i></th>
                         <th scope="col">Lider</th>

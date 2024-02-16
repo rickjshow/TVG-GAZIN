@@ -126,6 +126,9 @@ verificarPermissao($permission);
     </div>
     </div>
 
+    <div class='text-center mt-4'></div>
+    
+
     <div id="login-expired-message" style="color: black;"></div>
     <script>
         resetTimer();

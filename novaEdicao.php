@@ -113,7 +113,7 @@ $consultaVerifica->execute();
             </div>
         </div>
     </div>
-
+    <div class='text-center mt-4'></div>
     <?php
             if (isset($_SESSION['alerta'])) {
             echo "<script>
