@@ -109,7 +109,7 @@ if ($resultUser['permission'] == 'limited') {
 
                                 foreach ($data as $row) {
                                     echo "<div class='row'>
-                                        <div class='col-md-6 mx-auto mt-4 '>
+                                        <div class='col-md-10 mx-auto mt-4 '>
                                             <div class='border rounded shadow'>
                                                 <a href='lancarPontos.php?id={$row['prova_id']}' style='text-decoration: none; color: black;'>
                                                     <div class='card mt-4 border-0'> 

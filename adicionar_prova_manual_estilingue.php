@@ -189,7 +189,7 @@ if (isset($_GET['id'])) {
             foreach ($data as $row) {
                 echo "
                 <div class='accordion accordion-flush' id='accordionFlushExample'>
-                    <div class='card mt-4'>
+                    <div class='card mt-4 col-10 mx-auto'>
                         <div class='accordion-item card-body text-center'>
                             <div class='accordion-header'>
                                 <div class='accordion-button collapsed' data-bs-toggle='collapse' data-bs-target='#flush-collapseOne' aria-expanded='false' aria-controls='flush-collapseOne'>
