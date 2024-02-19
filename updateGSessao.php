@@ -100,36 +100,37 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
     </div>
     
 
-    <div class="container-fluid text-center mt-1 p-4">
-        <div class="row mx-auto">
-            <div class="col">
-                <?php  
+<div class="container-fluid text-center mt-1 p-4">
+    <div class="row mx-auto">
+        <div class="col">
+            <?php  
+                $querySessao = "SELECT COUNT(*) FROM usuarios AS u
+                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+                JOIN sessoes AS s ON gs.id_sessoes = s.id
+                WHERE s.id = :id_sessao AND u.situacao = 'Ativo' AND u.permission = 'limited'";
+                $consultaSessao = $pdo->prepare($querySessao);
+                $consultaSessao->bindParam(':id_sessao', $idGS);
+                $consultaSessao->execute();
 
-                    $querySessao = "SELECT COUNT(*) FROM usuarios AS u
-                    JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
-                    JOIN sessoes AS s ON gs.id_sessoes = s.id
-                    WHERE s.id = :id_sessao AND u.situacao = 'Ativo' AND u.permission = 'limited'";
-                    $consultaSessao = $pdo->prepare($querySessao);
-                    $consultaSessao->bindParam(':id_sessao', $idGS);
-                    $consultaSessao->execute();
+                $resultado = $consultaSessao->fetch(PDO::FETCH_ASSOC);
 
-                    $resultado = $consultaSessao->fetch(PDO::FETCH_ASSOC);
-
-                    if($resultado['COUNT(*)'] == 0){
-                        echo "<form action='updateGSessao.php' method='post'>
-                        <input type='hidden' name='idGS' value='$idGS'>
-                            <div class='container-fluid text-center mt-1 p-4'>
-                                <button type='submit' class='btn btn-success mt-4' name='Ativar' style='font-size: 15px;'>Iniciar TVG</button>
-                            </div>
-                    </form>";
-                    }else{
-                        echo '<p>TVG já foi iniciado!</p>';
-                    }             
-                ?>
-                <button id="btnExcluirSessao" class="btn btn-danger mt-4" disabled style="font-size: 15px;">Excluir Sessão</button>
-            </div>
+                echo "<div class='d-flex justify-content-center align-items-center'>";
+                if ($resultado['COUNT(*)'] == 0) {
+                    echo "<form action='updateGSessao.php' method='post'>
+                            <input type='hidden' name='idGS' value='$idGS'>
+                            <button type='submit' class='btn btn-success mr-2' name='Ativar' style='font-size: 15px;'>Iniciar TVG</button>
+                        </form>";
+                } else {
+                    echo '<p class="mt-2 p-2">TVG já foi iniciado!</p>';
+                }
+                
+                echo "<button id='btnExcluirSessao' class='btn btn-danger' disabled style='font-size: 15px;'>Excluir Sessão</button>";
+                echo "</div>";
+            ?>
         </div>
     </div>
+</div>
+
         <div class="container-fluid text-center mt-1 p-4">
             <?php 
 
