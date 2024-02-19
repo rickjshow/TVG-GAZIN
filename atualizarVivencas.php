@@ -42,7 +42,7 @@
                 if (!in_array($row['equipe_nome'], $equipesProcessadas)) {
                     echo "<div class='container-fluid'>";
                     echo "<div class='row'>
-                                  <div class='col-md-8 mx-auto my-2 mt-4'> 
+                                  <div class='col-md-10 mx-auto my-2 mt-4'> 
                                       <div class='border rounded shadow'>
                                           <h4 class='text-center mt-3 mb-0'>{$row['equipe_nome']}</h4>";
     

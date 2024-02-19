@@ -74,9 +74,9 @@ include "header.php";
         }
 
         .not-done {
-            background-color:#FFEBB3;
-            padding: 6px ;
-           
+            background-color: #FFEBB3;
+            padding: 9px;
+            border: solid 1px black;
         }
 
         #newTask {
@@ -98,6 +98,7 @@ include "header.php";
             right: 0;
             top: 50%;
             transform: translateY(-50%);
+            padding: 6px !important;
         }
 
         .status-button {
@@ -137,6 +138,16 @@ include "header.php";
 
         .red-button{
             background-color: red;
+        }
+
+        .task label:hover {
+            cursor: pointer;
+        }
+        .task label{
+
+
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+
         }
     </style>
 </head>
@@ -249,37 +260,54 @@ function deleteTask(button) {
     var taskId = $(button).closest('.task').data('taskid');
 
     $.ajax({
-        type: "POST",
-        url: "excluir_tarefa.php",
-        data: { Id: taskId },
-        success: function(response) {
-            if (response.trim() !== '') {
-                try {
-                    var result = JSON.parse(response);
-                    if (result.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Tarefa Excluída!',
-                            showConfirmButton: false,
-                            timer: 1000
-                        }).then(function () {
-                            location.reload();
-                        })
-                    } else {
-                        console.error('Falha ao excluir a tarefa:', result.mensagem);
-                    }
-                } catch (e) {
-                    console.error('Erro ao fazer o parse da resposta JSON:', e);
-                    console.error('Resposta do servidor:', response);
+    type: "POST",
+    url: "excluir_tarefa.php",
+    data: { Id: taskId },
+    success: function(response) {
+        if (response.trim() !== '') {
+            try {
+                var result = JSON.parse(response);
+
+                if (Swal.fire) {
+                    Swal.fire({
+                        title: 'Você tem certeza?',
+                        text: 'Isso irá excluir a tarefa!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sim, finalizar!',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function (confirmed) {
+                        if (confirmed.value) {
+                            if (result.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Tarefa Excluída!',
+                                    showConfirmButton: false,
+                                    timer: 1000
+                                }).then(function () {
+                                    location.reload();
+                                });
+                            } else {
+                                console.error('Falha ao excluir a tarefa:', result.mensagem);
+                            }
+                        }
+                    });
                 }
-            } else {
-                console.error('Resposta vazia do servidor.');
+            } catch (e) {
+                console.error('Erro ao fazer o parse da resposta JSON:', e);
+                console.error('Resposta do servidor:', response);
             }
-        },
-        error: function() {
-            console.error('Erro ao enviar solicitação AJAX para excluir a tarefa.');
+        } else {
+            console.error('Resposta vazia do servidor.');
         }
-    });
+    },
+    error: function() {
+        console.error('Erro ao enviar solicitação AJAX para excluir a tarefa.');
+    }
+});
+
 }
 
 
