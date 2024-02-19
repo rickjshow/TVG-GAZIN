@@ -40,7 +40,7 @@ if (isset($_GET['id'])) {
 }
 
 
-if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["equipe"]) && isset($_POST["facilitador"]) && isset($_POST["participante"]) && isset($_POST["provas"]) && isset($_POST["id"]) && isset($_POST["id2"]))) {
+if (isset($_POST["confirmacao"])) {
 
     $sessao = $_POST["sessao"];
     $equipe = $_POST["equipe"];
@@ -49,6 +49,7 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
     $provas = $_POST["provas"];
     $id_array = $_POST['id'];
     $id2_array = $_POST['id2'];
+    $id_equipe = $_POST['variavel'];
 
 
     $sqlsessao = "SELECT id FROM sessoes WHERE nome = :sessao";
@@ -87,10 +88,11 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
 
     $facilitador_id = $consultafacilitador->fetchColumn();
 
+
     $sqlExcluiDadosSessao = "DELETE FROM gerenciamento_sessao WHERE id_sessoes = :id_sessoes AND id_equipe = :id_equipe";
     $consulta = $pdo->prepare($sqlExcluiDadosSessao);
     $consulta->bindParam(':id_sessoes', $sessao_id);
-    $consulta->bindParam(':id_equipe', $equipe_id);
+    $consulta->bindParam(':id_equipe', $id_equipe);
     $consulta->execute();
 
 
@@ -199,6 +201,7 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
 <div class="container mt-4">
     <div class="container-fluid border rounded p-4 shadow  col-md-10">
         <form action="updateEquipeSessao.php" method="post" id="meuFormulario">
+        <input type="hidden" name="variavel" id="variavel" value="<?php echo $id_equipe ?>">
             <div class="form-group">
                 <label for="sessao">Sessão</label>
                 <select id="sessao" name="sessao" class="form-control select2">
@@ -209,59 +212,172 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="equipe">Equipe</label>
-                <select id="equipe" name="equipe" class="form-control select2">
-                    <?php
-                    $query = "SELECT e.* FROM equipes e where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_equipe = e.id)";
-                    $consulta = $pdo->prepare($query);
-                    $consulta->execute();
-                    $equipes2 = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            <?php
+            
+                $queryCountUsuarios = "SELECT COUNT(*) FROM usuarios AS u
+                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+                WHERE gs.id_equipe = :id_equipe AND gs.id_sessoes = :id_sessoes AND u.situacao = 'Ativo'";
+                $CountUsuarios= $pdo->prepare($queryCountUsuarios);
+                $CountUsuarios->bindParam(':id_equipe', $id_equipe);
+                $CountUsuarios->bindParam(':id_sessoes', $sesId);
+                $CountUsuarios->execute();
+            
+                $resultCount = $CountUsuarios->fetchColumn();
+            
+                if($resultCount <= 0) : ?>
+                    <div class="form-group">
+                        <label for="equipe">Equipe</label>
+                        <select id="equipe" name="equipe" class="form-control select2">
+                            <?php
+                            $query = "SELECT e.* FROM equipes e where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_equipe = e.id)";
+                            $consulta = $pdo->prepare($query);
+                            $consulta->execute();
+                            $equipes2 = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-                    foreach ($equipes2 as $equipe1) : ?>
-                        <option value="<?= $equipe1['nome'] ?>" <?= ($equipe['equipe_nome'] == $equipe1['nome']) ? "selected" : "" ?>>
-                            <?= $equipe1['nome'] ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+                            foreach ($equipes2 as $equipe1) : ?>
+                                <option value="<?= $equipe1['nome'] ?>" <?= ($equipe['equipe_nome'] == $equipe1['nome']) ? "selected" : "" ?>>
+                                    <?= $equipe1['nome'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-            <div class="form-group">
-                <label for="facilitador">Facilitador</label>
-                <select id="facilitador" name="facilitador" class="form-control select2">
-                    <?php
-                    $query1 = "SELECT u.* FROM usuarios u where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_usuarios = u.id)";
-                    $consulta1 = $pdo->prepare($query1);
-                    $consulta1->execute();
-                    $user2 = $consulta1->fetchAll(PDO::FETCH_ASSOC);
+                    <div class="form-group">
+                        <label for="facilitador">Facilitador</label>
+                        <select id="facilitador" name="facilitador" class="form-control select2">
+                            <?php
+                            $query1 = "SELECT u.* FROM usuarios u where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_usuarios = u.id)";
+                            $consulta1 = $pdo->prepare($query1);
+                            $consulta1->execute();
+                            $user2 = $consulta1->fetchAll(PDO::FETCH_ASSOC);
 
-                    foreach ($user2 as $user) : ?>
-                        <option value="<?= $user['nome'] ?>" <?= ($usuario['nome_user'] == $user['nome']) ? "selected" : "" ?>>
-                            <?= $user['nome'] ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+                            foreach ($user2 as $user) : ?>
+                                <option value="<?= $user['nome'] ?>" <?= ($usuario['nome_user'] == $user['nome']) ? "selected" : "" ?>>
+                                    <?= $user['nome'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-            <div class="form-group">
-                <label for="participante">Participantes</label>
-                <select id="participante" class="select2 form-control" name="participante[]" multiple="multiple">
-                    <?php
+                <?php else : ?>
+                    <div class="form-group">
+                        <label for="equipe">Equipe</label>
+                        <select id="equipe" name="equipe" class="form-control select2" disabled>
+                            <?php
+                            $query = "SELECT e.* FROM equipes e where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_equipe = e.id)";
+                            $consulta = $pdo->prepare($query);
+                            $consulta->execute();
+                            $equipes2 = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+                            foreach ($equipes2 as $equipe1) : ?>
+                                <option value="<?= $equipe1['nome'] ?>" <?= ($equipe['equipe_nome'] == $equipe1['nome']) ? "selected" : "" ?>>
+                                    <?= $equipe1['nome'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="facilitador">Facilitador</label>
+                        <select id="facilitador" name="facilitador" class="form-control select2" disabled>
+                            <?php
+                            $query1 = "SELECT u.* FROM usuarios u where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_usuarios = u.id)";
+                            $consulta1 = $pdo->prepare($query1);
+                            $consulta1->execute();
+                            $user2 = $consulta1->fetchAll(PDO::FETCH_ASSOC);
+
+                            foreach ($user2 as $user) : ?>
+                                <option value="<?= $user['nome'] ?>" <?= ($usuario['nome_user'] == $user['nome']) ? "selected" : "" ?>>
+                                    <?= $user['nome'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+            <?php endif; ?>
+                
+            <?php
+
+                $queryUsuario = "SELECT u.* FROM usuarios AS u
+                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+                WHERE gs.id_equipe = :id_equipe AND gs.id_sessoes = :id_sessoes";
+                $consultaUsuario= $pdo->prepare($queryUsuario);
+                $consultaUsuario->bindParam(':id_equipe', $id_equipe);
+                $consultaUsuario->bindParam(':id_sessoes', $sesId);
+                $consultaUsuario->execute();
+                
+                $user = $consultaUsuario->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach($user as $usuario){
+                    $id_user = $usuario['id'];
+                }
+
+                $queryChamada = "SELECT COUNT(*) FROM presenca AS p
+                JOIN sessoes AS s ON p.id_sessao = s.id
+                JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
+                WHERE gs.id_sessoes = :id_sessoes AND gs.id_equipe = :id_equipe AND p.id_user = :id_user";
+                $consultaChamada= $pdo->prepare($queryChamada);
+                $consultaChamada->bindParam(':id_sessoes', $sesId);
+                $consultaChamada->bindParam(':id_equipe', $id_equipe);
+                $consultaChamada->bindParam(':id_user', $id_user);
+                $consultaChamada->execute();
+            
+                $resultChamada = $consultaChamada->fetchColumn();
+            
+                $queryRascunho = "SELECT COUNT(*) FROM rascunho_presenca AS rp
+                JOIN sessoes AS s ON rp.id_sessao = s.id
+                JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
+                WHERE gs.id_sessoes = :id_sessoes AND gs.id_equipe = :id_equipe AND rp.id_user = :id_user";
+                $consultaRascunho= $pdo->prepare($queryRascunho);
+                $consultaRascunho->bindParam(':id_sessoes', $sesId);
+                $consultaRascunho->bindParam(':id_equipe', $id_equipe);
+                $consultaRascunho->bindParam(':id_user', $id_user);
+                $consultaRascunho->execute();
+                
+                $resultRascunho = $consultaRascunho->fetchColumn();
+            
+                if($resultChamada <= 0 && $resultRascunho <= 0) : ?>
+
+                    <div class="form-group">
+                        <label for="participante">Participantes</label>
+                        <select id="participante" class="select2 form-control" name="participante[]" multiple="multiple">
+                            <?php
 
 
-                    $query2 = "SELECT p.* FROM participantes p where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_participantes = p.id)";
-                    $consulta2 = $pdo->prepare($query2);
-                    $consulta2->execute();
-                    $participantes2 = $consulta2->fetchAll(PDO::FETCH_ASSOC);
+                            $query2 = "SELECT p.* FROM participantes p where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_participantes = p.id)";
+                            $consulta2 = $pdo->prepare($query2);
+                            $consulta2->execute();
+                            $participantes2 = $consulta2->fetchAll(PDO::FETCH_ASSOC);
 
-                    foreach ($participantes2 as $participante) : ?>
-                        <option value="<?= $participante['nome'] ?>" <?php echo (in_array($participante['nome'], array_column($participantes1, 'participante_nome'))) ? "selected" : ""; ?>>
-                            <?= $participante['nome'] ?>
-                        </option>
-                    <?php endforeach; ?>
+                            foreach ($participantes2 as $participante) : ?>
+                                <option value="<?= $participante['nome'] ?>" <?php echo (in_array($participante['nome'], array_column($participantes1, 'participante_nome'))) ? "selected" : ""; ?>>
+                                    <?= $participante['nome'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-                </select>
-            </div>
+                <?php else : ?>
+
+                    <div class="form-group">
+                        <label for="participante">Participantes</label>
+                        <select id="participante" class="select2 form-control" name="participante[]" multiple="multiple" disabled>
+                            <?php
+
+                            $query2 = "SELECT p.* FROM participantes p where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_participantes = p.id)";
+                            $consulta2 = $pdo->prepare($query2);
+                            $consulta2->execute();
+                            $participantes2 = $consulta2->fetchAll(PDO::FETCH_ASSOC);
+
+                            foreach ($participantes2 as $participante) : ?>
+                                <option value="<?= $participante['nome'] ?>" <?php echo (in_array($participante['nome'], array_column($participantes1, 'participante_nome'))) ? "selected" : ""; ?>>
+                                    <?= $participante['nome'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                <?php endif; ?>
 
             <div class="form-group">
                 <label for="provas">Provas</label>
@@ -280,25 +396,43 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
                     <?php endforeach; ?>
                 </select>
             </div>
-
-
             <button type="button" class="btn btn-primary" style="font-size: 13px;" onclick="validarFormulario()">Atualizar</button>
     </div>
-            <script>
-                function validarFormulario() {
-                    var sessao = document.getElementById('sessao').value;
-                    var equipe = document.getElementById('equipe').value;
-                    var facilitador = document.getElementById('facilitador').value;
-                    var participantes = document.getElementById('participante').value;
-                    var provas = document.getElementById('provas').value;
+        <script>
+            function validarFormulario() {
+
+                document.getElementById('equipe').removeAttribute('disabled');
+                document.getElementById('facilitador').removeAttribute('disabled');
+                document.getElementById('participante').removeAttribute('disabled');
+                document.getElementById('provas').removeAttribute('disabled');
+
+                // Verifica se os elementos do formulário existem
+                var sessaoElement = document.getElementById('sessao');
+                var equipeElement = document.getElementById('equipe');
+                var facilitadorElement = document.getElementById('facilitador');
+                var participantesElement = document.getElementById('participante');
+                var provasElement = document.getElementById('provas');
+
+                // Verifica se os elementos existem antes de acessá-los
+                if (sessaoElement && equipeElement && facilitadorElement && participantesElement && provasElement) {
+
+                    var sessao = sessaoElement.value;
+                    var equipe = equipeElement.value;
+                    var facilitador = facilitadorElement.value;
+                    var participantes = participantesElement.value;
+                    var provas = provasElement.value;
 
                     if (sessao === '' || equipe === '' || facilitador === '' || participantes === null || participantes.length === 0 || provas === null || provas.length === 0) {
                         alert('Favor preencher todos os campos!');
                     } else {
                         $('#exampleModal').modal('show');
                     }
+                } else {
+                    console.log('Alguns elementos do formulário não foram encontrados.');
                 }
-            </script>
+            }
+        </script>
+
             <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -343,7 +477,6 @@ if (isset($_POST["confirmacao"]) || (isset($_POST["sessao"]) && isset($_POST["eq
                         }
                         setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
                     });
-
             </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
