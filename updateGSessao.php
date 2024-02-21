@@ -164,13 +164,25 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
                 $consultaPresenca->execute();
                 $Presenca = $consultaPresenca->fetch(PDO::FETCH_ASSOC);
 
-                $resultadoPresenca = $Presenca['total_presenca'];            
+                $resultadoPresenca = $Presenca['total_presenca']; 
+
+                $queryUser  = "SELECT COUNT(*) AS total_user FROM usuarios AS u
+                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+                WHERE gs.id_sessoes = :id_sessoes AND u.situacao = 'Ativo' AND permission = 'limited'";
+                $consultaUser = $pdo->prepare($queryUser);
+                $consultaUser->bindValue(':id_sessoes', $idGS);  
+                $consultaUser->execute();
+                $User = $consultaUser->fetch(PDO::FETCH_ASSOC);
+
+                $usuario = $User['total_user'];       
 
             ?>
 
             <div class="container-fluid text-center p-4">
                 <?php
-                    if ($resultadoRascunho <= 0 && $resultadoPresenca <= 0){
+                    if($usuario <= 0){
+                        echo '<p>O TVG ainda não foi iniciado.</p>';
+                    }elseif ($resultadoRascunho <= 0 && $resultadoPresenca <= 0){
                         echo '<p>A chamada ainda não foi feita, grave o rascunho e confirme a presença. Não é possível encerrar a sessão.</p>';
                     }elseif($totalProvasNaoFinalizadas > 0){
                         echo '<p>Ainda há provas não finalizadas. Não é possível encerrar a sessão.</p>';
