@@ -108,10 +108,10 @@ if(isset($nomeSessao['nome'])){
                                 success: function(response) {
                                     var data = JSON.parse(response);
                                     if (data.status === 'inativo') {
-                                        // Redirecionar para a página de logout ou mostrar uma mensagem
+
                                         window.location.href = 'logout.php';
                                     } else {
-                                        // Usuário ativo, pode continuar normalmente
+
                                         console.log('Usuário está ativo.');
                                     }
                                 },
@@ -120,7 +120,7 @@ if(isset($nomeSessao['nome'])){
                                 }
                             });
                         }
-                        setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+                        setInterval(verificarSituacaoUsuario, 10000);
                     });
 
             </script>

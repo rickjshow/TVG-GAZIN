@@ -123,7 +123,7 @@ if (isset($_POST["confirmacao"])) {
     $sqlExcluiDadosEqpSessao = "DELETE FROM equipes_provas WHERE id_sessao = :id_sessoes AND id_equipes = :id_equipes";
     $consulta = $pdo->prepare($sqlExcluiDadosEqpSessao);
     $consulta->bindParam(':id_sessoes', $sessao_id);
-    $consulta->bindParam(':id_equipes', $equipe_id);
+    $consulta->bindParam(':id_equipes', $id_equipe);
     $consulta->execute();
 
     foreach ($provas as $key => $provasNome) {

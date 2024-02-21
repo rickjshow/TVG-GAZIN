@@ -19,7 +19,7 @@ verificarPermissao($permission);
 </head>
 <body class="bg-light">
 
-    <div class="container-fluid mt-5">
+    <div class="container-fluid mt-5 mb-5">
         <div class="row justify-content-center">
             <div class="col-md-6 text-center">
                 <h1 class="mb-4" style="font-size: 25px;">Sistema de Importação</h1>
@@ -28,31 +28,31 @@ verificarPermissao($permission);
                 </div>
             </div>
         </div>
+    </div>
 
-            <?php
+    <?php
 
-                $dataNascimento = '1965-12-13';
+        $dataNascimento = '1965-12-13';
 
-                $dataAtual = date('Y-m-d');
- 
-                $dataNascimentoObj = new DateTime($dataNascimento);
-                $dataAtualObj = new DateTime($dataAtual);
+        $dataAtual = date('Y-m-d');
 
-                if ($dataAtualObj >= new DateTime(date('Y') . '-12-13')) {
+        $dataNascimentoObj = new DateTime($dataNascimento);
+        $dataAtualObj = new DateTime($dataAtual);
 
-                    $dataNascimentoObj->modify('+1 year');
+        if ($dataAtualObj >= new DateTime(date('Y') . '-12-13')) {
 
-                }
+            $dataNascimentoObj->modify('+1 year');
 
-                $idade = $dataNascimentoObj->diff($dataAtualObj)->y;
-            
-            echo "<div class='row justify-content-center mt-4 font-weight-bold'>";
+        }
+
+        $idade = $dataNascimentoObj->diff($dataAtualObj)->y;
+        echo "<div class='container mt-4'>";
+            echo "<div class='row justify-content-center font-weight-bold'>";
                 echo "Parabéns Gazin pelos seus " . $idade . " anos de idade!";
             echo "</div>";
+        echo "</div>";
 
-            ?>
-
-    </div>
+    ?>
 
     <!-- Modal -->
     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
