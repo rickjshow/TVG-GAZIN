@@ -406,14 +406,12 @@ if (isset($_POST["confirmacao"])) {
                 document.getElementById('participante').removeAttribute('disabled');
                 document.getElementById('provas').removeAttribute('disabled');
 
-                // Verifica se os elementos do formulário existem
                 var sessaoElement = document.getElementById('sessao');
                 var equipeElement = document.getElementById('equipe');
                 var facilitadorElement = document.getElementById('facilitador');
                 var participantesElement = document.getElementById('participante');
                 var provasElement = document.getElementById('provas');
 
-                // Verifica se os elementos existem antes de acessá-los
                 if (sessaoElement && equipeElement && facilitadorElement && participantesElement && provasElement) {
 
                     var sessao = sessaoElement.value;
@@ -463,10 +461,10 @@ if (isset($_POST["confirmacao"])) {
                                 success: function(response) {
                                     var data = JSON.parse(response);
                                     if (data.status === 'inativo') {
-                                        // Redirecionar para a página de logout ou mostrar uma mensagem
+
                                         window.location.href = 'logout.php';
                                     } else {
-                                        // Usuário ativo, pode continuar normalmente
+
                                         console.log('Usuário está ativo.');
                                     }
                                 },
@@ -475,7 +473,7 @@ if (isset($_POST["confirmacao"])) {
                                 }
                             });
                         }
-                        setInterval(verificarSituacaoUsuario, 10000); // Verificar a cada 10 segundos
+                        setInterval(verificarSituacaoUsuario, 10000);
                     });
             </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

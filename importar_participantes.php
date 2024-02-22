@@ -71,6 +71,7 @@ verificarPermissao($permission);
                             <input type="file" class="form-control-file" name="planilha" id="planilha" accept=".csv, .xlsx, .xls, .ods">
                         </div>
                         <button type="submit" id="arquivo" class="btn btn-primary" name="submit">Importar</button>
+                        <a href="dados.ods" download="dados.ods" class="btn btn-success">Baixar Planilha</a>
                     </form>
 
                     <?php

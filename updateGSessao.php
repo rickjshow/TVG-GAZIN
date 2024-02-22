@@ -98,104 +98,100 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
 
         ?>
     </div>
-    
 
-<div class="container-fluid text-center mt-1 p-4">
-    <div class="row mx-auto">
-        <div class="col">
-            <?php  
-                $querySessao = "SELECT COUNT(*) FROM usuarios AS u
-                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
-                JOIN sessoes AS s ON gs.id_sessoes = s.id
-                WHERE s.id = :id_sessao AND u.situacao = 'Ativo' AND u.permission = 'limited'";
-                $consultaSessao = $pdo->prepare($querySessao);
-                $consultaSessao->bindParam(':id_sessao', $idGS);
-                $consultaSessao->execute();
+<div class="container mt-4 mb-4">
+    <div class="col-md-6 mx-auto border rounded shadow">
 
-                $resultado = $consultaSessao->fetch(PDO::FETCH_ASSOC);
+    <?php  
+        $querySessao = "SELECT COUNT(*) FROM usuarios AS u
+        JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+        JOIN sessoes AS s ON gs.id_sessoes = s.id
+        WHERE s.id = :id_sessao AND u.situacao = 'Ativo' AND u.permission = 'limited'";
+        $consultaSessao = $pdo->prepare($querySessao);
+        $consultaSessao->bindParam(':id_sessao', $idGS);
+        $consultaSessao->execute();
 
-                echo "<div class='d-flex justify-content-center align-items-center'>";
-                if ($resultado['COUNT(*)'] == 0) {
-                    echo "<form action='updateGSessao.php' method='post'>
-                            <input type='hidden' name='idGS' value='$idGS'>
-                            <button type='submit' class='btn btn-success mr-2' name='Ativar' style='font-size: 15px;'>Iniciar TVG</button>
-                        </form>";
-                } else {
-                    echo '<p class="mt-2 p-2">TVG já foi iniciado!</p>';
+        $resultado = $consultaSessao->fetch(PDO::FETCH_ASSOC);
+
+        echo "<div class='d-flex justify-content-center align-items-center'>";
+        if ($resultado['COUNT(*)'] == 0) {
+            echo "<form action='updateGSessao.php' method='post'>
+                    <input type='hidden' name='idGS' value='$idGS'>
+                    <button type='submit' class='btn btn-success mr-2 mt-4' name='Ativar' style='font-size: 15px;'>Iniciar TVG</button>
+                </form>";
+        } else {
+            echo '<p class="mt-4 p-2">TVG já foi iniciado!</p>';
+        }
+        
+        echo "<button id='btnExcluirSessao' class='btn btn-danger mt-3' disabled style='font-size: 15px;'>Excluir Sessão</button>";
+        echo "</div>";
+    ?>
+
+    <?php 
+
+        if (isset($_GET['id'])) {
+            $idGS = $_GET['id'];
+        }
+
+        $query = "SELECT COUNT(*) AS total_provas_nao_finalizadas
+                FROM equipes_provas
+                WHERE id_sessao = :id_sessao
+                AND situacao <> 'Finalizado'";
+
+        $consulta = $pdo->prepare($query);
+        $consulta->bindValue(':id_sessao', $idGS);  
+        $consulta->execute();
+        $resultado = $consulta->fetch(PDO::FETCH_ASSOC);
+
+        $totalProvasNaoFinalizadas = $resultado['total_provas_nao_finalizadas'];
+
+        $queryRascunho = "SELECT COUNT(*) as total_rascunho FROM rascunho_presenca WHERE id_sessao = :id_sessao";
+        $consultarRascunho = $pdo->prepare($queryRascunho);
+        $consultarRascunho->bindValue(':id_sessao', $idGS);  
+        $consultarRascunho->execute();
+        $Rascunho = $consultarRascunho->fetch(PDO::FETCH_ASSOC);
+
+        $resultadoRascunho = $Rascunho['total_rascunho'];
+
+        $queryPresenca = "SELECT COUNT(*) as total_presenca FROM presenca WHERE id_sessao = :id_sessao";
+        $consultaPresenca = $pdo->prepare($queryPresenca);
+        $consultaPresenca->bindValue(':id_sessao', $idGS);  
+        $consultaPresenca->execute();
+        $Presenca = $consultaPresenca->fetch(PDO::FETCH_ASSOC);
+
+        $resultadoPresenca = $Presenca['total_presenca']; 
+
+        $queryUser  = "SELECT COUNT(*) AS total_user FROM usuarios AS u
+        JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+        WHERE gs.id_sessoes = :id_sessoes AND u.situacao = 'Ativo' AND permission = 'limited'";
+        $consultaUser = $pdo->prepare($queryUser);
+        $consultaUser->bindValue(':id_sessoes', $idGS);  
+        $consultaUser->execute();
+        $User = $consultaUser->fetch(PDO::FETCH_ASSOC);
+
+        $usuario = $User['total_user'];       
+
+    ?>
+
+        <div class="container-fluid text-center p-4">
+            <?php
+                if($usuario <= 0){
+                    echo '<p>O TVG ainda não foi iniciado.</p>';
+                }elseif ($resultadoRascunho <= 0 && $resultadoPresenca <= 0){
+                    echo '<p>A chamada ainda não foi feita, grave o rascunho e confirme a presença. Não é possível encerrar a sessão.</p>';
+                }elseif($totalProvasNaoFinalizadas > 0){
+                    echo '<p>Ainda há provas não finalizadas. Não é possível encerrar a sessão.</p>';
+                }elseif($resultadoRascunho > 0 || $resultadoPresenca <= 0){
+                    echo '<p>Ainda á rascunho de presença, finalize as listas de chamada. Não é possível encerrar a sessão.</p>';
+                }elseif($totalProvasNaoFinalizadas <= 0 && $resultadoRascunho <= 0 && $resultadoPresenca > 0) {
+                echo "<form action='finalizarSessao.php' method='post'>
+                        <a href='finalizarSessao.php?id={$idGS}' type='submit' class='btn btn-secondary' data-dismiss='modal'>Finalizar Sessão</a>
+                    </form>";
                 }
-                
-                echo "<button id='btnExcluirSessao' class='btn btn-danger' disabled style='font-size: 15px;'>Excluir Sessão</button>";
-                echo "</div>";
-            ?>
-        </div>
+            ?>      
+        </div> 
     </div>
 </div>
-
-        <div class="container-fluid text-center mt-1 p-4">
-            <?php 
-
-                if (isset($_GET['id'])) {
-                    $idGS = $_GET['id'];
-                }
-
-                $query = "SELECT COUNT(*) AS total_provas_nao_finalizadas
-                        FROM equipes_provas
-                        WHERE id_sessao = :id_sessao
-                        AND situacao <> 'Finalizado'";
-
-                $consulta = $pdo->prepare($query);
-                $consulta->bindValue(':id_sessao', $idGS);  
-                $consulta->execute();
-                $resultado = $consulta->fetch(PDO::FETCH_ASSOC);
-
-                $totalProvasNaoFinalizadas = $resultado['total_provas_nao_finalizadas'];
-
-                $queryRascunho = "SELECT COUNT(*) as total_rascunho FROM rascunho_presenca WHERE id_sessao = :id_sessao";
-                $consultarRascunho = $pdo->prepare($queryRascunho);
-                $consultarRascunho->bindValue(':id_sessao', $idGS);  
-                $consultarRascunho->execute();
-                $Rascunho = $consultarRascunho->fetch(PDO::FETCH_ASSOC);
-
-                $resultadoRascunho = $Rascunho['total_rascunho'];
-
-                $queryPresenca = "SELECT COUNT(*) as total_presenca FROM presenca WHERE id_sessao = :id_sessao";
-                $consultaPresenca = $pdo->prepare($queryPresenca);
-                $consultaPresenca->bindValue(':id_sessao', $idGS);  
-                $consultaPresenca->execute();
-                $Presenca = $consultaPresenca->fetch(PDO::FETCH_ASSOC);
-
-                $resultadoPresenca = $Presenca['total_presenca']; 
-
-                $queryUser  = "SELECT COUNT(*) AS total_user FROM usuarios AS u
-                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
-                WHERE gs.id_sessoes = :id_sessoes AND u.situacao = 'Ativo' AND permission = 'limited'";
-                $consultaUser = $pdo->prepare($queryUser);
-                $consultaUser->bindValue(':id_sessoes', $idGS);  
-                $consultaUser->execute();
-                $User = $consultaUser->fetch(PDO::FETCH_ASSOC);
-
-                $usuario = $User['total_user'];       
-
-            ?>
-
-            <div class="container-fluid text-center p-4">
-                <?php
-                    if($usuario <= 0){
-                        echo '<p>O TVG ainda não foi iniciado.</p>';
-                    }elseif ($resultadoRascunho <= 0 && $resultadoPresenca <= 0){
-                        echo '<p>A chamada ainda não foi feita, grave o rascunho e confirme a presença. Não é possível encerrar a sessão.</p>';
-                    }elseif($totalProvasNaoFinalizadas > 0){
-                        echo '<p>Ainda há provas não finalizadas. Não é possível encerrar a sessão.</p>';
-                    }elseif($resultadoRascunho > 0 || $resultadoPresenca <= 0){
-                        echo '<p>Ainda á rascunho de presença, finalize as listas de chamada. Não é possível encerrar a sessão.</p>';
-                    }elseif($totalProvasNaoFinalizadas <= 0 && $resultadoRascunho <= 0 && $resultadoPresenca > 0) {
-                    echo "<form action='finalizarSessao.php' method='post'>
-                            <a href='finalizarSessao.php?id={$idGS}' type='submit' class='btn btn-secondary' data-dismiss='modal'>Finalizar Sessão</a>
-                        </form>";
-                    }
-                ?>      
-            </div>
-        </div>  
              
  <script>
 
