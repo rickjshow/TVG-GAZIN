@@ -3,6 +3,7 @@ include "header.php";
 include "importacao_participantes.php";
 require_once "permissao.php";
 include "temporizador.php";
+include "conexao.php";
 
 verificarPermissao($permission);
 
@@ -54,17 +55,33 @@ verificarPermissao($permission);
 
     ?>
 
+
+<style>
+button#arquivo1 {
+    margin-top: 85px;
+    font-size: 15px;
+}
+button#arquivo2 {
+    margin-top: 85px;
+    font-size: 15px;
+}
+
+
+</style>
+
+
     <!-- Modal -->
     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="importModalLabel">Importar Planilha</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Importar Planilha</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center">
                     <form action="importacao_participantes.php" method="post" enctype="multipart/form-data">
                         <div class="form-group">
                             <label for="planilha">Escolha a planilha:</label>
@@ -72,19 +89,26 @@ verificarPermissao($permission);
                         </div>
                         <button type="submit" id="arquivo" class="btn btn-primary" name="submit">Importar</button>
                     </form>
-
-                    <?php
-                        if (isset($_SESSION['alerta'])) {
-                                echo "<script>";
-                                echo "alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');";
-                                echo "</script>";
-                        unset($_SESSION['alerta']);
-                        }
-                    ?>
+                    <form action="download_arquivo_modelo.php" method="POST">
+                        <button type="submit" id="arquivo1" class="btn btn-primary" name="download_modelo" value="1">Modelo</button>
+                    </form>
+                    <form action="" class="ml-2">
+                        <button type="submit" id="arquivo2" class="btn btn-primary" name="submit">Departamentos</button>
+                    </form>
                 </div>
             </div>
+            <?php
+                if (isset($_SESSION['alerta'])) {
+                    echo "<script>";
+                    echo "alerta('{$_SESSION['alerta']['tipo']}', '{$_SESSION['alerta']['mensagem']}');";
+                    echo "</script>";
+                    unset($_SESSION['alerta']);
+                }
+            ?>
         </div>
     </div>
+</div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {

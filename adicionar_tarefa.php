@@ -5,7 +5,7 @@ if (isset($_POST["newTask"])) {
     if (empty($_POST["newTask"])) {
         session_start();
         $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Favor inserir ao menos uma tarefa!');
-        header("location: checklist.php");
+        header("location: tarefas.php");
         exit();
     } else {
     $taskText = trim($_POST["newTask"]);

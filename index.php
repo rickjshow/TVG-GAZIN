@@ -73,6 +73,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button class="btn mt-3">Login</button>
         </form>
     </div>
+    <style>
+
+
+    </style>
+    <p class="mb-3 text-muted text-center">
+            ©️ 2024 TVG. Todos os direitos reservados.
+            <br>
+            Desenvolvido por <a href="" target="_blank" style="color:#011085; font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">HRCode</a>
+    </p>
     <?php 
     
         if (isset($_SESSION['alerta'])) {
