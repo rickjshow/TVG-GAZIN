@@ -88,6 +88,7 @@ button#arquivo2 {
                             <input type="file" class="form-control-file" name="planilha" id="planilha" accept=".csv, .xlsx, .xls, .ods">
                         </div>
                         <button type="submit" id="arquivo" class="btn btn-primary" name="submit">Importar</button>
+                        <a href="dados.ods" download="dados.ods" class="btn btn-success">Baixar Planilha</a>
                     </form>
                     <form action="download_arquivo_modelo.php" method="POST">
                         <button type="submit" id="arquivo1" class="btn btn-primary" name="download_modelo" value="1">Modelo</button>
