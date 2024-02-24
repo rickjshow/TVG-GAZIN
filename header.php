@@ -16,6 +16,14 @@ require_once "permissao.php";
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="index.js"></script>
+    <style>
+        @media (min-width: 599px) {
+                img#logo {
+                    width: 175px !important; 
+                    padding: -5px;
+                }
+            }
+    </style>
     <title>Painel TVG</title>
     
 </head>

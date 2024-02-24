@@ -39,10 +39,15 @@ if (isset($_POST['submit'])) {
             $stmtSelectDepartamento->execute(['nome' => $nomeDepartamento]);
             $idDepartamento = $stmtSelectDepartamento->fetchColumn();
 
-            if (!$idDepartamento) {
-                continue; 
-            }
+/*
+                ajustar
 
+            if (!$idDepartamento) {
+                 $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Departamento não existe na base de dados! Faça download dos departamentos e corrija!');
+                 header("Location: importar_participantes.php");
+                exit();
+            }
+*/
             $stmtCheckNome = $pdo->prepare("SELECT COUNT(*) FROM participantes WHERE nome = :nome");
             $stmtCheckNome->execute(['nome' => $nome]);
             $count = $stmtCheckNome->fetchColumn();

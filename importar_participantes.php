@@ -57,13 +57,25 @@ verificarPermissao($permission);
 
 
 <style>
-button#arquivo1 {
-    margin-top: 85px;
-    font-size: 15px;
-}
-button#arquivo2 {
-    margin-top: 85px;
-    font-size: 15px;
+    button#arquivo1 {
+        margin-top: 85px;
+        font-size: 15px;
+    }
+    button#arquivo2 {
+        margin-top: 85px;
+        font-size: 15px;
+    }
+
+    @media  only screen and (max-width: 499px) {
+        a.btn.btn-success {
+        font-size: 12px;
+    }
+
+    button#arquivo {
+        font-size: 12px;
+    }
+
+    
 }
 
 
@@ -71,7 +83,7 @@ button#arquivo2 {
 
 
 <?php 
-  require 'vendor/autoload.php';  // Inclua o arquivo de autoload do Composer
+  require 'vendor/autoload.php';  // arquivo de autoload do Composer
 
   use PhpOffice\PhpSpreadsheet\Spreadsheet;
   use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -81,12 +93,16 @@ button#arquivo2 {
   $departamentos->execute();
   $result = $departamentos->fetchAll(PDO::FETCH_ASSOC);
   
-  // Crie uma instância do Spreadsheet
+  // Criei uma instância do Spreadsheet
   $spreadsheet = new Spreadsheet();
   $sheet = $spreadsheet->getActiveSheet();
   
-  // Adicione os dados ao Spreadsheet
-  $sheet->fromArray($result, null, 'A1');
+
+  // Adicionei os dados ao Spreadsheet
+  $header = ['ID', 'Descrição']; 
+  $sheet->fromArray([$header], null, 'A1');
+
+  $sheet->fromArray($result, null, 'A2');
   
   // Salve o arquivo do Excel
   $writer = new Xlsx($spreadsheet);
@@ -94,8 +110,8 @@ button#arquivo2 {
 
     ?>
 
-    <!-- Modal -->
-    <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+ 
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
