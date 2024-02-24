@@ -70,6 +70,30 @@ button#arquivo2 {
 </style>
 
 
+<?php 
+  require 'vendor/autoload.php';  // Inclua o arquivo de autoload do Composer
+
+  use PhpOffice\PhpSpreadsheet\Spreadsheet;
+  use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+  
+  $queryDepartamentos = "SELECT * FROM departamentos";
+  $departamentos = $pdo->prepare($queryDepartamentos);
+  $departamentos->execute();
+  $result = $departamentos->fetchAll(PDO::FETCH_ASSOC);
+  
+  // Crie uma instância do Spreadsheet
+  $spreadsheet = new Spreadsheet();
+  $sheet = $spreadsheet->getActiveSheet();
+  
+  // Adicione os dados ao Spreadsheet
+  $sheet->fromArray($result, null, 'A1');
+  
+  // Salve o arquivo do Excel
+  $writer = new Xlsx($spreadsheet);
+  $writer->save('departamentos.xlsx');
+
+    ?>
+
     <!-- Modal -->
     <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -88,15 +112,9 @@ button#arquivo2 {
                             <input type="file" class="form-control-file" name="planilha" id="planilha" accept=".csv, .xlsx, .xls, .ods">
                         </div>
                         <button type="submit" id="arquivo" class="btn btn-primary" name="submit">Importar</button>
-                        <a href="dados.ods" download="dados.ods" class="btn btn-success">Baixar Planilha</a>
+                        <a href="dados.ods" download="dados.ods" class="btn btn-success">Modelo</a>
+                        <a href="departamentos.xlsx" download="departamentos.xlsx" class="btn btn-success">Departamento</a>
                     </form>
-                    <form action="download_arquivo_modelo.php" method="POST">
-                        <button type="submit" id="arquivo1" class="btn btn-primary" name="download_modelo" value="1">Modelo</button>
-                    </form>
-                    <form action="" class="ml-2">
-                        <button type="submit" id="arquivo2" class="btn btn-primary" name="submit">Departamentos</button>
-                    </form>
-                </div>
             </div>
             <?php
                 if (isset($_SESSION['alerta'])) {
