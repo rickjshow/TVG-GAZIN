@@ -27,8 +27,16 @@ if (isset($_POST['submit'])) {
         $stmtInsertParticipante = $pdo->prepare($sqlInsertParticipante);
 
         $duplicateNames = array();
+        $nonexistentDepartments = array();
+
+        $firstRow = true; // Variável de controle para ignorar a primeira linha
 
         foreach ($sheet->getRowIterator() as $row) {
+            if ($firstRow) {
+                $firstRow = false;
+                continue; // Ignora a primeira linha
+            }
+
             $cellIterator = $row->getCellIterator();
             $cellIterator->setIterateOnlyExistingCells(FALSE);
 
@@ -39,15 +47,11 @@ if (isset($_POST['submit'])) {
             $stmtSelectDepartamento->execute(['nome' => $nomeDepartamento]);
             $idDepartamento = $stmtSelectDepartamento->fetchColumn();
 
-/*
-                ajustar
-
             if (!$idDepartamento) {
-                 $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Departamento não existe na base de dados! Faça download dos departamentos e corrija!');
-                 header("Location: importar_participantes.php");
-                exit();
+                $nonexistentDepartments[] = $nomeDepartamento;
+                continue;
             }
-*/
+
             $stmtCheckNome = $pdo->prepare("SELECT COUNT(*) FROM participantes WHERE nome = :nome");
             $stmtCheckNome->execute(['nome' => $nome]);
             $count = $stmtCheckNome->fetchColumn();
@@ -69,7 +73,14 @@ if (isset($_POST['submit'])) {
         $stmtCheckNome = null;
         $pdo = null;
 
-        if (!empty($duplicateNames)) {
+        if (!empty($nonexistentDepartments)) {
+            $message = 'Os seguintes Departamentos não existem: <br>';
+            foreach ($nonexistentDepartments as $department) {
+                $message .= "<br> $department <br>";
+                $message .= "<br>Ajuste apenas os Departamentos que estão incorretos e importe novamente! <br>";
+            }
+            exibirAlerta('error', $message);
+        } elseif (!empty($duplicateNames)) {
             $message = 'Os seguintes participantes já existem no banco de dados: <br>';
             foreach ($duplicateNames as $name) {
                 $message .= "<br>- $name <br>";
