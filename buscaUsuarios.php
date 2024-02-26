@@ -32,7 +32,7 @@ include "conexao.php";
                 <th style="font-weight: normal;"><a><?php echo $row['name']; ?></a></th>
                 <td><a href="update.php?id=<?php echo $row['id']; ?>" style="font-size: 12px;" class="btn btn-success">Update</a></td>
                 <td>
-                    <a class="btn btn-<?php echo ($row['situacao'] == 'Ativo') ? 'success' : 'danger'; ?>" style="font-size: 12px;" id="btn">
+                    <a class="btn btn-<?php echo ($row['situacao'] == 'Ativo') ? 'success' : 'danger'; ?>" style="font-size: 12px; width: 62px; height: 30px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;" id="btn">
                         <?php echo $row['situacao']; ?>
                     </a>
                 </td>

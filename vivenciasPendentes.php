@@ -56,7 +56,7 @@ if(isset($nomeSessao['id'])){
 if(isset($nomeSessao['nome'])){
     $nomeSession = $nomeSessao['nome'];
 }else{
-    $nomeSession = 'Não existem sessöes pendentes no momento';
+    $nomeSession = 'Não existem sessões pendentes no momento';
 }
 
     echo "
