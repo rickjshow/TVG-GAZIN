@@ -48,7 +48,7 @@ $consultaChamada->execute();
 $numChamada = $consultaChamada->fetchColumn();
 
 if(isset($nomeSessao['id'])){
-    $idSessao = $nomeSessao['id']; 
+    $idSessao = $nomeSessao['id'];
 }else{
     $idSessao = null;
 }

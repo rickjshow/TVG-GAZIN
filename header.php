@@ -174,7 +174,6 @@ require_once "permissao.php";
                                     });
                                 </script>
 
-                           
                             <nav class="dashboard-nav-list">
                                 <a href="home.php" class="dashboard-nav-item active"><i class="fas fa-home"></i> Home</a>
 
