@@ -195,7 +195,7 @@ require_once "permissao.php";
                                             <div class='dashboard-nav-dropdown-menu'>
                                                 <a href="#" class="dashboard-nav-dropdown-item">Presença</a>
                                                 <a href="#" class="dashboard-nav-dropdown-item">Pontuação</a>
-                                                <a href="#" class="dashboard-nav-dropdown-item">Dashboard</a>
+                                                <a href="dashboard.php" class="dashboard-nav-dropdown-item">Dashboard</a>
                                             </div>
                                         </div>
                                     </div>
