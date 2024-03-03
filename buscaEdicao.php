@@ -37,7 +37,7 @@ include "conexao.php";
         ?>
         <tr>
             <th style="font-weight: normal;"><?php echo $row['nome']; ?></th>
-            <th style="font-weight: normal;"><a><?php echo $row['data_TVG']; ?></a></th>
+            <th style="font-weight: normal;"><a><?php echo date('d/m/Y', strtotime($row['data_TVG'])); ?></a></th>
             <td>
                 <a class="btn btn-<?php echo ($row['situacao'] == 'Pendente') ? 'danger' : 'success'; ?>" style="font-size: 12px;" id="btn">
                     <?php echo $row['situacao']; ?>

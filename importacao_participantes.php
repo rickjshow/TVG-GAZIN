@@ -20,6 +20,12 @@ if (isset($_POST['submit'])) {
         $spreadsheet = IOFactory::load($caminhoTemporario);
         $sheet = $spreadsheet->getActiveSheet();
 
+        $rowCount = $sheet->getHighestDataRow();
+        if ($rowCount <= 1) {
+            exibirAlerta('error', 'A planilha está vazia. Por favor, anexe uma planilha com dados.');
+            exit();
+        }
+
         $sqlSelectDepartamento = "SELECT id FROM departamentos WHERE name = :nome";
         $stmtSelectDepartamento = $pdo->prepare($sqlSelectDepartamento);
 

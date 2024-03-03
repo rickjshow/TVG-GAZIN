@@ -117,7 +117,7 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
         if ($resultado['COUNT(*)'] == 0) {
             echo "<form action='updateGSessao.php' method='post'>
                     <input type='hidden' name='idGS' value='$idGS'>
-                    <button type='submit' class='btn btn-success mr-2 mt-4' name='Ativar' style='font-size: 15px;'>Iniciar TVG</button>
+                    <button type='submit' class='btn btn-success mr-2 mt-3' name='Ativar' style='font-size: 15px;'>Iniciar TVG</button>
                 </form>";
         } else {
             echo '<p class="mt-4 p-2">TVG já foi iniciado!</p>';
