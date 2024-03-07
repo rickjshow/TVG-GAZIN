@@ -25,3 +25,11 @@
 .text-c-blue{
     color: blue;
 }
+
+.card-footer.bg-c-purple {
+        background: linear-gradient(to right, rgba(128, 0, 128, 0.8), rgba(128, 0, 128, 0.2));
+ }
+
+ .text-c-purple {
+     color: rgb(128, 0, 128);
+ }

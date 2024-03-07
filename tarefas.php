@@ -185,8 +185,8 @@ include "header.php";
                     ?>
                          <div class="task" data-taskid="<?php echo $tarefa['id']; ?>">
                         <input type="checkbox" class="invisible-checkbox" <?php echo $tarefa['situacao'] == 'Concluída' ? 'checked' : ''; ?>>
-                        <label class="<?php echo $tarefa['situacao'] == 'Concluída' ? 'done' : 'not-done'; ?>">
-                            <?php echo $tarefa['nome']; ?>
+                        <label class="<?php echo $tarefa['situacao'] == 'Concluída' ? 'done' : 'not-done';  ?>">
+                            <?php echo $tarefa['nome'];  ?>
                         </label>
                         <div class="status-buttons">
                             <button class="status-button done" onclick="markTaskAsDone(this)">Concluído</button>
