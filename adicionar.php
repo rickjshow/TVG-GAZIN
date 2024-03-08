@@ -30,7 +30,7 @@ if (isset($_POST["add_user"])) {
                     exit();  
             }           
         } else {
-            if ($tipo_nome === "GESTOR RH") {
+            if ($tipo_nome == "Gestor RH" || $tipo_nome == "Desenvolvedor") {
                 $situacao = "admin";
             } else {
                 $situacao = "limited";
@@ -71,6 +71,32 @@ if (isset($_POST["add_user"])) {
                     $consulta->bindParam(':fotos', $imagem_binaria, PDO::PARAM_LOB);
 
                     if ($consulta->execute()) {
+
+                        $user = $_SESSION['username'];
+
+                        if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                            $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                        } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                            $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                        } else {
+                            $ip_address = $_SERVER['REMOTE_ADDR'];
+                        }
+                        
+                        $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+    
+                        $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                        $result = $pdo->prepare($queryUser);
+                        $result->bindValue(1, $user);
+                        $result->execute();
+                        $idUser = $result->fetchColumn();
+    
+                        $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'adição de facilitador' , NOW() , NULL ,?)";
+                        $stmt = $pdo->prepare($insert);
+                        $stmt->bindValue(1, $idUser);
+                        $stmt->bindValue(2, $ip_user);
+                        $stmt->bindValue(3, $nome);
+                        $stmt->execute();
+
                         session_start();
                         $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Cadastrado com sucesso!');
                         header("location: acesso.php");

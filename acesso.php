@@ -25,6 +25,22 @@ verificarPermissao($permission);
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
             <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Lista de Facilitadores</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Usuarios</button>
+            <?php 
+        
+                $username = $_SESSION['username'];
+
+                $queryPermission = "SELECT t.tipo AS tipo FROM usuarios AS u
+                JOIN tipo AS t ON u.id_tipo = t.id
+                WHERE nome = ?";
+                $result = $pdo->prepare($queryPermission);
+                $result->bindValue(1, $username);
+                $result->execute();
+                $resultado = $result->fetchColumn();
+
+                if($resultado == 'Desenvolvedor') : ?>
+                    <a class="btn btn-success mt-4" href="logFacilitadores.php">Log de Facilitadores</a>
+                <?php endif;
+            ?>
         </div>
     </div>
 
@@ -101,7 +117,13 @@ verificarPermissao($permission);
                         <label for="tipo">Tipo de usuário:</label>
                         <select name="tipo" class="form-control">
                             <?php
-                            $query = "SELECT * FROM tipo WHERE tipo NOT IN('DESENVOLVEDOR')";
+
+                            if($resultado == "Desenvolvedor"){
+                                $query = "SELECT * FROM tipo ORDER BY id DESC";
+                            }else{
+                                $query = "SELECT * FROM tipo WHERE tipo NOT IN('DESENVOLVEDOR') ORDER BY id DESC";
+                            }
+                            
                             $consulta = $pdo->prepare($query);
                             $consulta->execute();
                             $data = $consulta->fetchAll(PDO::FETCH_ASSOC);

@@ -69,7 +69,12 @@ if (isset($_POST['submit'])) {
 
             $result = $stmtInsertParticipante->execute(['nome' => $nome, 'id_departamento' => $idDepartamento]);
 
-            if (!$result) {
+            if($result){
+
+                $sucessfulInserts[] = $nome;
+
+            }elseif (!$result) {
+
                 exibirAlerta('error', "Erro na inserção para $nome");
             }
         }
@@ -93,6 +98,46 @@ if (isset($_POST['submit'])) {
             }
             exibirAlerta('warning', $message);
         } else {
+            $user = $_SESSION['username'];
+
+                    require "conexao.php";
+
+                    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                        $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                    } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                        $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                    } else {
+                        $ip_address = $_SERVER['REMOTE_ADDR'];
+                    }
+                    
+                    $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+                    $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                    $result = $pdo->prepare($queryUser);
+                    $result->bindValue(1, $user);
+                    $result->execute();
+                    $idUser = $result->fetchColumn();
+
+                    $querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente'";
+                    $sessao = $pdo->prepare($querySession);
+                    $sessao->execute();
+                    $resultado = $sessao->fetchColumn();
+                    if($resultado > 0){
+                        $idSession = $resultado;
+                    }else{
+                        $idSession = null;
+                    }
+
+                foreach($sucessfulInserts AS $name){
+                    $insert = "INSERT INTO log_auditoria (id_sessoes, id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?,?, 'importação de participantes' , NOW() , NULL ,?)";
+                    $stmt = $pdo->prepare($insert);
+                    $stmt->bindValue(1, $idSession);
+                    $stmt->bindValue(2, $idUser);
+                    $stmt->bindValue(3, $ip_user);
+                    $stmt->bindValue(4, $name);
+                    $stmt->execute();
+                }
+
             exibirAlerta('success', 'Cadastrado com sucesso!');
         }
     } else {

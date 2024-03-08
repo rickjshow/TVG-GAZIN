@@ -3,14 +3,24 @@ include("header.php");
 require_once ("conexao.php");
 include "temporizador.php";
 
-$querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
-$ConsultaSession = $pdo->prepare($querySession);
-$ConsultaSession->execute();
-$idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);    
+    $querySession = "SELECT id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+    $ConsultaSession = $pdo->prepare($querySession);
+    $ConsultaSession->execute();
+    $idSessao = $ConsultaSession->fetch(PDO::FETCH_ASSOC);
 
-if(isset($idSessao['id'])){
-    $idSession = $idSessao['id'];
-}
+    $username = $_SESSION['username'];
+
+    $queryPermission = "SELECT t.tipo AS tipo FROM usuarios AS u
+    JOIN tipo AS t ON u.id_tipo = t.id
+    WHERE nome = ?";
+    $result = $pdo->prepare($queryPermission);
+    $result->bindValue(1, $username);
+    $result->execute();
+    $resultado = $result->fetchColumn();
+
+    if(isset($idSessao['id'])){
+        $idSession = $idSessao['id'];
+    }
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -47,6 +57,12 @@ if (isset($_POST['update_usuario'])) {
     $departamento_nome = $_POST['departamentos'];
     $tipo = $_POST["tipo"];
 
+    if($tipo == "Desenvolvedor" || $tipo == "Gestor RH"){
+        $permission = "admin";
+    }else{
+        $permission = "limited";
+    }
+
     $sql_departamento = "SELECT id FROM departamentos WHERE name = :departamento_nome";
     $consulta_departamento = $pdo->prepare($sql_departamento);
     $consulta_departamento->bindParam(':departamento_nome', $departamento_nome);
@@ -68,7 +84,7 @@ if (isset($_POST['update_usuario'])) {
     $resultUser = $consultaUser->fetchColumn();
 
     if($resultUser == 0){
-        // Verifique se o nome é diferente do original
+
         $queryOriginalName = "SELECT nome FROM usuarios WHERE id = :id";
         $consultaOriginalName = $pdo->prepare($queryOriginalName);
         $consultaOriginalName->bindParam(':id', $id);
@@ -76,7 +92,7 @@ if (isset($_POST['update_usuario'])) {
         $originalName = $consultaOriginalName->fetch(PDO::FETCH_ASSOC)['nome'];
 
         if ($nome !== $originalName) {
-            // Verifique se o novo nome já existe no banco de dados
+
             $queryNome = "SELECT nome FROM usuarios WHERE nome = :nome";
             $consultaNome = $pdo->prepare($queryNome);
             $consultaNome->bindParam(':nome', $nome);
@@ -89,13 +105,22 @@ if (isset($_POST['update_usuario'])) {
                 exit();
             }
         }
+
+        $queryValoresAntigos = "SELECT u.nome AS nome, d.name AS departamento, u.senha AS senha, u.situacao AS situacao, t.tipo AS tipo FROM usuarios AS u
+        JOIN departamentos AS d ON u.id_departamentos = d.id
+        JOIN tipo AS t ON u.id_tipo = t.id
+        WHERE u.id = :id";
+        $consultaValoresAntigos = $pdo->prepare($queryValoresAntigos);
+        $consultaValoresAntigos->bindParam(':id', $id);
+        $consultaValoresAntigos->execute();
+        $valoresAntigos = $consultaValoresAntigos->fetch(PDO::FETCH_ASSOC);
         
         $sqlUser = "
         UPDATE usuarios
         SET
             nome = :nome,
             senha = :senha,
-            permission = 'limited',
+            permission = :permission,
             situacao = :situacao,
             id_departamentos = :id_departamento,
             id_tipo = :id_tipo
@@ -105,6 +130,7 @@ if (isset($_POST['update_usuario'])) {
         $consulta = $pdo->prepare($sqlUser);
         $consulta->bindValue(':nome', $nome);
         $consulta->bindValue(':senha', $senha);
+        $consulta->bindValue(':permission', $permission);
         $consulta->bindValue(':situacao', $situacao);
         $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
         $consulta->bindParam(':id_tipo', $resultado_tipo["id"]);
@@ -112,6 +138,80 @@ if (isset($_POST['update_usuario'])) {
         $consulta->execute();
     
         if($consulta){
+
+            $user = $_SESSION['username'];
+
+                if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                    $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                    $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                } else {
+                    $ip_address = $_SERVER['REMOTE_ADDR'];
+                }
+                
+                $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+                $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                $result = $pdo->prepare($queryUser);
+                $result->bindValue(1, $user);
+                $result->execute();
+                $idUser = $result->fetchColumn();
+
+                if ($valoresAntigos['nome'] != $nome) {
+
+                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - nome', NOW(), ?, ?)";
+                    $stmtNome = $pdo->prepare($insertNome);
+                    $stmtNome->bindValue(1, $idUser);
+                    $stmtNome->bindValue(2, $ip_user);
+                    $stmtNome->bindValue(3, $valoresAntigos['nome']); 
+                    $stmtNome->bindValue(4, $nome); 
+                    $stmtNome->execute();
+                }
+        
+                if ($valoresAntigos['departamento'] != $departamento_nome) {
+
+                    $insertDepartamento = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - departamento', NOW(), ?, ?)";
+                    $stmtDepartamento = $pdo->prepare($insertDepartamento);
+                    $stmtDepartamento->bindValue(1, $idUser);
+                    $stmtDepartamento->bindValue(2, $ip_user);
+                    $stmtDepartamento->bindValue(3, $valoresAntigos['departamento']); 
+                    $stmtDepartamento->bindValue(4, $departamento_nome); 
+                    $stmtDepartamento->execute();
+                }
+
+                if ($valoresAntigos['senha'] != $senha) {
+
+                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - senha', NOW(), ?, ?)";
+                    $stmtNome = $pdo->prepare($insertNome);
+                    $stmtNome->bindValue(1, $idUser);
+                    $stmtNome->bindValue(2, $ip_user);
+                    $stmtNome->bindValue(3, $valoresAntigos['senha']); 
+                    $stmtNome->bindValue(4, $senha); 
+                    $stmtNome->execute();
+                }
+
+                if ($valoresAntigos['situacao'] != $situacao) {
+
+                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - situacao', NOW(), ?, ?)";
+                    $stmtNome = $pdo->prepare($insertNome);
+                    $stmtNome->bindValue(1, $idUser);
+                    $stmtNome->bindValue(2, $ip_user);
+                    $stmtNome->bindValue(3, $valoresAntigos['situacao']); 
+                    $stmtNome->bindValue(4, $situacao); 
+                    $stmtNome->execute();
+                }
+        
+                if ($valoresAntigos['tipo'] != $tipo) {
+
+                    $insertDepartamento = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - tipo', NOW(), ?, ?)";
+                    $stmtDepartamento = $pdo->prepare($insertDepartamento);
+                    $stmtDepartamento->bindValue(1, $idUser);
+                    $stmtDepartamento->bindValue(2, $ip_user);
+                    $stmtDepartamento->bindValue(3, $valoresAntigos['tipo']); 
+                    $stmtDepartamento->bindValue(4, $tipo); 
+                    $stmtDepartamento->execute();
+                }
+
             session_start();
             $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Usuário Alterado com sucesso!');
             header("location: acesso.php");
@@ -197,7 +297,13 @@ if (isset($_POST['update_usuario'])) {
                 <label for="tipo">Tipo:</label>
                 <select name="tipo" class="form-control">
                     <?php
-                    $query = "SELECT * FROM tipo";
+
+                    if($resultado == "Desenvolvedor"){
+                        $query = "SELECT * FROM tipo";
+                    }else{
+                        $query = "SELECT * FROM tipo WHERE tipo NOT IN('DESENVOLVEDOR')";
+                    }
+
                     $consulta = $pdo->prepare($query);
                     $consulta->execute();
                     $tipos = $consulta->fetchAll(PDO::FETCH_ASSOC);

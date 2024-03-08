@@ -81,6 +81,14 @@ if (isset($_POST['update_participantes'])) {
                 exit();
             }
         }
+
+        $queryValoresAntigos = "SELECT p.nome AS nome, d.name AS departamento FROM participantes AS p 
+        JOIN departamentos AS d ON p.id_departamentos = d.id
+        WHERE p.id = :id";
+        $consultaValoresAntigos = $pdo->prepare($queryValoresAntigos);
+        $consultaValoresAntigos->bindParam(':id', $id);
+        $consultaValoresAntigos->execute();
+        $valoresAntigos = $consultaValoresAntigos->fetch(PDO::FETCH_ASSOC);
   
         $sqlParticipante = "UPDATE participantes SET nome = :nome, id_departamentos = :id_departamento WHERE id = :id";
         $consulta = $pdo->prepare($sqlParticipante);
@@ -90,7 +98,47 @@ if (isset($_POST['update_participantes'])) {
         $consulta->execute();
     
             if($consulta){
-                session_start();
+                
+                $user = $_SESSION['username'];
+
+                if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                    $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                    $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                } else {
+                    $ip_address = $_SERVER['REMOTE_ADDR'];
+                }
+                
+                $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+                $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                $result = $pdo->prepare($queryUser);
+                $result->bindValue(1, $user);
+                $result->execute();
+                $idUser = $result->fetchColumn();
+
+                if ($valoresAntigos['nome'] != $nome) {
+
+                    $insertNome = "INSERT INTO log_participantes (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de participante - nome', NOW(), ?, ?)";
+                    $stmtNome = $pdo->prepare($insertNome);
+                    $stmtNome->bindValue(1, $idUser);
+                    $stmtNome->bindValue(2, $ip_user);
+                    $stmtNome->bindValue(3, $valoresAntigos['nome']); 
+                    $stmtNome->bindValue(4, $nome); 
+                    $stmtNome->execute();
+                }
+        
+                if ($valoresAntigos['departamento'] != $departamento_nome) {
+
+                    $insertDepartamento = "INSERT INTO log_participantes (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de participante - departamento', NOW(), ?, ?)";
+                    $stmtDepartamento = $pdo->prepare($insertDepartamento);
+                    $stmtDepartamento->bindValue(1, $idUser);
+                    $stmtDepartamento->bindValue(2, $ip_user);
+                    $stmtDepartamento->bindValue(3, $valoresAntigos['departamento']); 
+                    $stmtDepartamento->bindValue(4, $departamento_nome); 
+                    $stmtDepartamento->execute();
+                }
+
                 $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Participante alterado com sucesso!');
                 header("location: participantes.php");
                 exit();

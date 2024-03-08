@@ -2,17 +2,37 @@
 
 include "conexao.php";
 
+    $username = $_SESSION['username'];
+
+    $queryPermission = "SELECT t.tipo AS tipo FROM usuarios AS u
+    JOIN tipo AS t ON u.id_tipo = t.id
+    WHERE nome = ?";
+    $result = $pdo->prepare($queryPermission);
+    $result->bindValue(1, $username);
+    $result->execute();
+    $resultado = $result->fetchColumn();
+
     if (isset($_POST['buscar']) && isset($_POST['search']) && !empty($_POST['search'])) {
 
             $busca = $_POST['search'];
 
-            $query = "SELECT u.*, d.name
-            FROM usuarios as u
-            JOIN departamentos as d ON u.id_departamentos = d.id
-            WHERE u.permission = 'limited' AND u.nome LIKE '%$busca%'";
-            $consulta = $pdo->prepare($query);
-            $consulta->execute();
-            $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            if($resultado == "Desenvolvedor"){
+                $query = "SELECT u.*, d.name
+                FROM usuarios as u
+                JOIN departamentos as d ON u.id_departamentos = d.id
+                WHERE u.nome LIKE '%$busca%'";
+                $consulta = $pdo->prepare($query);
+                $consulta->execute();
+                $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            }else{
+                $query = "SELECT u.*, d.name
+                FROM usuarios as u
+                JOIN departamentos as d ON u.id_departamentos = d.id
+                WHERE u.permission = 'limited' AND u.nome LIKE '%$busca%'";
+                $consulta = $pdo->prepare($query);
+                $consulta->execute();
+                $data = $consulta->fetchAll(PDO::FETCH_ASSOC);
+            }  
 
     }elseif(isset($_POST['buscar']) && empty($_POST['search'])){
         $query = "SELECT u.*, d.name FROM usuarios as u

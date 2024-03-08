@@ -40,7 +40,32 @@ if (isset($_POST["add_participantes"])) {
                 $consulta->bindParam(':id_departamentos', $departamento_id);
 
                 if ($consulta->execute()) {
-                    session_start();
+
+                    $user = $_SESSION['username'];
+
+                    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                        $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                    } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                        $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                    } else {
+                        $ip_address = $_SERVER['REMOTE_ADDR'];
+                    }
+                    
+                    $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+                    $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                    $result = $pdo->prepare($queryUser);
+                    $result->bindValue(1, $user);
+                    $result->execute();
+                    $idUser = $result->fetchColumn();
+
+                    $insert = "INSERT INTO log_participantes (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'adição de participante' , NOW() , NULL ,?)";
+                    $stmt = $pdo->prepare($insert);
+                    $stmt->bindValue(1, $idUser);
+                    $stmt->bindValue(2, $ip_user);
+                    $stmt->bindValue(3, $nome);
+                    $stmt->execute();
+
                     $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Cadastrado com sucesso!');
                     header("location: participantes.php");
                     exit();
