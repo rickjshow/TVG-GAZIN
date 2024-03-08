@@ -55,9 +55,12 @@ echo "<form method='post' action='dashboard.php' class='mt-4'>
                 $querySessao->execute();
                 $SessaoName = $querySessao->fetchAll(PDO::FETCH_ASSOC);
                 $nomeSelecionado = isset($_POST['tvg']) ? $_POST['tvg'] : '';
+                echo "<option value='' " . ($nomeSelecionado === '' ? 'selected' : '') . ">Selecionar</option>";
                 foreach ($SessaoName as $row) {
+                   
                     $selected = ($row['nome'] == $nomeSelecionado) ? 'selected' : '';
                     echo "<option value='" . $row['nome'] . "' $selected>" . $row['nome'] . "</option>";
+                    
                 }
                 echo "</select>
                 </div>
@@ -70,15 +73,90 @@ echo "<form method='post' action='dashboard.php' class='mt-4'>
 
 ?>
 
-    <div class="container mt-4">
-        <div class="row">
+<div class="container mt-4">
+    <div class="row">
+
+
+    <?php           
+               $queryPartTotal = "SELECT COUNT(DISTINCT p.id) AS total_participantes
+               FROM presenca AS pre
+               JOIN sessoes AS s ON pre.id_sessao = s.id
+               JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
+               JOIN status AS statos ON pre.id_status = statos.id
+               JOIN participantes AS p ON pre.id_participantes = p.id
+               WHERE gs.id_sessoes = :idSessaoSelecionada ";
+
+                 $consulta = $pdo->prepare($queryPartTotal);
+                 $consulta->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
+                
+                 try {
+                     $consulta->execute();
+                     $resultTotal = $consulta->fetch(PDO::FETCH_ASSOC);
+                
+                
+                 } catch (PDOException $e) {
+                     echo "Error: " . $e->getMessage();
+                 }
+
+         ?>
+
+
+    <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-block">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h4 class="text-c-blus f-w-600 p-2"><?php echo $resultTotal['total_participantes']?></h4>
+                                <h6 class="text-muted m-b-0 p-2">Quantidade Participantes Total</h6>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-c-blus">
+                        <div class="row align-items-center">
+                            <div class="col-9">
+                                <p class="text-white m-b-0"></p>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-area-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <?php           
+               $query = "SELECT COUNT(DISTINCT p.id) AS total_participantes_presentes
+               FROM presenca AS pre
+               JOIN sessoes AS s ON pre.id_sessao = s.id
+               JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
+               JOIN status AS statos ON pre.id_status = statos.id
+               JOIN participantes AS p ON pre.id_participantes = p.id
+               WHERE gs.id_sessoes = :idSessaoSelecionada AND statos.nome = 'Presente'";
+
+                 $consulta = $pdo->prepare($query);
+                 $consulta->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
+                
+                 try {
+                     $consulta->execute();
+                     $result = $consulta->fetch(PDO::FETCH_ASSOC);
+                
+                
+                 } catch (PDOException $e) {
+                     echo "Error: " . $e->getMessage();
+                 }
+
+         ?>
+
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card">
                     <div class="card-block">
                         <div class="row align-items-center">
                             <div class="col-8">
-                                <h4 class="text-c-green f-w-600 p-2">fazer</h4>
-                                <h6 class="text-muted m-b-0 p-2">Participantes Presente</h6>
+                                <h4 class="text-c-green f-w-600 p-2"><?php echo  $result['total_participantes_presentes'] ?></h4>
+                                <h6 class="text-muted m-b-0 p-2">Participantes Presentes</h6>
                             </div>
                             <div class="col-3 text-right">
                                 <i class="fa fa-bar-chart" aria-hidden="true"></i>
@@ -98,12 +176,37 @@ echo "<form method='post' action='dashboard.php' class='mt-4'>
                 </div>
             </div>
 
+
+
+            <?php           
+           $query = "SELECT COUNT(DISTINCT p.id) AS total_participantes_ausentes
+           FROM presenca AS pre
+           JOIN sessoes AS s ON pre.id_sessao = s.id
+           JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
+           JOIN status AS statos ON pre.id_status = statos.id
+           JOIN participantes AS p ON pre.id_participantes = p.id
+           WHERE gs.id_sessoes = :idSessaoSelecionada AND statos.nome = 'Ausente'";
+                         
+             $consulta = $pdo->prepare($query);
+             $consulta->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
+             
+             try {
+                 $consulta->execute();
+                 $resultAusentes = $consulta->fetch(PDO::FETCH_ASSOC);
+         
+              
+             } catch (PDOException $e) {
+                 echo "Error: " . $e->getMessage();
+             }
+                                    
+     ?>
+
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card">
                     <div class="card-block">
                         <div class="row align-items-center">
                             <div class="col-8">
-                                <h4 class="text-c-red f-w-600 p-2">fazer</h4>
+                                <h4 class="text-c-red f-w-600 p-2"><?php echo  $resultAusentes['total_participantes_ausentes'] ?></h4>
                                 <h6 class="text-muted m-b-0 p-2">Participantes Ausentes</h6>
                             </div>
                             <div class="col-3 text-right">
@@ -125,15 +228,51 @@ echo "<form method='post' action='dashboard.php' class='mt-4'>
                 </div>
             </div>
 
+
+            <?php 
+           
+                $totalParticipantesPresentes =  $result['total_participantes_presentes'] ? : 0;
+                $totalParticipantes = $resultTotal['total_participantes'] ? : 0;
+
+                $porcentagemParticipacao = ($totalParticipantes !== 0) ? number_format(($totalParticipantesPresentes / $totalParticipantes) * 100, 2) : 0;
+
+            ?>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-block">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h4 class="text-c-bluefor f-w-600 p-2"><?php echo $porcentagemParticipacao. '%' ?></h4>
+                                <h6 class="text-muted m-b-0 p-2">Taxa de participação</h6>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-c-bluefor">
+                        <div class="row align-items-center">
+                            <div class="col-9">
+                                <p class="text-white m-b-0"></p>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-area-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
     <?php
-            $queryFacilitadores = "SELECT COUNT(*) FROM tipo AS tipo
-            JOIN usuarios AS u ON tipo.id = u.id_tipo
-            JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
-            WHERE gs.id_sessoes = :idSessaoSelecionada AND u.permission = 'limited'";
-            $stmtFacilitadores = $pdo->prepare($queryFacilitadores);
-            $stmtFacilitadores->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
-            $stmtFacilitadores->execute();
-            $Facilitadores = $stmtFacilitadores->fetchAll(PDO::FETCH_ASSOC);
+            $queryQTDProvas = "SELECT COUNT(*) FROM provas AS p
+            JOIN equipes_provas AS eq ON p.id = eq.id_provas
+            JOIN sessoes AS ses ON eq.id_sessao = ses.id
+            WHERE ses.id = :idSessaoSelecionada ";
+            $stmtqueryQTDProvas = $pdo->prepare($queryQTDProvas);
+            $stmtqueryQTDProvas->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
+            $stmtqueryQTDProvas->execute();
+            $provas = $stmtqueryQTDProvas->fetchAll(PDO::FETCH_ASSOC);
 
     
        echo "<div class='col-xl-3 col-md-6 mb-4'>
@@ -141,8 +280,8 @@ echo "<form method='post' action='dashboard.php' class='mt-4'>
                    <div class='card-block'>
                        <div class='row align-items-center'>
                            <div class='col-8'>
-                               <h4 class='text-c-orange f-w-600 p-2'>" . $Facilitadores[0]['COUNT(*)'] . "</h4>
-                               <h6 class='text-muted m-b-0 p-2'>Quantidade de Facilitadores</h6>
+                               <h4 class='text-c-orange f-w-600 p-2'>" . $provas[0]['COUNT(*)'] . "</h4>
+                               <h6 class='text-muted m-b-0 p-2'>Eequipes</h6>
                            </div>
                            <div class='col-3 text-right'>
                                <i class='fa fa-bar-chart' aria-hidden='true'></i>
@@ -162,7 +301,6 @@ echo "<form method='post' action='dashboard.php' class='mt-4'>
                </div>
            </div>";
        ?>
-
 
     <?php
     
@@ -257,6 +395,72 @@ try {
                         </div>
                     </div>
                     <div class="card-footer bg-c-purple">
+                        <div class="row align-items-center">
+                            <div class="col-9">
+                                <p class="text-white m-b-0"></p>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-area-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <?php 
+
+            $IdSessaoSelecionada = null;
+            $queryQtdProvras = "SELECT COUNT(DISTINCT eq.id_equipes) AS equipes FROM equipes_provas AS eq
+            JOIN sessoes AS ses ON eq.id_sessao  = ses.id
+            JOIN gerenciamento_sessao AS gs ON gs.id_sessoes =  ses.id 
+            WHERE gs.id_sessoes = :idSessaoSelecionada";
+            $stmtQtdProvras = $pdo->prepare($queryQtdProvras);
+            $stmtQtdProvras->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
+            $stmtQtdProvras->execute();
+            $QtdProvrasTotal = $stmtQtdProvras->fetch(PDO::FETCH_ASSOC);
+
+            ?>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-block">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h4 class="text-c-orangets f-w-600 p-2"><?php echo $QtdProvrasTotal['equipes'] ?></h4>
+                                <h6 class="text-muted m-b-0 p-2">Quantidade Provas</h6>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-c-orangets">
+                        <div class="row align-items-center">
+                            <div class="col-9">
+                                <p class="text-white m-b-0"></p>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-area-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-block">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h4 class="text-c-violeta f-w-600 p-2"><?php ?>fazer</h4>
+                                <h6 class="text-muted m-b-0 p-2">Tempo Medio Provas</h6>
+                            </div>
+                            <div class="col-3 text-right">
+                                <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-c-violeta">
                         <div class="row align-items-center">
                             <div class="col-9">
                                 <p class="text-white m-b-0"></p>
