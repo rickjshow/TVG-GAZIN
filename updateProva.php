@@ -88,6 +88,15 @@ if (isset($_POST['update_prova'])) {
             exit();
         }
     }
+
+        $queryValoresAntigos = "SELECT p.nome AS nome, p.descricao AS descricao, p.pergunta AS pergunta, p.pontuacao_maxima AS pontuacao_maxima, tp.nome AS tipo_nome FROM provas AS p 
+        JOIN tipo_provas AS tp ON p.tipo_provas_id = tp.id
+        WHERE p.id = :id";
+        $consultaValoresAntigos = $pdo->prepare($queryValoresAntigos);
+        $consultaValoresAntigos->bindParam(':id', $id);
+        $consultaValoresAntigos->execute();
+        $valoresAntigos = $consultaValoresAntigos->fetch(PDO::FETCH_ASSOC);
+
             $sqlprova = "
             UPDATE provas
             SET
@@ -110,6 +119,82 @@ if (isset($_POST['update_prova'])) {
         
     
             if ($consulta) {
+
+                if($consulta){
+                
+                    $user = $_SESSION['username'];
+    
+                    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                        $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                    } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                        $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                    } else {
+                        $ip_address = $_SERVER['REMOTE_ADDR'];
+                    }
+                    
+                    $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+    
+                    $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                    $result = $pdo->prepare($queryUser);
+                    $result->bindValue(1, $user);
+                    $result->execute();
+                    $idUser = $result->fetchColumn();
+    
+                    if ($valoresAntigos['nome'] != $nome) {
+    
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - nome', NOW(), ?, ?)";
+                        $stmtNome = $pdo->prepare($insertNome);
+                        $stmtNome->bindValue(1, $idUser);
+                        $stmtNome->bindValue(2, $ip_user);
+                        $stmtNome->bindValue(3, $valoresAntigos['nome']); 
+                        $stmtNome->bindValue(4, $nome); 
+                        $stmtNome->execute();
+                    }
+
+                    if ($valoresAntigos['descricao'] != $descricao) {
+    
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - descrição', NOW(), ?, ?)";
+                        $stmtNome = $pdo->prepare($insertNome);
+                        $stmtNome->bindValue(1, $idUser);
+                        $stmtNome->bindValue(2, $ip_user);
+                        $stmtNome->bindValue(3, $valoresAntigos['descricao']); 
+                        $stmtNome->bindValue(4, $descricao); 
+                        $stmtNome->execute();
+                    }
+
+                    if ($valoresAntigos['pergunta'] != $pergunta) {
+    
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivencia - pergunta', NOW(), ?, ?)";
+                        $stmtNome = $pdo->prepare($insertNome);
+                        $stmtNome->bindValue(1, $idUser);
+                        $stmtNome->bindValue(2, $ip_user);
+                        $stmtNome->bindValue(3, $valoresAntigos['pergunta']); 
+                        $stmtNome->bindValue(4, $pergunta); 
+                        $stmtNome->execute();
+                    }
+
+                    if ($valoresAntigos['pontuacao_maxima'] != $pontos) {
+    
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - ponto máximo', NOW(), ?, ?)";
+                        $stmtNome = $pdo->prepare($insertNome);
+                        $stmtNome->bindValue(1, $idUser);
+                        $stmtNome->bindValue(2, $ip_user);
+                        $stmtNome->bindValue(3, $valoresAntigos['pontuacao_maxima']); 
+                        $stmtNome->bindValue(4, $pontos); 
+                        $stmtNome->execute();
+                    }
+            
+                    if ($valoresAntigos['tipo_nome'] != $tipo_provas) {
+    
+                        $insertDepartamento = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - tipo da prova', NOW(), ?, ?)";
+                        $stmtDepartamento = $pdo->prepare($insertDepartamento);
+                        $stmtDepartamento->bindValue(1, $idUser);
+                        $stmtDepartamento->bindValue(2, $ip_user);
+                        $stmtDepartamento->bindValue(3, $valoresAntigos['tipo_nome']); 
+                        $stmtDepartamento->bindValue(4, $tipo_provas); 
+                        $stmtDepartamento->execute();
+                    } 
+
                 session_start();
                 $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Prova atualizada com sucesso!');
                 header("location: cadastro_provas.php");
@@ -120,11 +205,12 @@ if (isset($_POST['update_prova'])) {
                 header("location: cadastro_provas.php");
                 exit();
             }
-    }else {
-        session_start();
-        $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Não é possível atualizar provas que estejam vinculadas a um TVG pendente!');
-        header("location: cadastro_provas.php");
-        exit();
+        }else {
+            session_start();
+            $_SESSION['alerta'] = array('tipo' => 'error', 'mensagem' => 'Não é possível atualizar provas que estejam vinculadas a um TVG pendente!');
+            header("location: cadastro_provas.php");
+            exit();
+        }
     }
 } 
 

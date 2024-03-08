@@ -27,6 +27,22 @@ verificarPermissao($permission);
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
             <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 18px;">Cadastro de Vivências TVG</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Vivências</button>
+            <?php 
+        
+                $username = $_SESSION['username'];
+
+                $queryPermission = "SELECT t.tipo AS tipo FROM usuarios AS u
+                JOIN tipo AS t ON u.id_tipo = t.id
+                WHERE nome = ?";
+                $result = $pdo->prepare($queryPermission);
+                $result->bindValue(1, $username);
+                $result->execute();
+                $resultado = $result->fetchColumn();
+
+                if($resultado == 'Desenvolvedor') : ?>
+                    <a class="btn btn-success mt-4" href="logVivencias.php">Log de vivências</a>
+                <?php endif;
+            ?>
         </div>
     </div>
 
