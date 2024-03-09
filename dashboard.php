@@ -265,23 +265,27 @@ echo "<form method='post' action='dashboard.php' class='mt-4'>
             </div>
 
     <?php
-            $queryQTDProvas = "SELECT COUNT(*) FROM provas AS p
-            JOIN equipes_provas AS eq ON p.id = eq.id_provas
-            JOIN sessoes AS ses ON eq.id_sessao = ses.id
-            WHERE ses.id = :idSessaoSelecionada ";
-            $stmtqueryQTDProvas = $pdo->prepare($queryQTDProvas);
-            $stmtqueryQTDProvas->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
-            $stmtqueryQTDProvas->execute();
-            $provas = $stmtqueryQTDProvas->fetchAll(PDO::FETCH_ASSOC);
 
-    
+        $queryQTDProvas = "SELECT COUNT(DISTINCT eq.id_equipes) AS quantidade_equipes
+        FROM provas AS p
+        JOIN equipes_provas AS eq ON p.id = eq.id_provas
+        JOIN sessoes AS ses ON eq.id_sessao = ses.id
+        WHERE ses.id = :idSessaoSelecionada";
+       
+       $stmtqueryQTDProvas = $pdo->prepare($queryQTDProvas);
+       $stmtqueryQTDProvas->bindParam(':idSessaoSelecionada', $idSessaoSelecionada, PDO::PARAM_INT);
+       $stmtqueryQTDProvas->execute();
+       $resultado = $stmtqueryQTDProvas->fetch(PDO::FETCH_ASSOC);
+       
+       $quantidadeEquipes = $resultado['quantidade_equipes'];
+       
        echo "<div class='col-xl-3 col-md-6 mb-4'>
                <div class='card'>
                    <div class='card-block'>
                        <div class='row align-items-center'>
                            <div class='col-8'>
-                               <h4 class='text-c-orange f-w-600 p-2'>" . $provas[0]['COUNT(*)'] . "</h4>
-                               <h6 class='text-muted m-b-0 p-2'>Eequipes</h6>
+                               <h4 class='text-c-orange f-w-600 p-2'>" . $quantidadeEquipes[0] . "</h4>
+                               <h6 class='text-muted m-b-0 p-2'>Equipes</h6>
                            </div>
                            <div class='col-3 text-right'>
                                <i class='fa fa-bar-chart' aria-hidden='true'></i>
@@ -410,7 +414,7 @@ try {
             <?php 
 
             $IdSessaoSelecionada = null;
-            $queryQtdProvras = "SELECT COUNT(DISTINCT eq.id_equipes) AS equipes FROM equipes_provas AS eq
+            $queryQtdProvras = "SELECT COUNT(DISTINCT eq.id_provas) AS equipes FROM equipes_provas AS eq
             JOIN sessoes AS ses ON eq.id_sessao  = ses.id
             JOIN gerenciamento_sessao AS gs ON gs.id_sessoes =  ses.id 
             WHERE gs.id_sessoes = :idSessaoSelecionada";
@@ -447,12 +451,27 @@ try {
                 </div>
             </div>
 
+            <?php 
+            
+            $tempoEmSegundos = strtotime($tempoFormatado) - strtotime('00:00:00');
+            $quantidadeEquipes = $QtdProvrasTotal['equipes'];
+            $tempoMedio = ($quantidadeEquipes != 0) ? $tempoEmSegundos / $quantidadeEquipes : 0;
+        
+            $tempoMedioFormatado = number_format($tempoMedio, 2);
+            
+            $horas = floor($tempoMedio / 3600);
+            $minutos = floor(($tempoMedio / 60) % 60);
+            $segundos = $tempoMedio % 60;
+            $tempoMedioFormatadoHHMMSS = sprintf("%02d:%02d:%02d", $horas, $minutos, $segundos);
+            
+            ?>
+
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card">
                     <div class="card-block">
                         <div class="row align-items-center">
                             <div class="col-8">
-                                <h4 class="text-c-violeta f-w-600 p-2"><?php ?>fazer</h4>
+                                <h4 class="text-c-violeta f-w-600 p-2"><?php echo $tempoMedioFormatadoHHMMSS  ?></h4>
                                 <h6 class="text-muted m-b-0 p-2">Tempo Medio Provas</h6>
                             </div>
                             <div class="col-3 text-right">
