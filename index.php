@@ -47,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="login.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="alert.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" 
-    rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="icon" href="iconegazin.png" type="image/x-icon">
     <title>TVG GAZIN</title>
 </head>
 
@@ -79,8 +79,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
     <p class="mb-3 text-muted text-center">
             ©️ 2024 TVG. Todos os direitos reservados.
-            <br>
-            Desenvolvido por <a href="" target="_blank" style="color:#011085; font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;">HRCode</a>
     </p>
     <?php 
     
