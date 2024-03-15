@@ -4,8 +4,12 @@ require_once "conexao.php";
 require_once "permissao.php";
 include "adicionarProva.php";
 include "temporizador.php";
+require_once "tipoUser.php";
 
 verificarPermissao($permission);
+
+$resultado = verificarTipo($_SESSION['username']);
+
 ?>
 
 <!DOCTYPE html>
@@ -28,16 +32,6 @@ verificarPermissao($permission);
             <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 18px;">Cadastro de Vivências TVG</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Vivências</button>
             <?php 
-        
-                $username = $_SESSION['username'];
-
-                $queryPermission = "SELECT t.tipo AS tipo FROM usuarios AS u
-                JOIN tipo AS t ON u.id_tipo = t.id
-                WHERE nome = ?";
-                $result = $pdo->prepare($queryPermission);
-                $result->bindValue(1, $username);
-                $result->execute();
-                $resultado = $result->fetchColumn();
 
                 if($resultado == 'Desenvolvedor') : ?>
                     <a class="btn btn-success mt-4" href="logVivencias.php">Log de vivências</a>

@@ -4,8 +4,12 @@ require_once "permissao.php";
 include "header.php";
 include "adicionar.php";
 include "temporizador.php";
+require_once "tipoUser.php";
 
 verificarPermissao($permission);
+
+$resultado = verificarTipo($_SESSION['username']);
+
 ?>
 
 <!DOCTYPE html>
@@ -23,22 +27,17 @@ verificarPermissao($permission);
    
     <div class="container mt-4">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
-            <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Lista de Facilitadores</h3>
+        <?php 
+            if($resultado == 'Desenvolvedor') : ?>
+                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Lista de Usuarios</h3>
+            <?php else : ?>
+                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Lista de Facilitadores</h3>
+            <?php endif; ?>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Usuarios</button>
             <?php 
-        
-                $username = $_SESSION['username'];
-
-                $queryPermission = "SELECT t.tipo AS tipo FROM usuarios AS u
-                JOIN tipo AS t ON u.id_tipo = t.id
-                WHERE nome = ?";
-                $result = $pdo->prepare($queryPermission);
-                $result->bindValue(1, $username);
-                $result->execute();
-                $resultado = $result->fetchColumn();
 
                 if($resultado == 'Desenvolvedor') : ?>
-                    <a class="btn btn-success mt-4" href="logFacilitadores.php">Log de Facilitadores</a>
+                    <a class="btn btn-success mt-4" href="logFacilitadores.php">Log de Usuarios</a>
                 <?php endif;
             ?>
         </div>
@@ -47,7 +46,7 @@ verificarPermissao($permission);
     <form id="formBusca">
         <div class="container mt-4">
             <div class="input-group mb-3">
-                <input type="text" id="campoBusca" class="form-control" name="search" placeholder="Buscar participante por nome" onkeyup="atualizarBusca()">
+                <input type="text" id="campoBusca" class="form-control" name="search" placeholder="Buscar usuário por nome" onkeyup="atualizarBusca()">
                 <div class="input-group-append">
                     <button class="btn btn-primary" type="submit" name="buscar" id="botaoBusca">
                         <i class="fa fa-search"></i>

@@ -35,12 +35,12 @@ if (isset($_POST['submit'])) {
         $duplicateNames = array();
         $nonexistentDepartments = array();
 
-        $firstRow = true; // Variável de controle para ignorar a primeira linha
+        $firstRow = true;
 
         foreach ($sheet->getRowIterator() as $row) {
             if ($firstRow) {
                 $firstRow = false;
-                continue; // Ignora a primeira linha
+                continue; 
             }
 
             $cellIterator = $row->getCellIterator();
@@ -49,6 +49,15 @@ if (isset($_POST['submit'])) {
             $nome = $cellIterator->current()->getValue();
             $cellIterator->next();
             $nomeDepartamento = $cellIterator->current()->getValue();
+
+            if(empty($nome)){
+                exibirAlerta('error', 'Existem campos de nome vazios na planilha!');
+
+            }if(empty($nomeDepartamento)){
+                
+                exibirAlerta('error', 'Existem campos de departamento vazios na planilha');
+
+            }
 
             $stmtSelectDepartamento->execute(['nome' => $nomeDepartamento]);
             $idDepartamento = $stmtSelectDepartamento->fetchColumn();
@@ -129,12 +138,11 @@ if (isset($_POST['submit'])) {
                     }
 
                 foreach($sucessfulInserts AS $name){
-                    $insert = "INSERT INTO log_auditoria (id_sessoes, id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?,?, 'importação de participantes' , NOW() , NULL ,?)";
+                    $insert = "INSERT INTO log_participantes (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'importação de participantes' , NOW() , NULL ,?)";
                     $stmt = $pdo->prepare($insert);
-                    $stmt->bindValue(1, $idSession);
-                    $stmt->bindValue(2, $idUser);
-                    $stmt->bindValue(3, $ip_user);
-                    $stmt->bindValue(4, $name);
+                    $stmt->bindValue(1, $idUser);
+                    $stmt->bindValue(2, $ip_user);
+                    $stmt->bindValue(3, $name);
                     $stmt->execute();
                 }
 

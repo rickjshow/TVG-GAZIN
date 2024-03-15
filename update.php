@@ -159,7 +159,7 @@ if (isset($_POST['update_usuario'])) {
 
                 if ($valoresAntigos['nome'] != $nome) {
 
-                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - nome', NOW(), ?, ?)";
+                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $valoresAntigos['nome'] . " - nome', NOW(), ?, ?)";
                     $stmtNome = $pdo->prepare($insertNome);
                     $stmtNome->bindValue(1, $idUser);
                     $stmtNome->bindValue(2, $ip_user);
@@ -170,7 +170,8 @@ if (isset($_POST['update_usuario'])) {
         
                 if ($valoresAntigos['departamento'] != $departamento_nome) {
 
-                    $insertDepartamento = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - departamento', NOW(), ?, ?)";
+                    $insertDepartamento = $sql = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $nome . " - departamento', NOW(), ?, ?)";
+
                     $stmtDepartamento = $pdo->prepare($insertDepartamento);
                     $stmtDepartamento->bindValue(1, $idUser);
                     $stmtDepartamento->bindValue(2, $ip_user);
@@ -181,7 +182,7 @@ if (isset($_POST['update_usuario'])) {
 
                 if ($valoresAntigos['senha'] != $senha) {
 
-                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - senha', NOW(), ?, ?)";
+                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $nome . " - senha', NOW(), ?, ?)";
                     $stmtNome = $pdo->prepare($insertNome);
                     $stmtNome->bindValue(1, $idUser);
                     $stmtNome->bindValue(2, $ip_user);
@@ -192,7 +193,7 @@ if (isset($_POST['update_usuario'])) {
 
                 if ($valoresAntigos['situacao'] != $situacao) {
 
-                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - situacao', NOW(), ?, ?)";
+                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $nome . " - situacao', NOW(), ?, ?)";
                     $stmtNome = $pdo->prepare($insertNome);
                     $stmtNome->bindValue(1, $idUser);
                     $stmtNome->bindValue(2, $ip_user);
@@ -203,7 +204,7 @@ if (isset($_POST['update_usuario'])) {
         
                 if ($valoresAntigos['tipo'] != $tipo) {
 
-                    $insertDepartamento = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de facilitador - tipo', NOW(), ?, ?)";
+                    $insertDepartamento = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $nome . " - tipo', NOW(), ?, ?)";
                     $stmtDepartamento = $pdo->prepare($insertDepartamento);
                     $stmtDepartamento->bindValue(1, $idUser);
                     $stmtDepartamento->bindValue(2, $ip_user);

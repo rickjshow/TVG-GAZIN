@@ -397,6 +397,22 @@ if (isset($_POST["confirmacao"])) {
                 </select>
             </div>
             <button type="button" class="btn btn-primary" style="font-size: 13px;" onclick="validarFormulario()">Atualizar</button>
+            <?php 
+            
+                $queryVerificar = "SELECT COUNT(*) FROM usuarios AS u
+                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+                WHERE gs.id_sessoes = ? AND u.situacao = 'Ativo'";
+                $result = $pdo->prepare($queryVerificar);
+                $result->bindValue(1, $sesId);
+                $result->execute();
+                $quantidade = $result->fetchColumn();
+
+                if($quantidade == 0) : ?>
+                    <a class="btn btn-danger" style="font-size: 13px;" href="excluirEquipe.php?idEquipe=<?php echo $id_equipe; ?>&idSessao=<?php echo $sesId; ?>">Excluir Equipe</a>
+                <?php endif;
+
+            ?>
+            
     </div>
         <script>
             function validarFormulario() {

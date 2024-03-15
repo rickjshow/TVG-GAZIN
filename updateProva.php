@@ -142,7 +142,7 @@ if (isset($_POST['update_prova'])) {
     
                     if ($valoresAntigos['nome'] != $nome) {
     
-                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - nome', NOW(), ?, ?)";
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição da prova " . $valoresAntigos['nome'] ." - nome', NOW(), ?, ?)";
                         $stmtNome = $pdo->prepare($insertNome);
                         $stmtNome->bindValue(1, $idUser);
                         $stmtNome->bindValue(2, $ip_user);
@@ -153,7 +153,7 @@ if (isset($_POST['update_prova'])) {
 
                     if ($valoresAntigos['descricao'] != $descricao) {
     
-                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - descrição', NOW(), ?, ?)";
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição da prova " . $nome ." - descrição', NOW(), ?, ?)";
                         $stmtNome = $pdo->prepare($insertNome);
                         $stmtNome->bindValue(1, $idUser);
                         $stmtNome->bindValue(2, $ip_user);
@@ -164,7 +164,7 @@ if (isset($_POST['update_prova'])) {
 
                     if ($valoresAntigos['pergunta'] != $pergunta) {
     
-                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivencia - pergunta', NOW(), ?, ?)";
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição da prova " . $nome ." - pergunta', NOW(), ?, ?)";
                         $stmtNome = $pdo->prepare($insertNome);
                         $stmtNome->bindValue(1, $idUser);
                         $stmtNome->bindValue(2, $ip_user);
@@ -175,7 +175,7 @@ if (isset($_POST['update_prova'])) {
 
                     if ($valoresAntigos['pontuacao_maxima'] != $pontos) {
     
-                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - ponto máximo', NOW(), ?, ?)";
+                        $insertNome = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição da prova " . $nome ." - ponto máximo', NOW(), ?, ?)";
                         $stmtNome = $pdo->prepare($insertNome);
                         $stmtNome->bindValue(1, $idUser);
                         $stmtNome->bindValue(2, $ip_user);
@@ -186,7 +186,7 @@ if (isset($_POST['update_prova'])) {
             
                     if ($valoresAntigos['tipo_nome'] != $tipo_provas) {
     
-                        $insertDepartamento = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição de vivência - tipo da prova', NOW(), ?, ?)";
+                        $insertDepartamento = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição da prova " . $nome ." - tipo da prova', NOW(), ?, ?)";
                         $stmtDepartamento = $pdo->prepare($insertDepartamento);
                         $stmtDepartamento->bindValue(1, $idUser);
                         $stmtDepartamento->bindValue(2, $ip_user);

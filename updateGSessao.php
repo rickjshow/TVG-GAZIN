@@ -36,7 +36,12 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
         header("location: novaEdicao.php");
         exit();
     }
-}   
+}
+
+if(isset($_GET['id'])){
+    $id = $_GET['id'];
+}
+
 
 ?>
 
@@ -57,6 +62,7 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
 <div class="container mt-4">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
             <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Equipes</h3>
+            <a class="btn btn-success mt-4" href="gerenciamentoEdicao.php?continuar=1&idsessao=<?php echo $id ?>">Adicionar Equipe</a>
         </div>
 </div>
 

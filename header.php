@@ -2,6 +2,7 @@
 ob_start();
 
 require_once "permissao.php";
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -78,15 +79,22 @@ require_once "permissao.php";
 
                                     $user = $_SESSION['username'];
 
-                                    $queryId = "SELECT id FROM usuarios WHERE nome = :user";
-                                    $consultaId = $pdo->prepare($queryId);
-                                    $consultaId->bindParam(':user', $user);
-                                    $consultaId->execute();
-                                    $Id = $consultaId->fetch(PDO::FETCH_ASSOC);
+                                    $queryPermission = "SELECT t.tipo AS tipo, u.id AS id FROM usuarios AS u
+                                    JOIN tipo AS t ON u.id_tipo = t.id
+                                    WHERE nome = ?";
+                                    $result = $pdo->prepare($queryPermission);
+                                    $result->bindValue(1, $user);
+                                    $result->execute();
+                                    $resultado = $result->fetchAll(PDO::FETCH_ASSOC);
+
+                                    foreach($resultado AS $row){
+                                        $Id = $row['id'];
+                                        $tipo = $row['tipo'];
+                                    }
 
                                     $queryFotosUsuarios = "SELECT fotos FROM usuarios WHERE id = :id";
                                     $consultafoto = $pdo->prepare($queryFotosUsuarios);
-                                    $consultafoto->bindParam(':id', $Id['id']);
+                                    $consultafoto->bindParam(':id', $Id);
                                     $consultafoto->execute();
 
                                     if ($consultafoto->rowCount() > 0) {
@@ -186,7 +194,7 @@ require_once "permissao.php";
                                         </div>
                                         <a href="cadastro_provas.php" class="dashboard-nav-item"><i class="fa-solid fa-dice"></i>Vivencias TVG</a>
                                         <a href="novaEdicao.php" class="dashboard-nav-item"><i class="fa-solid fa-font-awesome"></i>TVG</a>
-                                        <a href="acesso.php" class="dashboard-nav-item"><i class="fa-solid fa-user-plus"></i>Facilitadores</a>
+                                        <a href="acesso.php" class="dashboard-nav-item"><i class="fa-solid fa-user-plus"></i><?php if($tipo== "Desenvolvedor"){echo "Usuários";}else{echo "Facilitadores";} ?></a>
                                         <a href="ranking.php" class="dashboard-nav-item"><i class="fa-solid fa-trophy"></i>Ranking</a>
                                         <a href="presenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Participantes Ausentes</a>
                                         <a href="tarefas.php" class="dashboard-nav-item"><i class="fa-solid fa-pen-to-square"></i>Tarefas</a>

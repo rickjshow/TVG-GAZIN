@@ -14,6 +14,16 @@ if (isset($_POST["add_tvg"])) {
 
         $dateAtual = date("Y-m-d");
 
+        $query = "SELECT COUNT(*) FROM sessoes WHERE nome = ?";
+        $result = $pdo->prepare($query);
+        $result->bindValue(1, $nome);
+        $result->execute();
+        $num = $result->fetchColumn();
+
+        if($num > 0){
+            echo "<script>alerta('error', 'Esse nome de TVG já existe!');</script>";
+        }
+
         if($data < $dateAtual){
             echo "<script>alerta('error', 'A data do TVG não pode ser menor do que a data atual!');</script>";
         } else{
@@ -30,6 +40,38 @@ if (isset($_POST["add_tvg"])) {
                 $consulta->bindParam(':nome', $nome);
                 $consulta->bindParam(':data', $data);
                 if ($consulta->execute()) {
+
+                    $user = $_SESSION['username'];
+
+                    if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                        $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                    } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                        $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                    } else {
+                        $ip_address = $_SERVER['REMOTE_ADDR'];
+                    }
+                    
+                    $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+                    $querySessao = "SELECT id FROM sessoes ORDER BY data_criacao ASC LIMIT 1";
+                    $resultado = $pdo->prepare($querySessao);
+                    $resultado->execute();
+                    $id = $resultado->fetchColumn();
+
+                    $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                    $result = $pdo->prepare($queryUser);
+                    $result->bindValue(1, $user);
+                    $result->execute();
+                    $idUser = $result->fetchColumn();
+
+                    $insert = "INSERT INTO log_sessoes (id_sessoes, id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?,?, 'adição de sessão' , NOW() , NULL ,?)";
+                    $stmt = $pdo->prepare($insert);
+                    $stmt->bindValue(1, $id);
+                    $stmt->bindValue(2, $idUser);
+                    $stmt->bindValue(3, $ip_user);
+                    $stmt->bindValue(4, $nome);
+                    $stmt->execute();
+
                     header("location:gerenciamentoEdicao.php");
                     exit();
                 } else {

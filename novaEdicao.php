@@ -4,8 +4,11 @@ require_once "conexao.php";
 require_once "permissao.php";
 include "adicionarEdicao.php";
 include "temporizador.php";
+require_once "tipoUser.php";
 
 verificarPermissao($permission);
+
+$resultado = verificarTipo($_SESSION['username']);
 
 ?>
 
@@ -36,6 +39,12 @@ $consultaVerifica->execute();
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
             <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Edição TVG</h3>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Edição</button>
+            <?php 
+
+                if($resultado == 'Desenvolvedor') : ?>
+                    <a class="btn btn-success mt-4" href="logSessao.php">Log de Usuarios</a>
+                <?php endif;
+            ?>
         </div>
     </div>
 
