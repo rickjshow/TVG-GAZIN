@@ -77,12 +77,10 @@ include "conexao.php";
 
 
             <?php
-            $queryPartTotal = "SELECT COUNT(DISTINCT p.id) AS total_participantes
-               FROM presenca AS pre
-               JOIN sessoes AS s ON pre.id_sessao = s.id
-               JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
-               JOIN status AS statos ON pre.id_status = statos.id
-               JOIN participantes AS p ON pre.id_participantes = p.id
+            $queryPartTotal = "SELECT COUNT(*) AS total_participantes
+               FROM gerenciamento_sessao AS gs
+               JOIN sessoes AS s ON gs.id_sessoes = s.id
+               JOIN participantes AS p ON gs.id_participantes = p.id
                WHERE gs.id_sessoes = :idSessaoSelecionada ";
 
             $consulta = $pdo->prepare($queryPartTotal);
@@ -277,7 +275,7 @@ include "conexao.php";
                    <div class='card-block'>
                        <div class='row align-items-center'>
                            <div class='col-8'>
-                               <h4 class='text-c-orange f-w-600 p-2'>" . $quantidadeEquipes[0] . "</h4>
+                               <h4 class='text-c-orange f-w-600 p-2'>" . $quantidadeEquipes . "</h4>
                                <h6 class='text-muted m-b-0 p-2'>Equipes</h6>
                            </div>
                            <div class='col-3 text-right'>

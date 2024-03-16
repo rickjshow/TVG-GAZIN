@@ -9,20 +9,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = $_POST["nome"];
         $password = $_POST["senha"];
     
-        $query = "SELECT * FROM usuarios WHERE nome = :username AND senha = :password";
+        $query = "SELECT * FROM usuarios WHERE nome = :username";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(":username", $username);
-        $stmt->bindParam(":password", $password);
-    
+        
         try {
             $stmt->execute();
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-            if ($user) {
+            $user = $stmt->fetch();
+            $senha = $user['senha'];
+            $nome = $user['nome'];
+        
+            if($user && password_verify($password, $senha)) {
+
                 if ($user['situacao'] == 'Ativo') {
 
-                    $_SESSION["username"] = $username;
-                    header("location: home.php");
+                    if($user['senha_resetada'] == 'sim'){
+                        header("location: alterarsenha.php?user=$nome");
+                        exit();
+                    }
+
+                $_SESSION["username"] = $username;
+                header("location: home.php");
 
                 } elseif ($user['situacao'] == 'Inativo') {
                     echo "<script>alert('Usuário Inativo Temporariamente!');</script>";
@@ -32,8 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } catch (PDOException $e) {
             echo "Erro: " . $e->getMessage();
-            var_dump($e);
-        }
+        }        
     }
 }
 ?>

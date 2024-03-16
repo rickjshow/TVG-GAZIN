@@ -3,12 +3,11 @@
 require_once "conexao.php";
 
 if (isset($_POST["add_user"])) {
-    if (empty($_POST["nome"]) || empty($_POST["senha"]) || empty($_POST["departamentos"]) || empty($_POST["tipo"])) {
+    if (empty($_POST["nome"]) || empty($_POST["departamentos"]) || empty($_POST["tipo"])) {
         echo "<script>alert('Favor inserir todos os dados!'); window.location.href='acesso.php';</script>";
         exit();
     } else {
         $nome = $_POST["nome"];
-        $senha = $_POST["senha"];
         $departamento_nome = $_POST["departamentos"];
         $tipo_nome = $_POST["tipo"];
 
@@ -31,9 +30,9 @@ if (isset($_POST["add_user"])) {
             }           
         } else {
             if ($tipo_nome == "Gestor RH" || $tipo_nome == "Desenvolvedor") {
-                $situacao = "admin";
+                $permissao = "admin";
             } else {
-                $situacao = "limited";
+                $permissao = "limited";
             }
 
             $sqlVerificaTipo = "SELECT id FROM tipo WHERE tipo = :tipo";
@@ -56,7 +55,20 @@ if (isset($_POST["add_user"])) {
                 } else {
                     $departamento_id = $consultaDepartamento->fetchColumn();
 
-                    $sql = "INSERT INTO usuarios(nome, senha, permission, situacao, id_departamentos, id_tipo, fotos) VALUES(:nome, :senha, :situacao, 'Inativo', :id_departamentos, :id_tipo, :fotos)";
+                    if($permissao == 'limited'){
+
+                        $hash = "facilitadorgazin";
+                        $situacao = "Inativo";
+
+                    }elseif($permissao == 'admin'){
+
+                        $hash = "admingazin";
+                        $situacao = "Ativo";
+                    }
+
+                    $senha = password_hash($hash, PASSWORD_DEFAULT);
+
+                    $sql = "INSERT INTO usuarios(nome, senha, permission, situacao, id_departamentos, id_tipo, fotos, senha_resetada) VALUES(:nome, :senha, :permissao, :situacao, :id_departamentos, :id_tipo, :fotos, 'sim')";
 
                     $caminho_imagem_predefinida = 'semfoto.jpg';
 
@@ -65,6 +77,7 @@ if (isset($_POST["add_user"])) {
                     $consulta = $pdo->prepare($sql);
                     $consulta->bindParam(':nome', $nome);
                     $consulta->bindParam(':senha', $senha);
+                    $consulta->bindParam(':permissao', $permissao);
                     $consulta->bindParam(':situacao', $situacao);
                     $consulta->bindParam(':id_departamentos', $departamento_id);
                     $consulta->bindParam(':id_tipo', $tipo_id);
@@ -90,7 +103,7 @@ if (isset($_POST["add_user"])) {
                         $result->execute();
                         $idUser = $result->fetchColumn();
     
-                        $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'adição de facilitador' , NOW() , NULL ,?)";
+                        $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'adição de usuário' , NOW() , NULL ,?)";
                         $stmt = $pdo->prepare($insert);
                         $stmt->bindValue(1, $idUser);
                         $stmt->bindValue(2, $ip_user);

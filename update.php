@@ -52,7 +52,6 @@ if (isset($_GET['id'])) {
 if (isset($_POST['update_usuario'])) {
     $id = $_POST['id'];
     $nome = $_POST['nome'];
-    $senha = $_POST['senha'];
     $situacao = $_POST['situacao'];
     $departamento_nome = $_POST['departamentos'];
     $tipo = $_POST["tipo"];
@@ -106,7 +105,7 @@ if (isset($_POST['update_usuario'])) {
             }
         }
 
-        $queryValoresAntigos = "SELECT u.nome AS nome, d.name AS departamento, u.senha AS senha, u.situacao AS situacao, t.tipo AS tipo FROM usuarios AS u
+        $queryValoresAntigos = "SELECT u.nome AS nome, d.name AS departamento, u.situacao AS situacao, t.tipo AS tipo FROM usuarios AS u
         JOIN departamentos AS d ON u.id_departamentos = d.id
         JOIN tipo AS t ON u.id_tipo = t.id
         WHERE u.id = :id";
@@ -119,7 +118,6 @@ if (isset($_POST['update_usuario'])) {
         UPDATE usuarios
         SET
             nome = :nome,
-            senha = :senha,
             permission = :permission,
             situacao = :situacao,
             id_departamentos = :id_departamento,
@@ -129,7 +127,6 @@ if (isset($_POST['update_usuario'])) {
     
         $consulta = $pdo->prepare($sqlUser);
         $consulta->bindValue(':nome', $nome);
-        $consulta->bindValue(':senha', $senha);
         $consulta->bindValue(':permission', $permission);
         $consulta->bindValue(':situacao', $situacao);
         $consulta->bindParam(':id_departamento', $resultado_departamento['id']);
@@ -178,17 +175,6 @@ if (isset($_POST['update_usuario'])) {
                     $stmtDepartamento->bindValue(3, $valoresAntigos['departamento']); 
                     $stmtDepartamento->bindValue(4, $departamento_nome); 
                     $stmtDepartamento->execute();
-                }
-
-                if ($valoresAntigos['senha'] != $senha) {
-
-                    $insertNome = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $nome . " - senha', NOW(), ?, ?)";
-                    $stmtNome = $pdo->prepare($insertNome);
-                    $stmtNome->bindValue(1, $idUser);
-                    $stmtNome->bindValue(2, $ip_user);
-                    $stmtNome->bindValue(3, $valoresAntigos['senha']); 
-                    $stmtNome->bindValue(4, $senha); 
-                    $stmtNome->execute();
                 }
 
                 if ($valoresAntigos['situacao'] != $situacao) {
@@ -263,12 +249,6 @@ if (isset($_POST['update_usuario'])) {
                 <label  class="mt-4" for="nome">Usuário:</label>
                 <input type="text" name="nome" class="form-control" value="<?= $row['nome'] ?>">
             </div>
-
-            <div class="form-group">
-                <label for="senha">Senha:</label>
-                <input type="text" name="senha" class="form-control" value="<?= $row['senha'] ?>">
-            </div>
-
             <div class="form-group">
                 <label for="situacao">Situação:</label>
                 <select name="situacao" class="form-control">
@@ -317,11 +297,19 @@ if (isset($_POST['update_usuario'])) {
                 </select>
             </div>
 
-            <input type="submit" class="btn btn-success" style="font-size: 12px;" name="update_usuario" value="ATUALIZAR">
+            <input type="submit" class="btn btn-success" style="font-size: 12px;" name="update_usuario" value="Atualizar">
         </form>
+        <div class="form-group d-flex mt-4">
+            <?php 
 
-        <div class="form-group">
-            <button id="btnExcluiruser" class="btn btn-danger" style="font-size: 12px; margin-left:100px; margin-top:-59px">Excluir Usuário</button>
+                if($_SESSION['username'] !== $row['nome']) : ?>
+
+                    <button id="btnExcluiruser" class="btn btn-danger mr-2" style="font-size: 12px;">Excluir usuário</button>
+
+                <?php endif;
+            
+            ?>
+            <button id="btnResetar" class="btn btn-primary" style="font-size: 12px;">Resetar senha</button>
         </div>
     </div>
 </div>
@@ -358,6 +346,43 @@ if (isset($_POST['update_usuario'])) {
                                 icon: 'error',
                                 title: 'Erro',
                                 text: 'Ocorreu um erro ao excluir o usuário. Por favor, tente novamente.'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    $(document).ready(function() {
+        $("#btnResetar").prop("disabled", false);
+
+        $("#btnResetar").click(function() {
+            var id = "<?php echo $_GET['id']; ?>";
+
+            Swal.fire({
+                title: 'Você tem certeza?',
+                text: 'Esta ação irá resetar a senha do usuário. Deseja continuar?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sim, excluir!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: 'resetsenha.php',
+                        data: { idUser: id},
+                        success: function(response) {
+                            window.location.href = 'resetsenha.php?idUsuario=' + id;
+                        },
+                        error: function(error) {
+                            console.error('Erro ao resetar senha:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro',
+                                text: 'Ocorreu um erro ao resetar senha do usuário. Por favor, tente novamente.'
                             });
                         }
                     });
