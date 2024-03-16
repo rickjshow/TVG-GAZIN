@@ -8,11 +8,15 @@
     if(isset($_GET['idUsuario'])){
         $id = $_GET['idUsuario'];
 
-        $query = "SELECT permission FROM usuarios WHERE id = ?";
+        $query = "SELECT permission, nome FROM usuarios WHERE id = ?";
         $result = $pdo->prepare($query);
         $result->bindValue(1, $id);
         $result->execute();
-        $permission = $result->fetchColumn();
+        $data = $result->fetchAll(PDO::FETCH_ASSOC);
+        foreach($data as $row){
+            $permission = $row['permission'];
+            $nome = $row['nome'];
+        }
 
         if($permission == 'limited'){
             $senha = 'facilitadorgazin';
@@ -29,6 +33,31 @@
         $result2->execute();
 
         if($result2){
+
+            $user = $_SESSION['username'];
+
+            if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+            } else {
+                $ip_address = $_SERVER['REMOTE_ADDR'];
+            }
+            
+            $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+            $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+            $result = $pdo->prepare($queryUser);
+            $result->bindValue(1, $user);
+            $result->execute();
+            $idUser = $result->fetchColumn();
+
+            $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'Senha resetada do usuário - $nome' , NOW() , NULL ,NULL)";
+            $stmt = $pdo->prepare($insert);
+            $stmt->bindValue(1, $id);
+            $stmt->bindValue(2, $ip_user);
+            $stmt->execute();
+
             session_start();
             $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Senha resetada com sucesso!');
             header("location: acesso.php");

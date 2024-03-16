@@ -16,8 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $stmt->execute();
             $user = $stmt->fetch();
-            $senha = $user['senha'];
-            $nome = $user['nome'];
+            if(isset($user['senha']) && isset($user['senha'])){
+                $senha = $user['senha'];
+                $nome = $user['nome'];
+            }
         
             if($user && password_verify($password, $senha)) {
 
@@ -27,6 +29,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         header("location: alterarsenha.php?user=$nome");
                         exit();
                     }
+
+                if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                    $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+                } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                    $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+                } else {
+                    $ip_address = $_SERVER['REMOTE_ADDR'];
+                }
+                
+                $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+                $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
+                $result = $pdo->prepare($queryUser);
+                $result->bindValue(1, $nome);
+                $result->execute();
+                $idUser = $result->fetchColumn();
+
+                $querySessao = "INSERT INTO sessoes_usuarios_logados (id_user, data_login, ip_user) VALUES (?, NOW(), ?)";
+                $result1 = $pdo->prepare($querySessao);
+                $result1->bindValue(1, $idUser);
+                $result1->bindValue(2, $ip_user);
+                $result1->execute();    
 
                 $_SESSION["username"] = $username;
                 header("location: home.php");

@@ -56,7 +56,7 @@ if(isset($_GET['idUsuario'])) {
             $result->execute();
             $idUser = $result->fetchColumn();
 
-            $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'exclusão de facilitador' , NOW() ,?, NULL)";
+            $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'exclusão de usuário' , NOW() ,?, NULL)";
             $stmt = $pdo->prepare($insert);
             $stmt->bindValue(1, $idUser);
             $stmt->bindValue(2, $ip_user);
