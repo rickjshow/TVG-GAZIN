@@ -32,6 +32,6 @@ include "conexao.php";
         <?php endforeach; ?>
     <?php else: ?>
         <tr>
-            <tr><td colspan='4' class='text-center'>Sem resultados para essa consulta!</td></tr>;
+            <tr><td colspan='4' class='text-center'>Sem resultados para essa consulta</td></tr>;
         </tr>
     <?php endif; ?>
