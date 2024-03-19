@@ -118,12 +118,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             exit;                            
                         } else {
 
+                            $mediaPontos = ($sabor + $atendimento + $organizacao) / 3;
+
+                            $pontuacaoFinal = round($mediaPontos / 10 * $pontoMaximo);
+
                             $queryPonto = "INSERT INTO pontuacao (id_provas, id_sessoes, id_equipes, ponto_obtido, tempo_gasto) VALUES(:id_provas, :id_sessoes, :id_equipes, :ponto_obtido, :tempo_gasto)";
                             $consulta3 = $pdo->prepare($queryPonto);
                             $consulta3->bindValue(':id_provas', $idProva, PDO::PARAM_INT);
                             $consulta3->bindValue(':id_sessoes', $idSessao, PDO::PARAM_INT);
                             $consulta3->bindValue(':id_equipes', $idEquipe, PDO::PARAM_INT);
-                            $consulta3->bindValue(':ponto_obtido', $pontuacao, PDO::PARAM_INT);
+                            $consulta3->bindValue(':ponto_obtido', $pontuacaoFinal, PDO::PARAM_INT);
                             $consulta3->bindParam(':tempo_gasto', $tempoFormatado, PDO::PARAM_STR);
         
                             if ($consulta3->execute()) {
@@ -134,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $consulta4->bindValue(':id_sessao', $idSessao, PDO::PARAM_INT);
                                 $consulta4->execute();
         
-                                echo json_encode(['pontuacao' => 'A sua pontuação foi de ' . $pontuacao . ' pontos!']);
+                                echo json_encode(['pontuacao' => 'A sua pontuação foi de ' . $pontuacaoFinal . ' pontos!']);
                                 exit;
                             } else {     
                                 echo json_encode(['error' => 'Erro ao salvar pontuação.']);
@@ -227,19 +231,21 @@ if (isset($_GET['id'])) {
        
         <div class="row mt-4">
             <div class="col-md-6 offset-md-3">
-                <form id="pontuacaoForm" style="display: none">
+                <form id="pontuacaoForm" style="display: none;">
                     <div class="form-group">
                         <label for="sabor">Pontuação para o Sabor:</label>
-                        <input type="number" class="form-control" id="sabor" name="sabor" min="0" max="10" required>
+                        <input type="number" class="form-control" id="sabor" name="sabor" min="0" max="10" oninput="validarPontuacao(event)" required>
+                        <small class="error-message text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label for="atendimento">Pontuação para o Atendimento:</label>
-                        <input type="number" class="form-control" id="atendimento" name="atendimento" min="0" max="10" required>
+                        <input type="number" class="form-control" id="atendimento" name="atendimento" min="0" max="10" oninput="validarPontuacao(event)" required>
+                        <small class="error-message text-danger"></small>
                     </div>
                     <div class="form-group">
                         <label for="organizacao">Pontuação para a Organização:</label>
-                        <input type="number" class="form-control" id="organizacao" name="organizacao" min="0" max="10" required>
-                        
+                        <input type="number" class="form-control" id="organizacao" name="organizacao" min="0" max="10" oninput="validarPontuacao(event)" required>
+                        <small class="error-message text-danger"></small>
                     </div>
                     <button type="button" class="btn btn-danger" onclick="enviarPontos()">Finalizar Prova</button>
                 </form>
@@ -358,6 +364,23 @@ if (isset($_GET['id'])) {
     document.addEventListener('DOMContentLoaded', function () {
         restoreTimerState();
     });
+
+    function validarPontuacao(event) {
+    const valor = parseInt(event.target.value);
+    const mensagemErroElement = event.target.parentElement.querySelector('.error-message');
+
+    if (isNaN(valor) || valor < 0 || valor > 10) {
+        mensagemErroElement.textContent = 'Por favor, insira um número inteiro de 0 a 10.';
+
+        if (valor > 10) {
+            event.target.value = ''; 
+        }
+        } else {
+            mensagemErroElement.textContent = '';
+        }
+    }
+
+
 
     function enviarPontos() {
         var idProva = <?php echo $id; ?>;
