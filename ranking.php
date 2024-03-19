@@ -18,6 +18,8 @@
         $nomeSession = "Não existem sessões pendentes no momento";
     }
 
+    
+
 ?>
 
 <!DOCTYPE html>
