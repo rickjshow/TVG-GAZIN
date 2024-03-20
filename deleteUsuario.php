@@ -19,11 +19,50 @@ if(isset($_GET['idUsuario'])) {
     $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt_check->execute();
     $num_rows = $stmt_check->fetchColumn();
-    
+
     if ($num_rows > 0) {
         $existe_vinculo = true;
     }
 
+    $selectUser = "SELECT COUNT(*) FROM log_facilitadores WHERE id_usuarios = :id";
+    $stmt_check = $pdo->prepare($selectUser);
+    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt_check->execute();
+    $num_rows = $stmt_check->fetchColumn();
+
+    if ($num_rows > 0) {
+        $existe_vinculo = true;
+    }
+
+    $selectUser = "SELECT COUNT(*) FROM log_participantes WHERE id_usuarios = :id";
+    $stmt_check = $pdo->prepare($selectUser);
+    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt_check->execute();
+    $num_rows = $stmt_check->fetchColumn();
+
+    if ($num_rows > 0) {
+        $existe_vinculo = true;
+    }
+
+    $selectUser = "SELECT COUNT(*) FROM log_sessoes WHERE id_usuarios = :id";
+    $stmt_check = $pdo->prepare($selectUser);
+    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt_check->execute();
+    $num_rows = $stmt_check->fetchColumn();
+
+    if ($num_rows > 0) {
+        $existe_vinculo = true;
+    }
+
+    $selectUser = "SELECT COUNT(*) FROM log_vivencias WHERE id_usuarios = :id";
+    $stmt_check = $pdo->prepare($selectUser);
+    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt_check->execute();
+    $num_rows = $stmt_check->fetchColumn();
+    
+    if ($num_rows > 0) {
+        $existe_vinculo = true;
+    }
  
     if ($existe_vinculo) {
         session_start();

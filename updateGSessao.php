@@ -62,7 +62,21 @@ if(isset($_GET['id'])){
 <div class="container mt-4">
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
             <h3 class="mt-4 font-weight-bold display-4 text-primary" style="font-size: 15px;">Equipes</h3>
-            <a class="btn btn-success mt-4" href="gerenciamentoEdicao.php?continuar=1&idsessao=<?php echo $id ?>">Adicionar Equipe</a>
+            <?php 
+            
+                $queryVerificar = "SELECT COUNT(*) FROM usuarios AS u
+                JOIN gerenciamento_sessao AS gs ON u.id = gs.id_usuarios
+                WHERE gs.id_sessoes = ? AND u.situacao = 'Ativo'";
+                $result = $pdo->prepare($queryVerificar);
+                $result->bindValue(1, $id);
+                $result->execute();
+                $quantidade = $result->fetchColumn();
+
+                if($quantidade <= 0) : ?>
+                    <a class="btn btn-success mt-4" href="gerenciamentoEdicao.php?continuar=1&idsessao=<?php echo $id ?>">Adicionar Equipe</a>
+                <?php endif;
+
+            ?>
         </div>
 </div>
 
