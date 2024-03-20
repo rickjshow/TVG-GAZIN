@@ -7,7 +7,7 @@
     
     verificarPermissao($permission);
 
-    $querySessao = "SELECT nome, id FROM sessoes WHERE situacao = 'Pendente' ORDER BY data_criacao DESC LIMIT 1";
+    $querySessao = "SELECT nome, id FROM sessoes ORDER BY data_criacao DESC LIMIT 1";
     $stmtSessao = $pdo->prepare($querySessao);
     $stmtSessao->execute();
     $nomeSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
@@ -15,7 +15,7 @@
     if(isset($nomeSessao['nome'])){
         $nomeSession = $nomeSessao['nome'];
     }else{
-        $nomeSession = "Não existem sessões pendentes no momento";
+        $nomeSession = "Não existem sessões cadastradas!";
     }
 
     
@@ -85,7 +85,7 @@
     <div class='container mt-4'>
         <div class='mt-4 text-center p-4 border rounded shadow text-primary ">
             <h1 class="mt-4 font-weight-bold' style='font-size: px;'>Ranking Tvg Gazin</h1>
-            <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 600px; font-size: 0.9em; padding:5px; border:solid #000 1px;'> Sessão Atual: <?php echo $nomeSession ?> </h4>
+            <h4 class='mt-4 text-center mx-auto' style=' color: black; max-width: 600px; font-size: 0.9em; padding:5px; border:solid #000 1px;'>Ranking referente a sessão: <?php echo $nomeSession ?> </h4>
         </div>
 
     <div class="container mt-4">
