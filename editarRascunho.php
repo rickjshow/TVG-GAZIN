@@ -19,7 +19,7 @@
     
         $username = $_SESSION['username'];
     
-        $querySessao = "SELECT s.id AS id_sessao, s.situacao, u.id AS userId FROM sessoes AS s
+        $querySessao = "SELECT s.id AS id_sessao, s.situacao, u.id AS userId, gs.id_equipe AS equipe FROM sessoes AS s
                         JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
                         JOIN usuarios AS u ON gs.id_usuarios = u.id
                         WHERE u.nome = :username
@@ -34,6 +34,8 @@
 
         $userId = $resultSessao['userId'];
 
+        $idEquipe = $resultSessao['equipe'];
+
         $idSessao = $resultSessao['id_sessao'];
     
         if ($resultSessao && $resultSessao['situacao'] == 'Pendente') {
@@ -46,7 +48,7 @@
     
             $rascunho = $_POST['rascunho'];
     
-            $queryInsert = "INSERT INTO rascunho_presenca (id_sessao, id_participantes, id_status, id_user) VALUES (:id_sessao, :id_participante, :id_status, :id_user)";
+            $queryInsert = "INSERT INTO rascunho_presenca (id_sessao, id_participantes, id_status, id_user, id_equipe) VALUES (:id_sessao, :id_participante, :id_status, :id_user, :id_equipe)";
             $stmtUpdate = $pdo->prepare($queryInsert);
     
             foreach ($rascunho as $participante => $status) {
@@ -60,13 +62,14 @@
                 
                 $idStatus = ($status == 'Presente') ? obterIdStatus('Presente') : obterIdStatus('Ausente');
                 
-                $queryInsert = "INSERT INTO rascunho_presenca (id_sessao, id_participantes, id_status, id_user) VALUES (:id_sessao, :id_participante, :id_status, :id_user)";
+                $queryInsert = "INSERT INTO rascunho_presenca (id_sessao, id_participantes, id_status, id_user, id_equipe) VALUES (:id_sessao, :id_participante, :id_status, :id_user, :id_equipe)";
                 $stmtUpdate = $pdo->prepare($queryInsert);
                 
                 $stmtUpdate->bindParam(":id_sessao", $idSessao);
                 $stmtUpdate->bindParam(":id_participante", $idParticipante);
                 $stmtUpdate->bindParam(":id_status", $idStatus);
                 $stmtUpdate->bindParam(":id_user", $userId);
+                $stmtUpdate->bindParam(":id_equipe", $idEquipe);
                 
                 if (!$stmtUpdate->execute()) {
                     session_start();
@@ -93,22 +96,24 @@
 
             $username = $_SESSION['username'];
         
-            $querySessao = "SELECT s.id AS id_sessao, s.situacao, u.id AS userId FROM sessoes AS s
-                            JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
-                            JOIN usuarios AS u ON gs.id_usuarios = u.id
-                            WHERE u.nome = :username
-                            ORDER BY s.data_criacao DESC
-                            LIMIT 1";
-        
+            $querySessao = "SELECT s.id AS id_sessao, s.situacao, u.id AS userId, gs.id_equipe AS equipe FROM sessoes AS s
+            JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
+            JOIN usuarios AS u ON gs.id_usuarios = u.id
+            WHERE u.nome = :username
+            ORDER BY s.data_criacao DESC
+            LIMIT 1";
+
             $stmtSessao = $pdo->prepare($querySessao);
             $stmtSessao->bindParam(":username", $username);
             $stmtSessao->execute();
-        
+
             $resultSessao = $stmtSessao->fetch(PDO::FETCH_ASSOC);
-        
-            $idSessao = $resultSessao['id_sessao'];
-        
+
             $userId = $resultSessao['userId'];
+
+            $idEquipe = $resultSessao['equipe'];
+
+            $idSessao = $resultSessao['id_sessao'];
         
             if ($resultSessao && $resultSessao['situacao'] == 'Pendente') {
         
@@ -120,7 +125,7 @@
         
                 $presenca = $_POST['rascunho'];
         
-                $queryInsert = "INSERT INTO presenca (id_sessao, id_participantes, id_status, id_user) VALUES (:id_sessao, :id_participante, :id_status, :id_user)";
+                $queryInsert = "INSERT INTO presenca (id_sessao, id_participantes, id_status, id_user, id_equipe) VALUES (:id_sessao, :id_participante, :id_status, :id_user, :id_equipe)";
                 $stmtConfirm = $pdo->prepare($queryInsert);
         
                 foreach ($presenca as $participante => $status) {
@@ -138,6 +143,7 @@
                     $stmtConfirm->bindParam(":id_participante", $idParticipante);
                     $stmtConfirm->bindParam(":id_status", $idStatus);
                     $stmtConfirm->bindParam(":id_user", $userId);
+                    $stmtConfirm->bindParam(":id_equipe", $idEquipe);
                     
                     if (!$stmtConfirm->execute()) {
                         session_start();

@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
 
     $username = $_SESSION['username'];
 
-    $querySessao = "SELECT s.id AS id_sessao, s.situacao FROM sessoes AS s
+    $querySessao = "SELECT s.id AS id_sessao, s.situacao, u.id AS user, gs.id_equipe AS equipe FROM sessoes AS s
                     JOIN gerenciamento_sessao AS gs ON s.id = gs.id_sessoes
                     JOIN usuarios AS u ON gs.id_usuarios = u.id
                     WHERE u.nome = :username
@@ -36,9 +36,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
 
         $idSessao = $resultSessao['id_sessao'];
 
+        $idUser = $resultSessao['user'];
+
+        $idEquipe = $resultSessao['equipe'];
+
         $presencas = $_POST['presenca'];
 
-        $queryInsert = "INSERT INTO presenca (id_sessao, id_participantes, id_status) VALUES (:id_sessao, :id_participante, :id_status)";
+        $queryInsert = "INSERT INTO presenca (id_sessao, id_participantes, id_status, id_user, id_equipe) VALUES (:id_sessao, :id_participante, :id_status, :id_user, :id_equipe)";
         $stmtInsert = $pdo->prepare($queryInsert);
 
         foreach ($presencas as $participante => $status) {
@@ -64,6 +68,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['adicionarPresenca'])) 
                     $stmtInsert->bindParam(":id_sessao", $idSessao);
                     $stmtInsert->bindParam(":id_participante", $idParticipante);
                     $stmtInsert->bindParam(":id_status", $idStatus);
+                    $stmtInsert->bindParam(":id_user", $idUser);
+                    $stmtInsert->bindParam(":id_equipe", $idEquipe);
                     $stmtInsert->execute();
                 } else {
                     session_start();

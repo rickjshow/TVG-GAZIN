@@ -197,7 +197,7 @@ require_once "permissao.php";
                                         <a href="novaEdicao.php" class="dashboard-nav-item"><i class="fa-solid fa-font-awesome"></i>TVG</a>
                                         <a href="acesso.php" class="dashboard-nav-item"><i class="fa-solid fa-user-plus"></i><?php if($tipo== "Desenvolvedor"){echo "Usuários";}else{echo "Facilitadores";} ?></a>
                                         <a href="ranking.php" class="dashboard-nav-item"><i class="fa-solid fa-trophy"></i>Ranking</a>
-                                        <a href="presenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Participantes Ausentes</a>
+                                        <a href="presenca.php" class="dashboard-nav-item"><i class="fas fa-users"></i>Lista de chamada TVG</a>
                                         <a href="tarefas.php" class="dashboard-nav-item"><i class="fa-solid fa-pen-to-square"></i>Tarefas</a>
                                         <div class='dashboard-nav-dropdown'>
                                             <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle"><i class="fas fa-file-upload"></i>Relatorios</a>

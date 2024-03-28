@@ -4,6 +4,9 @@
     include "header.php";
     require_once "permissao.php";
     include "temporizador.php";
+    require_once "tipoDev.php";
+
+    verificarTipo($type);
 
     verificarPermissao($permission);
 
