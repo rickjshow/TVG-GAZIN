@@ -20,17 +20,18 @@ function verificarTipo($type)
     }
 }
 
-function obterTipoDoBancoDeDados($username)
-{
+function obterTipoDoBancoDeDados($username){
     global $pdo;
 
-    $queryPerm = "SELECT permission FROM usuarios WHERE nome = :username";
+    $queryPerm = "SELECT t.tipo AS tipo FROM tipo AS t
+    JOIN usuarios AS u ON t.id = u.id_tipo
+    WHERE u.nome = :username";
     $stmt = $pdo->prepare($queryPerm);
     $stmt->bindParam(":username", $username);
     
     $stmt->execute();
 
-    $stmt->bindColumn("permission", $tipo);
+    $stmt->bindColumn("tipo", $tipo);
     $stmt->fetch(PDO::FETCH_BOUND);
     $stmt->closeCursor();
 
