@@ -17,9 +17,7 @@
     }else{
         $nomeSession = "Não existem sessões cadastradas!";
     }
-
-    
-
+ 
 ?>
 
 <!DOCTYPE html>
