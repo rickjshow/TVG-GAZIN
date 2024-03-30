@@ -59,9 +59,9 @@ if(isset($_GET['idProva'])) {
                     $result->execute();
                     $idUser = $result->fetchColumn();
 
-                    $insert = "INSERT INTO log_vivencias (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'exclusão de vivências' , NOW() ,?, NULL)";
+                    $insert = "INSERT INTO log_vivencias (usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'exclusão de vivências' , NOW() ,?, NULL)";
                     $stmt = $pdo->prepare($insert);
-                    $stmt->bindValue(1, $idUser);
+                    $stmt->bindValue(1, $user);
                     $stmt->bindValue(2, $ip_user);
                     $stmt->bindValue(3, $nome);
                     $stmt->execute();

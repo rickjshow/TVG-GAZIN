@@ -86,12 +86,8 @@
                         }
                     }
                     
-                      
-                    
-    
                     echo "</div></div></div></div>";
                     echo "<div class='mt-4'></div>";
                 }
             }
         }
-?>

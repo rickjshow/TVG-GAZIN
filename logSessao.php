@@ -119,45 +119,36 @@
                         $dataInicial = $_POST['datainicial'];
                         $dataFinal = $_POST['datafinal'];
 
-                        $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-                        $consulta2 = $pdo->prepare($queryUser);
-                        $consulta2->bindValue(1, $usuario);
-                        $consulta2->execute();
-                        $idUser = $consulta2->fetchColumn();
-
                         $querySessao = "SELECT id FROM sessoes WHERE nome = ?";
                         $result = $pdo->prepare($querySessao);
                         $result->bindValue(1, $sessao);
                         $result->execute();
                         $idSessao = $result->fetchColumn();
 
-                        $queryLog = "SELECT log_sessoes.*, usuarios.nome AS nome_usuario FROM log_sessoes
-                        LEFT JOIN usuarios ON log_sessoes.id_usuarios = usuarios.id 
-                        LEFT JOIN sessoes ON log_sessoes.id_sessoes = sessoes.id
-                        WHERE 1=1";
+                        $queryLog = "SELECT * FROM log_sessoes WHERE 1=1";
            
                         $bindings = array();
 
                         if (!empty($dataInicial) && !empty($dataFinal)) {
-                            $queryLog .= " AND log_sessoes.horario BETWEEN ? AND ?";
+                            $queryLog .= " AND horario BETWEEN ? AND ?";
                             $bindings[] = $dataInicial;
                             $bindings[] = $dataFinal;
                         } elseif (!empty($dataInicial) && empty($dataFinal)) {
-                            $queryLog .= " AND log_sessoes.horario >= ?";
+                            $queryLog .= " AND horario >= ?";
                             $bindings[] = $dataInicial;
                         } elseif (!empty($dataFinal) && empty($dataInicial)) {
-                            $queryLog .= " AND log_sessoes.horario <= ?";
+                            $queryLog .= " AND horario <= ?";
                             $bindings[] = $dataFinal;
                         }
                                                 
                         if ($usuario != 'Todos os usuarios') {
-                            $queryLog .= " AND log_sessoes.id_usuarios = ?";
-                            $bindings[] = $idUser;
+                            $queryLog .= " AND usuario = ?";
+                            $bindings[] = $usuario;
                         }
 
                         if($sessao != 'Todas as sessoes'){
-                            $queryLog .= " AND log_sessoes.id_sessoes = ?";
-                            $bindings[] = $idSessao;
+                            $queryLog .= " AND sessao = ?";
+                            $bindings[] = $sessao;
                         } 
                                                 
                         $consulta3 = $pdo->prepare($queryLog);
@@ -168,7 +159,7 @@
                         if(isset($resultado) && !empty($resultado)) {
                             foreach($resultado AS $row) {
                                 echo "<tr>";
-                                echo "<td style='font-weight: normal;'>{$row['nome_usuario']}</td>";
+                                echo "<td style='font-weight: normal;'>{$row['usuario']}</td>";
                                 echo "<td style='font-weight: normal;'>{$row['horario']}</td>";
                                 echo "<td style='font-weight: normal;'>{$row['acao']}</td>";
                                 if(isset($row['valor_antigo'])){

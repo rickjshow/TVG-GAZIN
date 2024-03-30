@@ -29,9 +29,9 @@ $resultado = verificarTipo($_SESSION['username']);
         <div class="box1 mt-4 text-center p-4 border rounded shadow">
         <?php 
             if($resultado == 'Desenvolvedor') : ?>
-                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Lista de Usuarios</h3>
+                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Cadastro de Usuarios</h3>
             <?php else : ?>
-                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Lista de Facilitadores</h3>
+                <h3 class="mt-4 font-weight-bold text-primary" style="font-size: 18px;">Cadastro de Facilitadores</h3>
             <?php endif; ?>
             <button class="btn btn-primary mt-4" data-toggle="modal" style="font-size: 15px;" data-target="#exampleModal">Cadastrar Usuarios</button>
             <?php 

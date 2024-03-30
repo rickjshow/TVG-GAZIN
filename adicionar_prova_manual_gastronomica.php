@@ -228,8 +228,13 @@ if (isset($_GET['id'])) {
             </div>
         </div>
 
+        <div class="col-10 mx-auto mt-4">
+            <div class="mt-4 text-center p-4 border rounded shadow">
+                <h4 class="mt-4 font-weight-bold text-primary" style="font-size: 14px;">Adicione a pontuação de 0 a 10 em cada campo (apenas numeros inteiros)</h4>
+            </div>
+        </div>
        
-        <div class="row mt-4">
+        <div class="row mt-5">
             <div class="col-md-6 offset-md-3">
                 <form id="pontuacaoForm" style="display: none;">
                     <div class="form-group">
@@ -366,19 +371,22 @@ if (isset($_GET['id'])) {
     });
 
     function validarPontuacao(event) {
-    const valor = parseInt(event.target.value);
-    const mensagemErroElement = event.target.parentElement.querySelector('.error-message');
+        const input = event.target;
+        let valor = input.value.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
+        const mensagemErroElement = input.parentElement.querySelector('.error-message');
 
-    if (isNaN(valor) || valor < 0 || valor > 10) {
-        mensagemErroElement.textContent = 'Por favor, insira um número inteiro de 0 a 10.';
+        if (valor !== '') {
+            valor = parseInt(valor); // Converte o valor para um número inteiro
 
-        if (valor > 10) {
-            event.target.value = ''; 
-        }
-        } else {
-            mensagemErroElement.textContent = '';
+            if (isNaN(valor) || valor < 0 || valor > 10) {
+                mensagemErroElement.textContent = 'Por favor, insira um número inteiro de 0 a 10.';
+                input.value = ''; // Limpa o campo se o valor estiver fora do intervalo permitido
+            } else {
+                mensagemErroElement.textContent = '';
+            }
         }
     }
+
 
 
 

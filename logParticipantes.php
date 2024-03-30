@@ -99,27 +99,25 @@
 
                         $idUser = $consulta2->fetchColumn();
 
-                        $queryLog = "SELECT log_participantes.*, usuarios.nome AS nome_usuario FROM log_participantes
-                        LEFT JOIN usuarios ON log_participantes.id_usuarios = usuarios.id 
-                        WHERE 1=1";
+                        $queryLog = "SELECT * FROM log_participantes WHERE 1=1";
            
                         $bindings = array();
                                                 
                         if (!empty($dataInicial) && !empty($dataFinal)) {
-                            $queryLog .= " AND log_participantes.horario BETWEEN ? AND ?";
+                            $queryLog .= " AND horario BETWEEN ? AND ?";
                             $bindings[] = $dataInicial;
                             $bindings[] = $dataFinal;
                         } elseif (!empty($dataInicial) && empty($dataFinal)) {
-                            $queryLog .= " AND log_participantes.horario >= ?";
+                            $queryLog .= " AND horario >= ?";
                             $bindings[] = $dataInicial;
                         } elseif (!empty($dataFinal) && empty($dataInicial)) {
-                            $queryLog .= " AND log_participantes.horario <= ?";
+                            $queryLog .= " AND horario <= ?";
                             $bindings[] = $dataFinal;
                         }
                                                 
                         if ($usuario != 'Todos os usuarios') {
-                            $queryLog .= " AND log_participantes.id_usuarios = ?";
-                            $bindings[] = $idUser;
+                            $queryLog .= " AND usuario = ?";
+                            $bindings[] = $usuario;
                         }
                                                 
                         $consulta3 = $pdo->prepare($queryLog);
@@ -130,7 +128,7 @@
                         if(isset($resultado) && !empty($resultado)) {
                             foreach($resultado AS $row) {
                                 echo "<tr>";
-                                echo "<td style='font-weight: normal;'>{$row['nome_usuario']}</td>";
+                                echo "<td style='font-weight: normal;'>{$row['usuario']}</td>";
                                 echo "<td style='font-weight: normal;'>{$row['horario']}</td>";
                                 echo "<td style='font-weight: normal;'>{$row['acao']}</td>";
                                 if(isset($row['valor_antigo'])){

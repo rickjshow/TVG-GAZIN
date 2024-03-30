@@ -41,6 +41,12 @@ if (isset($_POST["add_tvg"])) {
                 $consulta->bindParam(':data', $data);
                 if ($consulta->execute()) {
 
+                    $query = "SELECT nome FROM sessoes WHERE id = ?";
+                    $result = $pdo->prepare($query);
+                    $result->bindValue(1, $id);
+                    $result->execute();
+                    $name = $result->fetchColumn();
+
                     $user = $_SESSION['username'];
 
                     if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -53,23 +59,18 @@ if (isset($_POST["add_tvg"])) {
                     
                     $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
 
-                    $querySessao = "SELECT id FROM sessoes ORDER BY data_criacao ASC LIMIT 1";
+                    $querySessao = "SELECT data_TVG FROM sessoes ORDER BY data_criacao ASC LIMIT 1";
                     $resultado = $pdo->prepare($querySessao);
                     $resultado->execute();
-                    $id = $resultado->fetchColumn();
+                    $data = $resultado->fetchColumn();
 
-                    $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-                    $result = $pdo->prepare($queryUser);
-                    $result->bindValue(1, $user);
-                    $result->execute();
-                    $idUser = $result->fetchColumn();
-
-                    $insert = "INSERT INTO log_sessoes (id_sessoes, id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?,?, 'adição de sessão' , NOW() , NULL ,?)";
+                    $insert = "INSERT INTO log_sessoes (sessao, data_sessao, usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?,?,?, 'adição de sessão' , NOW() , NULL ,?)";
                     $stmt = $pdo->prepare($insert);
-                    $stmt->bindValue(1, $id);
-                    $stmt->bindValue(2, $idUser);
-                    $stmt->bindValue(3, $ip_user);
-                    $stmt->bindValue(4, $nome);
+                    $stmt->bindValue(1, $name);
+                    $stmt->bindValue(2, $data);
+                    $stmt->bindValue(3, $user);
+                    $stmt->bindValue(4, $ip_user);
+                    $stmt->bindValue(5, $nome);
                     $stmt->execute();
 
                     header("location:gerenciamentoEdicao.php");

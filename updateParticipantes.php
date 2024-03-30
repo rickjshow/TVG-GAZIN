@@ -111,17 +111,11 @@ if (isset($_POST['update_participantes'])) {
                 
                 $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
 
-                $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-                $result = $pdo->prepare($queryUser);
-                $result->bindValue(1, $user);
-                $result->execute();
-                $idUser = $result->fetchColumn();
-
                 if ($valoresAntigos['nome'] != $nome) {
 
-                    $insertNome = "INSERT INTO log_participantes (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $valoresAntigos['nome'] . " - nome', NOW(), ?, ?)";
+                    $insertNome = "INSERT INTO log_participantes (usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $valoresAntigos['nome'] . " - nome', NOW(), ?, ?)";
                     $stmtNome = $pdo->prepare($insertNome);
-                    $stmtNome->bindValue(1, $idUser);
+                    $stmtNome->bindValue(1, $user);
                     $stmtNome->bindValue(2, $ip_user);
                     $stmtNome->bindValue(3, $valoresAntigos['nome']); 
                     $stmtNome->bindValue(4, $nome); 
@@ -130,9 +124,9 @@ if (isset($_POST['update_participantes'])) {
         
                 if ($valoresAntigos['departamento'] != $departamento_nome) {
 
-                    $insertDepartamento = "INSERT INTO log_participantes (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $nome . " - departamento', NOW(), ?, ?)";
+                    $insertDepartamento = "INSERT INTO log_participantes (usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?, ?, 'edição do(a) " . $nome . " - departamento', NOW(), ?, ?)";
                     $stmtDepartamento = $pdo->prepare($insertDepartamento);
-                    $stmtDepartamento->bindValue(1, $idUser);
+                    $stmtDepartamento->bindValue(1, $user);
                     $stmtDepartamento->bindValue(2, $ip_user);
                     $stmtDepartamento->bindValue(3, $valoresAntigos['departamento']); 
                     $stmtDepartamento->bindValue(4, $departamento_nome); 

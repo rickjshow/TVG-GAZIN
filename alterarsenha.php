@@ -64,21 +64,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
                 
                 $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
 
-                $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-                $result = $pdo->prepare($queryUser);
-                $result->bindValue(1, $user);
-                $result->execute();
-                $idUser = $result->fetchColumn();
-
-                $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'Alteração da senha do usuário - $user' , NOW() , NULL ,NULL)";
+                $insert = "INSERT INTO log_facilitadores (usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'Alteração da senha do usuário - $user' , NOW() , NULL ,NULL)";
                 $stmt = $pdo->prepare($insert);
-                $stmt->bindValue(1, $idUser);
+                $stmt->bindValue(1, $user);
                 $stmt->bindValue(2, $ip_user);
                 $stmt->execute();
 
-                $querySessao = "INSERT INTO sessoes_usuarios_logados (id_user, data_login, ip_user) VALUES (?, NOW(), ?)";
+                $querySessao = "INSERT INTO sessoes_usuarios_logados (usuario, data_login, ip_user) VALUES (?, NOW(), ?)";
                 $result1 = $pdo->prepare($querySessao);
-                $result1->bindValue(1, $idUser);
+                $result1->bindValue(1, $user);
                 $result1->bindValue(2, $ip_user);
                 $result1->execute();
 

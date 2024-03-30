@@ -40,15 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
 
-                $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-                $result = $pdo->prepare($queryUser);
-                $result->bindValue(1, $nome);
-                $result->execute();
-                $idUser = $result->fetchColumn();
-
-                $querySessao = "INSERT INTO sessoes_usuarios_logados (id_user, data_login, ip_user) VALUES (?, NOW(), ?)";
+                $querySessao = "INSERT INTO sessoes_usuarios_logados (usuario, data_login, ip_user) VALUES (?, NOW(), ?)";
                 $result1 = $pdo->prepare($querySessao);
-                $result1->bindValue(1, $idUser);
+                $result1->bindValue(1, $user['nome']);
                 $result1->bindValue(2, $ip_user);
                 $result1->execute();    
 

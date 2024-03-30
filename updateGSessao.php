@@ -29,6 +29,40 @@ if(isset($_POST['Ativar']) && isset($_POST['idGS'])){
     
     session_start();
     if ($updateUser) {
+
+        $query = "SELECT nome FROM sessoes WHERE id = ?";
+            $result = $pdo->prepare($query);
+            $result->bindValue(1, $idGS);
+            $result->execute();
+            $name = $result->fetchColumn();
+
+            $user = $_SESSION['username'];
+
+            if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                $ip_address = $_SERVER['HTTP_CLIENT_IP'];
+            } else {
+                $ip_address = $_SERVER['REMOTE_ADDR'];
+            }
+            
+            $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
+
+            $querySessao = "SELECT data_TVG FROM sessoes WHERE id = ?";
+            $resultado = $pdo->prepare($querySessao);
+            $resultado->bindValue(1, $idGS);
+            $resultado->execute();
+            $data = $resultado->fetchColumn();
+
+            $insert = "INSERT INTO log_sessoes (sessao, data_sessao, usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?,?,?, 'inicialização de sessão' , NOW() , NULL ,?)";
+            $stmt = $pdo->prepare($insert);
+            $stmt->bindValue(1, $name);
+            $stmt->bindValue(2, $data);
+            $stmt->bindValue(3, $user);
+            $stmt->bindValue(4, $ip_user);
+            $stmt->bindValue(5, $nome);
+            $stmt->execute();
+
         $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'O TVG foi iniciado, boa sorte a todos!');
         header("location: home.php");
         exit();

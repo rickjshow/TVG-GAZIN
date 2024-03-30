@@ -42,7 +42,7 @@ $consultaVerifica->execute();
             <?php 
 
                 if($resultado == 'Desenvolvedor') : ?>
-                    <a class="btn btn-success mt-4" href="logSessao.php">Log de Usuarios</a>
+                    <a class="btn btn-success mt-4" href="logSessao.php">Log de Sessões</a>
                 <?php endif;
             ?>
         </div>

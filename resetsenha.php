@@ -46,15 +46,9 @@
             
             $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
 
-            $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-            $result = $pdo->prepare($queryUser);
-            $result->bindValue(1, $user);
-            $result->execute();
-            $idUser = $result->fetchColumn();
-
-            $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'Senha resetada do usuário - $nome' , NOW() , NULL ,NULL)";
+            $insert = "INSERT INTO log_facilitadores (usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'Senha resetada do usuário - $nome' , NOW() , NULL ,NULL)";
             $stmt = $pdo->prepare($insert);
-            $stmt->bindValue(1, $id);
+            $stmt->bindValue(1, $user);
             $stmt->bindValue(2, $ip_user);
             $stmt->execute();
 

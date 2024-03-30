@@ -19,46 +19,6 @@ if(isset($_GET['idUsuario'])) {
     $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt_check->execute();
     $num_rows = $stmt_check->fetchColumn();
-
-    if ($num_rows > 0) {
-        $existe_vinculo = true;
-    }
-
-    $selectUser = "SELECT COUNT(*) FROM log_facilitadores WHERE id_usuarios = :id";
-    $stmt_check = $pdo->prepare($selectUser);
-    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt_check->execute();
-    $num_rows = $stmt_check->fetchColumn();
-
-    if ($num_rows > 0) {
-        $existe_vinculo = true;
-    }
-
-    $selectUser = "SELECT COUNT(*) FROM log_participantes WHERE id_usuarios = :id";
-    $stmt_check = $pdo->prepare($selectUser);
-    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt_check->execute();
-    $num_rows = $stmt_check->fetchColumn();
-
-    if ($num_rows > 0) {
-        $existe_vinculo = true;
-    }
-
-    $selectUser = "SELECT COUNT(*) FROM log_sessoes WHERE id_usuarios = :id";
-    $stmt_check = $pdo->prepare($selectUser);
-    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt_check->execute();
-    $num_rows = $stmt_check->fetchColumn();
-
-    if ($num_rows > 0) {
-        $existe_vinculo = true;
-    }
-
-    $selectUser = "SELECT COUNT(*) FROM log_vivencias WHERE id_usuarios = :id";
-    $stmt_check = $pdo->prepare($selectUser);
-    $stmt_check->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt_check->execute();
-    $num_rows = $stmt_check->fetchColumn();
     
     if ($num_rows > 0) {
         $existe_vinculo = true;
@@ -89,15 +49,9 @@ if(isset($_GET['idUsuario'])) {
             
             $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
 
-            $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-            $result = $pdo->prepare($queryUser);
-            $result->bindValue(1, $user);
-            $result->execute();
-            $idUser = $result->fetchColumn();
-
-            $insert = "INSERT INTO log_facilitadores (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'exclusão de usuário' , NOW() ,?, NULL)";
+            $insert = "INSERT INTO log_facilitadores (usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'exclusão de usuário' , NOW() ,?, NULL)";
             $stmt = $pdo->prepare($insert);
-            $stmt->bindValue(1, $idUser);
+            $stmt->bindValue(1, $user);
             $stmt->bindValue(2, $ip_user);
             $stmt->bindValue(3, $nome);
             $stmt->execute();

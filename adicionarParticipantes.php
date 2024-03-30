@@ -53,15 +53,9 @@ if (isset($_POST["add_participantes"])) {
                     
                     $ip_user = filter_var($ip_address, FILTER_VALIDATE_IP);
 
-                    $queryUser = "SELECT id FROM usuarios WHERE nome = ?";
-                    $result = $pdo->prepare($queryUser);
-                    $result->bindValue(1, $user);
-                    $result->execute();
-                    $idUser = $result->fetchColumn();
-
-                    $insert = "INSERT INTO log_participantes (id_usuarios, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'adição de participante' , NOW() , NULL ,?)";
+                    $insert = "INSERT INTO log_participantes (usuario, ip_user, acao, horario, valor_antigo, valor_novo) VALUES (?,?, 'adição de participante' , NOW() , NULL ,?)";
                     $stmt = $pdo->prepare($insert);
-                    $stmt->bindValue(1, $idUser);
+                    $stmt->bindValue(1, $user);
                     $stmt->bindValue(2, $ip_user);
                     $stmt->bindValue(3, $nome);
                     $stmt->execute();
