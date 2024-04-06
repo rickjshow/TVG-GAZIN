@@ -50,6 +50,10 @@ if(isset($_GET['idGS'])) {
         $stmt2 = $pdo->prepare( $querySituacao);
         $stmt2->execute();
 
+        $queryTarefa = "UPDATE tarefas SET situacao = 'Pendente'";
+        $result = $pdo->prepare($queryTarefa);
+        $result->execute();
+
         session_start();
         $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Sessão excluida com sucesso!');
         header("location: novaEdicao.php");

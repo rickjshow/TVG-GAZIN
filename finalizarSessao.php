@@ -48,6 +48,10 @@ include "conexao.php";
             $stmt2 = $pdo->prepare( $querySituacao);
             $stmt2->execute();
 
+            $queryTarefa = "UPDATE tarefas SET situacao = 'Pendente'";
+            $result = $pdo->prepare($queryTarefa);
+            $result->execute();
+
             session_start();
             $_SESSION['alerta'] = array('tipo' => 'success', 'mensagem' => 'Sessão finalizada com sucesso!');
             header("location: novaEdicao.php");

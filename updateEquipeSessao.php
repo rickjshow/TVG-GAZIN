@@ -246,7 +246,7 @@ if (isset($_POST["confirmacao"])) {
                         <label for="facilitador">Facilitador</label>
                         <select id="facilitador" name="facilitador" class="form-control select2">
                             <?php
-                            $query1 = "SELECT u.* FROM usuarios u where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_usuarios = u.id)";
+                            $query1 = "SELECT u.* FROM usuarios u where not exists (select 1 from gerenciamento_sessao gs where gs.id_sessoes = $sesId and gs.id_equipe <> $id_equipe and gs.id_usuarios = u.id) AND u.permission = 'limited'";
                             $consulta1 = $pdo->prepare($query1);
                             $consulta1->execute();
                             $user2 = $consulta1->fetchAll(PDO::FETCH_ASSOC);
