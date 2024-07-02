@@ -20,11 +20,11 @@ require_once "permissao.php";
     <script src="index.js"></script>
     <style>
         @media (min-width: 599px) {
-                img#logo {
-                    width: 175px !important; 
-                    padding: -5px;
-                }
+            img#logo {
+                width: 76px !important;
+                padding: -5px;
             }
+        }
     </style>
     <title>Painel TVG</title>
     
@@ -55,7 +55,7 @@ require_once "permissao.php";
         <div class='dashboard-app'>
         <header class='dashboard-toolbar  align-items-center justify-content-center'>
             <a class="menu-toggle"><i class="fas fa-bars"></i></a>
-           <img src="gazin_logo.png" id="logo" alt="logogazin" class="mx-auto" onclick="enviaHome()" style="width: 150px;">
+           <img src="logo_teste.png" id="logo" alt="logogazin" class="mx-auto" onclick="enviaHome()" style="width: 70px;">
         </header>
         <script>
                 function enviaHome() {

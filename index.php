@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="wrapper">
         <div class="logo">
-            <img src="jeitogazinlogo.png" alt="jeitogazinlogo">
+            <img src="logo_teste.png" alt="logo">
         </div>
         <div class="text-center mt-4 name">
             TVG
