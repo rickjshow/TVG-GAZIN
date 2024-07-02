@@ -2,7 +2,7 @@
 
 body{
    font-family: 'Roboto', sans-serif;
-   background-image: url(teste.jpg);
+   background-image: url() !important; /*aqui foto de fundo tela principal*/
    background-size: cover;
    background-position: center;
    background-repeat: no-repeat;
